@@ -1,0 +1,59 @@
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+
+# Database
+sqlalchemy[asyncio]==2.0.30
+asyncpg==0.29.0
+alembic==1.13.1
+
+# Auth & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography==42.0.7
+
+# LangChain - Agent Orchestration
+langchain==0.2.1
+langchain-community==0.2.1
+langchain-core==0.2.1
+
+# Vector Database
+chromadb==0.5.0
+
+# Redis & Celery
+redis==5.0.4
+celery==5.4.0
+redbeat==2.2.0
+flower==2.0.1
+
+# HTTP client
+httpx==0.27.0
+aiohttp==3.9.5
+
+# Validation
+pydantic==2.7.1
+pydantic-settings==2.3.1
+
+# Document processing for RAG
+pypdf==4.2.0
+python-docx==1.1.2
+unstructured==0.14.4
+
+# Text splitting
+tiktoken==0.7.0
+
+# Monitoring & Logging
+structlog==24.1.0
+prometheus-client==0.20.0
+
+# Utilities
+python-dotenv==1.0.1
+tenacity==8.3.0
+msal==1.28.0
+azure-identity==1.16.0
+azure-mgmt-costmanagement==4.0.1
+azure-mgmt-compute==31.0.0
+azure-mgmt-monitor==6.0.2
+azure-mgmt-resource==23.0.1
+msgraph-sdk==1.3.0
