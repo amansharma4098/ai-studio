@@ -14,11 +14,12 @@ passlib[bcrypt]==1.7.4
 cryptography==42.0.7
 
 # LangChain - Agent Orchestration
-langchain==0.2.1
-langchain-community==0.2.1
-langchain-core==0.2.1
-langchain-groq==0.1.6
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-core==0.2.38
+langchain-groq==0.1.9
 langchain-huggingface==0.0.3
+langchain-text-splitters==0.2.4
 sentence-transformers==2.7.0
 
 # Vector Database
