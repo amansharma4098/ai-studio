@@ -19,8 +19,6 @@ langchain-community==0.2.1
 langchain-core==0.2.1
 langchain-groq==0.1.6
 langchain-huggingface==0.0.3
-
-# Embeddings (local, free)
 sentence-transformers==2.7.0
 
 # Vector Database
@@ -29,7 +27,6 @@ chromadb==0.5.0
 # Redis & Celery
 redis==5.0.4
 celery==5.4.0
-redbeat==2.3.1
 flower==2.0.1
 
 # HTTP client
@@ -43,7 +40,6 @@ pydantic-settings==2.3.1
 # Document processing for RAG
 pypdf==4.2.0
 python-docx==1.1.2
-unstructured==0.14.4
 
 # Text splitting
 tiktoken==0.7.0
