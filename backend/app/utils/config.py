@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://:redis_secret@localhost:6379/0"
 
-    # Ollama
-    OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_TIMEOUT: int = 120
+    # Groq LLM
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama3-8b-8192"
 
     # ChromaDB
     CHROMA_HOST: str = "localhost"
@@ -31,6 +31,10 @@ class Settings(BaseSettings):
 
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
+    ALLOWED_ORIGINS: str = ""
+
+    # Port
+    PORT: int = 8000
 
     # File uploads
     UPLOAD_DIR: str = "/app/uploads"

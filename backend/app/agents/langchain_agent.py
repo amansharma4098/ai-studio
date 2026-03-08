@@ -1,6 +1,6 @@
 """
 LangChain Agent Orchestration Engine
-Builds ReAct agents with Ollama LLMs and dynamically bound skill tools.
+Builds ReAct agents with Groq LLMs and dynamically bound skill tools.
 """
 import time
 import json
@@ -11,7 +11,7 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import StructuredTool, Tool
-from langchain_community.llms import Ollama
+from langchain_groq import ChatGroq
 
 from app.utils.config import settings
 from app.skills.registry import skill_registry
@@ -19,15 +19,14 @@ from app.skills.registry import skill_registry
 logger = structlog.get_logger()
 
 
-# ── Ollama LLM Factory ────────────────────────────────────────────
-def build_llm(model_name: str, temperature: float, max_tokens: int) -> Ollama:
-    """Create a LangChain Ollama LLM instance."""
-    return Ollama(
-        base_url=settings.OLLAMA_BASE_URL,
-        model=model_name,
+# ── Groq LLM Factory ──────────────────────────────────────────────
+def build_llm(model_name: str, temperature: float, max_tokens: int) -> ChatGroq:
+    """Create a LangChain ChatGroq LLM instance."""
+    return ChatGroq(
+        api_key=settings.GROQ_API_KEY,
+        model=model_name or settings.GROQ_MODEL,
         temperature=temperature,
-        num_predict=max_tokens,
-        timeout=settings.OLLAMA_TIMEOUT,
+        max_tokens=max_tokens,
     )
 
 
@@ -87,7 +86,7 @@ def build_agent_executor(
         credentials_map: {credential_id: {tenant_id, client_id, client_secret, ...}}
         memory_enabled: whether to use ConversationBufferWindowMemory
     """
-    # 1. Build Ollama LLM
+    # 1. Build Groq LLM
     llm = build_llm(model_name, temperature, max_tokens)
 
     # 2. Build tools from skill bindings

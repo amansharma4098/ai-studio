@@ -13,8 +13,8 @@ from pydantic import BaseModel
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.llms import Ollama
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 
 from app.db.session import get_db
@@ -27,7 +27,7 @@ router = APIRouter()
 
 # ── Embeddings & Vector Store ─────────────────────────────────────
 def get_embeddings():
-    return OllamaEmbeddings(base_url=settings.OLLAMA_BASE_URL, model="nomic-embed-text")
+    return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 
 def get_chroma_client():
@@ -175,8 +175,8 @@ async def query_documents(
     # Build context
     context = "\n\n---\n\n".join([d.page_content for d in top_docs])
 
-    # Generate answer with Ollama
-    llm = Ollama(base_url=settings.OLLAMA_BASE_URL, model=payload.model_name, temperature=0.3)
+    # Generate answer with Groq
+    llm = ChatGroq(api_key=settings.GROQ_API_KEY, model=settings.GROQ_MODEL, temperature=0.3)
     prompt = f"""Answer the following question based ONLY on the provided context.
 If the answer is not in the context, say "I cannot find this information in the uploaded documents."
 
