@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FakeEmbeddings
 from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 
@@ -26,8 +26,10 @@ router = APIRouter()
 
 
 # ── Embeddings & Vector Store ─────────────────────────────────────
+# Using FakeEmbeddings for Railway deployment - replace with
+# a real embeddings API (OpenAI/Cohere) for production use
 def get_embeddings():
-    return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    return FakeEmbeddings(size=384)
 
 
 def get_chroma_client():
