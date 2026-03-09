@@ -3,6 +3,7 @@ Celery Worker Configuration
 Handles async agent runs, workflow execution, and scheduled tasks.
 """
 import asyncio
+from datetime import datetime
 from celery import Celery
 from app.utils.config import settings
 
@@ -90,7 +91,7 @@ def execute_agent_task(self, agent_id: str, user_id: str, input_text: str):
                 await db.commit()
                 return result_data
 
-        return asyncio.get_event_loop().run_until_complete(_run())
+        return asyncio.run(_run())
 
     except Exception as exc:
         raise self.retry(exc=exc)
@@ -128,21 +129,23 @@ def execute_workflow_task(self, workflow_id: str, user_id: str):
 
                 wf_run = WorkflowRun(workflow_id=workflow_id, status="completed", execution_trace=trace)
                 db.add(wf_run)
-                from datetime import datetime
                 wf.last_run_at = datetime.utcnow()
                 await db.commit()
                 return {"status": "completed", "nodes_executed": len(trace)}
 
-        return asyncio.get_event_loop().run_until_complete(_run())
+        return asyncio.run(_run())
 
     except Exception as exc:
         raise self.retry(exc=exc)
 
 
 def schedule_workflow(workflow_id: str, cron_expr: str):
-    """Schedule a workflow using redbeat."""
-    from redbeat import RedBeatSchedulerEntry
-    from celery.schedules import crontab
+    """Schedule a workflow using redbeat (requires redbeat package)."""
+    try:
+        from redbeat import RedBeatSchedulerEntry
+        from celery.schedules import crontab
+    except ImportError:
+        raise RuntimeError("redbeat package is not installed; workflow scheduling is unavailable")
     parts = cron_expr.split()
     schedule = crontab(minute=parts[0], hour=parts[1], day_of_week=parts[4] if len(parts) > 4 else "*")
     entry = RedBeatSchedulerEntry(

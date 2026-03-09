@@ -27,7 +27,7 @@ async def get_stats(
     # Completed runs
     completed = await db.execute(
         select(func.count(AgentRun.id))
-        .join(Agent)
+        .join(Agent, Agent.id == AgentRun.agent_id)
         .where(Agent.user_id == current_user.id, AgentRun.status == "completed")
     )
     completed_runs = completed.scalar() or 0
@@ -35,7 +35,7 @@ async def get_stats(
     # Avg latency
     avg_lat = await db.execute(
         select(func.avg(AgentRun.execution_time_ms))
-        .join(Agent)
+        .join(Agent, Agent.id == AgentRun.agent_id)
         .where(Agent.user_id == current_user.id, AgentRun.status == "completed")
     )
     avg_latency = avg_lat.scalar() or 0
@@ -43,7 +43,7 @@ async def get_stats(
     # Total tokens
     tokens = await db.execute(
         select(func.sum(AgentRun.output_tokens + AgentRun.input_tokens))
-        .join(Agent)
+        .join(Agent, Agent.id == AgentRun.agent_id)
         .where(Agent.user_id == current_user.id)
     )
     total_tokens = tokens.scalar() or 0

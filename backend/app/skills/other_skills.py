@@ -11,27 +11,22 @@ import structlog
 logger = structlog.get_logger()
 
 
-# ── Web Skills ────────────────────────────────────────────────────
 def register(registry):
-    pass
-
-
-def register(registry_web):
-    @registry_web.register("http_get", "Make an HTTP GET request. Input JSON: {url, headers?, params?}")
+    # ── Web Skills ────────────────────────────────────────────────────
+    @registry.register("http_get", "Make an HTTP GET request. Input JSON: {url, headers?, params?}")
     def http_get(params: dict) -> dict:
         with httpx.Client(timeout=30) as client:
             resp = client.get(params["url"], headers=params.get("headers", {}), params=params.get("params", {}))
         return {"status_code": resp.status_code, "body": resp.text[:2000]}
 
-    @registry_web.register("http_post", "Make an HTTP POST request. Input JSON: {url, body, headers?}")
+    @registry.register("http_post", "Make an HTTP POST request. Input JSON: {url, body, headers?}")
     def http_post(params: dict) -> dict:
         with httpx.Client(timeout=30) as client:
             resp = client.post(params["url"], json=params.get("body", {}), headers=params.get("headers", {}))
         return {"status_code": resp.status_code, "body": resp.text[:2000]}
 
-    @registry_web.register("web_search", "Search the web for current information. Input JSON: {query, numResults?}")
+    @registry.register("web_search", "Search the web for current information. Input JSON: {query, numResults?}")
     def web_search(params: dict) -> dict:
-        # Uses DuckDuckGo instant answers API (free, no key)
         with httpx.Client(timeout=15) as client:
             resp = client.get("https://api.duckduckgo.com/", params={"q": params["query"], "format": "json", "no_html": 1})
         data = resp.json()
@@ -42,21 +37,18 @@ def register(registry_web):
             "related": [r.get("Text", "") for r in data.get("RelatedTopics", [])[:5]],
         }
 
-    @registry_web.register("scrape_url", "Scrape a web page for content. Input JSON: {url}")
+    @registry.register("scrape_url", "Scrape a web page for content. Input JSON: {url}")
     def scrape_url(params: dict) -> dict:
         with httpx.Client(timeout=20, follow_redirects=True) as client:
             resp = client.get(params["url"], headers={"User-Agent": "Mozilla/5.0"})
         return {"status_code": resp.status_code, "content": resp.text[:3000], "url": str(resp.url)}
 
-
-# ── Data Skills ───────────────────────────────────────────────────
-def register(registry_data):
-    @registry_data.register("run_sql_query", "Execute a SQL query. Input JSON: {query, connection}")
+    # ── Data Skills ───────────────────────────────────────────────────
+    @registry.register("run_sql_query", "Execute a SQL query. Input JSON: {query, connection}")
     def run_sql_query(params: dict) -> dict:
-        # In production: use sqlalchemy + connection string from params
         return {"result": "SQL execution requires a configured database connection", "query": params.get("query", "")}
 
-    @registry_data.register("run_python", "Execute a Python code snippet. Input JSON: {code, timeout?}")
+    @registry.register("run_python", "Execute a Python code snippet. Input JSON: {code, timeout?}")
     def run_python(params: dict) -> dict:
         code = params.get("code", "")
         timeout = min(int(params.get("timeout", 10)), 30)
@@ -71,21 +63,18 @@ def register(registry_data):
         except Exception as e:
             return {"error": str(e)}
 
-    @registry_data.register("calculate", "Evaluate a mathematical expression. Input JSON: {expression}")
+    @registry.register("calculate", "Evaluate a mathematical expression. Input JSON: {expression}")
     def calculate(params: dict) -> dict:
         import ast
         try:
-            # Safe eval for math expressions
             tree = ast.parse(params["expression"], mode="eval")
             result = eval(compile(tree, "<string>", "eval"), {"__builtins__": {}})
             return {"result": result, "expression": params["expression"]}
         except Exception as e:
             return {"error": str(e)}
 
-
-# ── Communication Skills ──────────────────────────────────────────
-def register(registry_comm):
-    @registry_comm.register("send_email", "Send an email. Input JSON: {to, subject, body, smtp_host?, smtp_port?, from_email?}")
+    # ── Communication Skills ──────────────────────────────────────────
+    @registry.register("send_email", "Send an email. Input JSON: {to, subject, body, smtp_host?, smtp_port?, from_email?}")
     def send_email(params: dict) -> dict:
         cred = params.get("_credential", {})
         msg = MIMEMultipart()
@@ -100,7 +89,7 @@ def register(registry_comm):
         except Exception as e:
             return {"error": str(e)}
 
-    @registry_comm.register("slack_post_message", "Post a message to Slack. Input JSON: {channel, message, webhook_url?}")
+    @registry.register("slack_post_message", "Post a message to Slack. Input JSON: {channel, message, webhook_url?}")
     def slack_post_message(params: dict) -> dict:
         cred = params.get("_credential", {})
         webhook = params.get("webhook_url", cred.get("webhook_url", ""))
@@ -110,7 +99,7 @@ def register(registry_comm):
             resp = client.post(webhook, json={"channel": params.get("channel", "#general"), "text": params["message"]})
         return {"status": "ok" if resp.status_code == 200 else "error", "response": resp.text}
 
-    @registry_comm.register("teams_post_message", "Post a message to Microsoft Teams. Input JSON: {message, webhook_url?}")
+    @registry.register("teams_post_message", "Post a message to Microsoft Teams. Input JSON: {message, webhook_url?}")
     def teams_post_message(params: dict) -> dict:
         cred = params.get("_credential", {})
         webhook = params.get("webhook_url", cred.get("webhook_url", ""))
@@ -121,10 +110,8 @@ def register(registry_comm):
             resp = client.post(webhook, json=body)
         return {"status": "ok" if resp.status_code == 200 else "error"}
 
-
-# ── DevOps Skills ─────────────────────────────────────────────────
-def register(registry_devops):
-    @registry_devops.register("github_create_issue", "Create a GitHub issue. Input JSON: {repo, title, body, labels?, token}")
+    # ── DevOps Skills ─────────────────────────────────────────────────
+    @registry.register("github_create_issue", "Create a GitHub issue. Input JSON: {repo, title, body, labels?, token}")
     def github_create_issue(params: dict) -> dict:
         cred = params.get("_credential", {})
         token = params.get("token", cred.get("token", ""))
@@ -134,7 +121,7 @@ def register(registry_devops):
             resp = client.post(f"https://api.github.com/repos/{params['repo']}/issues", headers=headers, json=body)
         return resp.json()
 
-    @registry_devops.register("snow_create_incident", "Create a ServiceNow incident. Input JSON: {shortDesc, description, urgency, category}")
+    @registry.register("snow_create_incident", "Create a ServiceNow incident. Input JSON: {shortDesc, description, urgency, category}")
     def snow_create_incident(params: dict) -> dict:
         cred = params.get("_credential", {})
         instance = cred.get("instance", params.get("instance", ""))
@@ -153,7 +140,7 @@ def register(registry_devops):
             )
         return resp.json()
 
-    @registry_devops.register("jira_create_issue", "Create a Jira issue. Input JSON: {project, summary, description, type, priority?}")
+    @registry.register("jira_create_issue", "Create a Jira issue. Input JSON: {project, summary, description, type, priority?}")
     def jira_create_issue(params: dict) -> dict:
         cred = params.get("_credential", {})
         base_url = cred.get("base_url", params.get("base_url", ""))

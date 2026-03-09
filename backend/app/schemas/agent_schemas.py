@@ -55,6 +55,8 @@ class AgentRunRequest(BaseModel):
 
 
 class AgentRunResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     agent_id: str
     input_text: str
@@ -65,6 +67,3 @@ class AgentRunResponse(BaseModel):
     execution_time_ms: Optional[int]
     error_message: Optional[str]
     created_at: datetime
-
-    class Config:
-        from_attributes = True

@@ -10,12 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel, ConfigDict
 
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import FakeEmbeddings
+from langchain_core.documents import Document as LangchainDocument
 from langchain_groq import ChatGroq
-from langchain.chains import RetrievalQA
 
 from app.db.session import get_db
 from app.db.models import Document
@@ -64,11 +64,15 @@ async def upload_document(
     elif ext in (".txt", ".md", ".csv"):
         loader = TextLoader(file_path, encoding="utf-8")
     elif ext == ".docx":
-        loader = UnstructuredWordDocumentLoader(file_path)
+        from docx import Document as DocxDocument
+        docx_file = DocxDocument(file_path)
+        text = "\n".join([p.text for p in docx_file.paragraphs if p.text.strip()])
+        docs = [LangchainDocument(page_content=text, metadata={"source": file_path})]
     else:
         raise HTTPException(400, "Unsupported file type")
 
-    docs = loader.load()
+    if ext != ".docx":
+        docs = loader.load()
 
     # Split into chunks
     splitter = RecursiveCharacterTextSplitter(
@@ -191,7 +195,7 @@ Question: {payload.question}
 
 Answer:"""
 
-    answer = llm.invoke(prompt)
+    answer = llm.invoke(prompt).content
 
     sources = [
         {
