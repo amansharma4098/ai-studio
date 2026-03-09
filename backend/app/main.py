@@ -13,6 +13,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_client import make_asgi_app
 
+from sqlalchemy import text
 from app.db.session import engine, Base
 from app.utils.config import settings
 from app.api import auth, agents, skills, credentials, documents, playground, workflows, monitoring
@@ -36,6 +37,24 @@ async def lifespan(app: FastAPI):
 
     # Create all database tables
     async with engine.begin() as conn:
+        # Drop orphaned types that cause conflicts, then create tables
+        await conn.execute(text("""
+            DO $$
+            DECLARE
+                r RECORD;
+            BEGIN
+                FOR r IN SELECT typname FROM pg_type
+                         WHERE typname IN (
+                             'aistudio_users','aistudio_agents','aistudio_tools',
+                             'aistudio_workflows','aistudio_documents','aistudio_agent_runs',
+                             'users','agents','tools','workflows','documents','agent_runs'
+                         )
+                         AND typtype = 'c'
+                LOOP
+                    EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(r.typname) || ' CASCADE';
+                END LOOP;
+            END $$;
+        """))
         await conn.run_sync(Base.metadata.create_all, checkfirst=True)
     logger.info("Database tables created/verified")
 
