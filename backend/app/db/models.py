@@ -21,7 +21,7 @@ def gen_uuid():
 
 # ── Users ─────────────────────────────────────────────────────────
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "aistudio_users"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
     email = Column(String(255), unique=True, nullable=False, index=True)
@@ -40,10 +40,10 @@ class User(Base):
 
 # ── Agents ────────────────────────────────────────────────────────
 class Agent(Base):
-    __tablename__ = "agents"
+    __tablename__ = "aistudio_agents"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     system_prompt = Column(Text, nullable=False)
@@ -69,7 +69,7 @@ class AgentSkillBinding(Base):
     __tablename__ = "agent_skill_bindings"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    agent_id = Column(UUID(as_uuid=False), ForeignKey("agents.id", ondelete="CASCADE"), nullable=False)
+    agent_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_agents.id", ondelete="CASCADE"), nullable=False)
     skill_id = Column(String(100), nullable=False)        # e.g. "en01", "az07"
     skill_name = Column(String(100), nullable=False)      # e.g. "entra_create_group"
     credential_id = Column(UUID(as_uuid=False), ForeignKey("credentials.id", ondelete="SET NULL"), nullable=True)
@@ -88,7 +88,7 @@ class Credential(Base):
     __tablename__ = "credentials"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
     name = Column(String(255), nullable=False)
     credential_type = Column(String(50), nullable=False)  # azure | entra | both
     # Encrypted JSON containing: tenant_id, client_id, client_secret, subscription_id
@@ -105,10 +105,10 @@ class Credential(Base):
 
 # ── Documents ─────────────────────────────────────────────────────
 class Document(Base):
-    __tablename__ = "documents"
+    __tablename__ = "aistudio_documents"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
     file_name = Column(String(500), nullable=False)
     file_path = Column(String(1000), nullable=False)
     file_size = Column(Integer, nullable=False)
@@ -123,10 +123,10 @@ class Document(Base):
 
 # ── Workflows ─────────────────────────────────────────────────────
 class Workflow(Base):
-    __tablename__ = "workflows"
+    __tablename__ = "aistudio_workflows"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     # React Flow node/edge definition
@@ -142,11 +142,11 @@ class Workflow(Base):
 
 # ── Agent Runs ────────────────────────────────────────────────────
 class AgentRun(Base):
-    __tablename__ = "agent_runs"
+    __tablename__ = "aistudio_agent_runs"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    agent_id = Column(UUID(as_uuid=False), ForeignKey("agents.id", ondelete="CASCADE"), nullable=False, index=True)
-    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    agent_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_agents.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="SET NULL"), nullable=True)
     input_text = Column(Text, nullable=False)
     output_text = Column(Text, nullable=True)
     # Full LangChain execution trace
@@ -168,7 +168,7 @@ class WorkflowRun(Base):
     __tablename__ = "workflow_runs"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    workflow_id = Column(UUID(as_uuid=False), ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False)
+    workflow_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_workflows.id", ondelete="CASCADE"), nullable=False)
     status = Column(String(50), default="pending")
     execution_trace = Column(JSON, default=list)
     execution_time_ms = Column(Integer, nullable=True)

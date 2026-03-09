@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI):
 
     # Create all database tables
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(Base.metadata.create_all, checkfirst=True)
     logger.info("Database tables created/verified")
 
     yield
