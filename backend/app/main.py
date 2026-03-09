@@ -37,25 +37,24 @@ async def lifespan(app: FastAPI):
 
     # Create all database tables
     async with engine.begin() as conn:
-        # Drop orphaned types that cause conflicts, then create tables
+        # Drop all old tables and types cleanly to start fresh
         await conn.execute(text("""
-            DO $$
-            DECLARE
-                r RECORD;
-            BEGIN
-                FOR r IN SELECT typname FROM pg_type
-                         WHERE typname IN (
-                             'aistudio_users','aistudio_agents','aistudio_tools',
-                             'aistudio_workflows','aistudio_documents','aistudio_agent_runs',
-                             'users','agents','tools','workflows','documents','agent_runs'
-                         )
-                         AND typtype = 'c'
-                LOOP
-                    EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(r.typname) || ' CASCADE';
-                END LOOP;
-            END $$;
+            DROP TABLE IF EXISTS agent_runs CASCADE;
+            DROP TABLE IF EXISTS embeddings CASCADE;
+            DROP TABLE IF EXISTS documents CASCADE;
+            DROP TABLE IF EXISTS workflows CASCADE;
+            DROP TABLE IF EXISTS tools CASCADE;
+            DROP TABLE IF EXISTS agents CASCADE;
+            DROP TABLE IF EXISTS users CASCADE;
+            DROP TABLE IF EXISTS aistudio_agent_runs CASCADE;
+            DROP TABLE IF EXISTS aistudio_documents CASCADE;
+            DROP TABLE IF EXISTS aistudio_workflows CASCADE;
+            DROP TABLE IF EXISTS aistudio_tools CASCADE;
+            DROP TABLE IF EXISTS aistudio_agents CASCADE;
+            DROP TABLE IF EXISTS aistudio_users CASCADE;
         """))
-        await conn.run_sync(Base.metadata.create_all, checkfirst=True)
+        # Now create all tables fresh
+        await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
 
     yield
