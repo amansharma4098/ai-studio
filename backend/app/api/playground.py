@@ -1,6 +1,6 @@
 """Playground API - test prompts directly against Groq."""
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 from app.utils.config import settings
@@ -10,6 +10,8 @@ router = APIRouter()
 
 
 class PlaygroundRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     prompt: str
     system_prompt: str = ""
     model_name: str = "llama3-8b-8192"

@@ -8,7 +8,7 @@ from typing import List
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -114,6 +114,8 @@ async def upload_document(
 
 # ── Query Documents (RAG) ─────────────────────────────────────────
 class QueryRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     question: str
     document_ids: List[str] = []
     model_name: str = "llama3"

@@ -37,23 +37,16 @@ async def lifespan(app: FastAPI):
 
     # Create all database tables
     async with engine.begin() as conn:
-        # Drop all old tables and types cleanly to start fresh
-        await conn.execute(text("""
-            DROP TABLE IF EXISTS agent_runs CASCADE;
-            DROP TABLE IF EXISTS embeddings CASCADE;
-            DROP TABLE IF EXISTS documents CASCADE;
-            DROP TABLE IF EXISTS workflows CASCADE;
-            DROP TABLE IF EXISTS tools CASCADE;
-            DROP TABLE IF EXISTS agents CASCADE;
-            DROP TABLE IF EXISTS users CASCADE;
-            DROP TABLE IF EXISTS aistudio_agent_runs CASCADE;
-            DROP TABLE IF EXISTS aistudio_documents CASCADE;
-            DROP TABLE IF EXISTS aistudio_workflows CASCADE;
-            DROP TABLE IF EXISTS aistudio_tools CASCADE;
-            DROP TABLE IF EXISTS aistudio_agents CASCADE;
-            DROP TABLE IF EXISTS aistudio_users CASCADE;
-        """))
-        # Now create all tables fresh
+        # asyncpg requires individual statements - cannot batch multiple commands
+        for table in [
+            "agent_runs", "embeddings", "documents", "workflows",
+            "tools", "agents", "users",
+            "aistudio_agent_runs", "aistudio_documents", "aistudio_workflows",
+            "aistudio_tools", "aistudio_agents", "aistudio_users",
+        ]:
+            await conn.execute(text(f"DROP TABLE IF EXISTS {table} CASCADE"))
+
+        # Create all tables fresh
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
 

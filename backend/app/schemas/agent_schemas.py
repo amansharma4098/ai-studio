@@ -1,7 +1,7 @@
 """Pydantic request/response schemas for agents."""
 from typing import List, Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class SkillBindingCreate(BaseModel):
@@ -11,6 +11,8 @@ class SkillBindingCreate(BaseModel):
 
 
 class AgentCreate(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     name: str
     description: str = ""
     system_prompt: str
@@ -22,6 +24,8 @@ class AgentCreate(BaseModel):
 
 
 class AgentUpdate(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     name: Optional[str] = None
     description: Optional[str] = None
     system_prompt: Optional[str] = None
@@ -32,6 +36,8 @@ class AgentUpdate(BaseModel):
 
 
 class AgentResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=(), from_attributes=True)
+
     id: str
     name: str
     description: Optional[str]
@@ -42,9 +48,6 @@ class AgentResponse(BaseModel):
     memory_enabled: bool
     is_active: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class AgentRunRequest(BaseModel):
