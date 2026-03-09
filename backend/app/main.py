@@ -7,9 +7,8 @@ import logging
 from contextlib import asynccontextmanager
 
 import structlog
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_client import make_asgi_app
 
@@ -67,20 +66,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── Middleware ────────────────────────────────────────────────────
-_cors_origins = (
-    [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
-    if settings.ALLOWED_ORIGINS
-    else ["*"]
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=_cors_origins,
-    # allow_credentials cannot be True when allow_origins=["*"]
-    allow_credentials="*" not in _cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# ── CORS — handle preflight before any routing ────────────────────
+@app.middleware("http")
+async def cors_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        response = Response(status_code=200)
+        response.headers["Access-Control-Allow-Origin"] = request.headers.get("origin", "*")
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
+        response.headers["Access-Control-Max-Age"] = "86400"
+        return response
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = request.headers.get("origin", "*")
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
+    return response
 
 # ── Global Exception Handler ──────────────────────────────────────
 @app.exception_handler(Exception)
