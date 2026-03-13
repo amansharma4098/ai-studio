@@ -62,10 +62,12 @@ export const skillsApi = {
 
 // ── Credentials ───────────────────────────────────────────────────
 export const credentialsApi = {
-  list: () => api.get('/credentials/'),
-  create: (data: any) => api.post('/credentials/', data),
-  verify: (id: string) => api.post(`/credentials/${id}/verify`),
+  getAuthTypes: () => api.get('/credentials/auth-types'),
+  list: () => api.get('/credentials/list'),
+  save: (data: any) => api.post('/credentials/save', data),
+  update: (id: string, data: any) => api.put(`/credentials/${id}`, data),
   delete: (id: string) => api.delete(`/credentials/${id}`),
+  getValues: (id: string) => api.get(`/credentials/${id}/values`),
 }
 
 // ── Documents ─────────────────────────────────────────────────────
