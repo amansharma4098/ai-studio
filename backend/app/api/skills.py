@@ -110,6 +110,133 @@ SKILL_CATALOG = [
             ]},
         ]
     },
+    # ── NEW CATEGORIES ─────────────────────────────────────────────
+    {
+        "id": "cat-sales", "name": "Sales & CRM", "icon": "💼",
+        "credType": "rest_api",
+        "tags": [
+            {"tag": "CRM", "skills": [
+                {"id": "sl01", "name": "hubspot_contact", "label": "HubSpot Contact", "desc": "Create or update a HubSpot contact with properties", "icon": "🧑‍💼", "params": ["email", "firstName", "lastName", "company", "phone"],
+                 "required_credentials": ["HUBSPOT_API_KEY"]},
+                {"id": "sl02", "name": "hubspot_deal", "label": "HubSpot Deal", "desc": "Create or update a deal in your HubSpot pipeline", "icon": "🤝", "params": ["dealName", "stage", "amount", "contactEmail"],
+                 "required_credentials": ["HUBSPOT_API_KEY"]},
+                {"id": "sl03", "name": "salesforce_lead", "label": "Salesforce Lead", "desc": "Create a new lead in Salesforce CRM", "icon": "☁️", "params": ["firstName", "lastName", "email", "company", "status"],
+                 "required_credentials": ["SALESFORCE_CLIENT_ID", "SALESFORCE_CLIENT_SECRET"]},
+            ]},
+            {"tag": "Prospecting", "skills": [
+                {"id": "sl04", "name": "linkedin_scraper", "label": "LinkedIn Scraper", "desc": "Scrape public LinkedIn profile data for lead enrichment", "icon": "🔗", "params": ["profileUrl"],
+                 "required_credentials": ["LINKEDIN_API_KEY"]},
+                {"id": "sl05", "name": "cold_email_sender", "label": "Cold Email Sender", "desc": "Send personalized cold outreach emails via SendGrid", "icon": "📨", "params": ["to", "subject", "body", "templateId"],
+                 "required_credentials": ["SENDGRID_API_KEY"]},
+                {"id": "sl06", "name": "lead_enrichment", "label": "Lead Enrichment", "desc": "Enrich lead data with company info, social profiles, and firmographics", "icon": "🔍", "params": ["email", "domain"],
+                 "required_credentials": []},
+            ]},
+        ]
+    },
+    {
+        "id": "cat-finance", "name": "Finance", "icon": "💰",
+        "credType": "rest_api",
+        "tags": [
+            {"tag": "Market Data", "skills": [
+                {"id": "fn01", "name": "stock_price_fetcher", "label": "Stock Price Fetcher", "desc": "Fetch real-time and historical stock prices from Alpha Vantage", "icon": "📈", "params": ["symbol", "interval"],
+                 "required_credentials": ["ALPHA_VANTAGE_KEY"]},
+                {"id": "fn02", "name": "currency_converter", "label": "Currency Converter", "desc": "Convert between currencies using live exchange rates", "icon": "💱", "params": ["from", "to", "amount"],
+                 "required_credentials": ["ALPHA_VANTAGE_KEY"]},
+            ]},
+            {"tag": "Accounting", "skills": [
+                {"id": "fn03", "name": "invoice_parser", "label": "Invoice Parser", "desc": "Extract structured data from PDF/image invoices using OCR", "icon": "🧾", "params": ["fileUrl"],
+                 "required_credentials": []},
+                {"id": "fn04", "name": "quickbooks_sync", "label": "QuickBooks Sync", "desc": "Sync invoices, expenses, and payments with QuickBooks Online", "icon": "📗", "params": ["entity", "action", "data"],
+                 "required_credentials": ["QUICKBOOKS_CLIENT_ID", "QUICKBOOKS_CLIENT_SECRET"]},
+                {"id": "fn05", "name": "expense_categorizer", "label": "Expense Categorizer", "desc": "Automatically categorize expenses using AI classification", "icon": "🏷️", "params": ["description", "amount", "vendor"],
+                 "required_credentials": []},
+                {"id": "fn06", "name": "pdf_report_generator", "label": "PDF Report Generator", "desc": "Generate formatted PDF financial reports from structured data", "icon": "📄", "params": ["title", "data", "template"],
+                 "required_credentials": []},
+            ]},
+        ]
+    },
+    {
+        "id": "cat-hr", "name": "HR & Recruiting", "icon": "👥",
+        "credType": "rest_api",
+        "tags": [
+            {"tag": "Recruiting", "skills": [
+                {"id": "hr01", "name": "resume_parser", "label": "Resume Parser", "desc": "Extract structured data from resumes (PDF/DOCX) — name, skills, experience", "icon": "📄", "params": ["fileUrl"],
+                 "required_credentials": []},
+                {"id": "hr02", "name": "job_poster", "label": "Job Poster", "desc": "Post job listings to multiple job boards simultaneously", "icon": "📢", "params": ["title", "description", "location", "salary", "boards"],
+                 "required_credentials": ["SENDGRID_API_KEY"]},
+                {"id": "hr03", "name": "interview_question_generator", "label": "Interview Question Generator", "desc": "Generate role-specific interview questions using AI", "icon": "❓", "params": ["role", "level", "skills", "count"],
+                 "required_credentials": []},
+                {"id": "hr04", "name": "candidate_scorer", "label": "Candidate Scorer", "desc": "Score and rank candidates against job requirements using AI", "icon": "⭐", "params": ["resumeData", "jobRequirements"],
+                 "required_credentials": []},
+            ]},
+            {"tag": "Onboarding", "skills": [
+                {"id": "hr05", "name": "onboarding_emailer", "label": "Onboarding Emailer", "desc": "Send automated onboarding email sequences to new hires", "icon": "✉️", "params": ["employeeName", "email", "startDate", "role", "manager"],
+                 "required_credentials": ["SENDGRID_API_KEY"]},
+            ]},
+        ]
+    },
+    {
+        "id": "cat-marketing", "name": "Marketing", "icon": "📣",
+        "credType": "rest_api",
+        "tags": [
+            {"tag": "Content", "skills": [
+                {"id": "mk01", "name": "seo_content_writer", "label": "SEO Content Writer", "desc": "Generate SEO-optimized blog posts and articles with target keywords", "icon": "✍️", "params": ["topic", "keywords", "wordCount", "tone"],
+                 "required_credentials": []},
+                {"id": "mk02", "name": "ad_copy_generator", "label": "Ad Copy Generator", "desc": "Generate ad copy for Google Ads, Facebook Ads, and LinkedIn", "icon": "📝", "params": ["product", "audience", "platform", "cta"],
+                 "required_credentials": []},
+            ]},
+            {"tag": "Distribution", "skills": [
+                {"id": "mk03", "name": "social_media_poster", "label": "Social Media Poster", "desc": "Post content to Twitter/X with scheduling support", "icon": "📱", "params": ["content", "platform", "scheduledTime"],
+                 "required_credentials": ["TWITTER_API_KEY", "TWITTER_API_SECRET"]},
+                {"id": "mk04", "name": "google_analytics_reader", "label": "Google Analytics Reader", "desc": "Read website traffic, page views, and conversion data from GA4", "icon": "📊", "params": ["propertyId", "startDate", "endDate", "metrics"],
+                 "required_credentials": ["GOOGLE_ANALYTICS_ID", "GOOGLE_SERVICE_ACCOUNT_JSON"]},
+                {"id": "mk05", "name": "newsletter_sender", "label": "Newsletter Sender", "desc": "Send HTML newsletters to subscriber lists via SendGrid", "icon": "📰", "params": ["listId", "subject", "htmlContent"],
+                 "required_credentials": ["SENDGRID_API_KEY"]},
+            ]},
+        ]
+    },
+    {
+        "id": "cat-devit", "name": "Dev & IT", "icon": "💻",
+        "credType": "rest_api",
+        "tags": [
+            {"tag": "Code Review", "skills": [
+                {"id": "di01", "name": "github_pr_reviewer", "label": "GitHub PR Reviewer", "desc": "Fetch PR diffs and generate AI-powered code review comments", "icon": "🔍", "params": ["repo", "prNumber"],
+                 "required_credentials": ["GITHUB_TOKEN"]},
+                {"id": "di02", "name": "bug_report_analyzer", "label": "Bug Report Analyzer", "desc": "Analyze bug reports and suggest root causes and fixes", "icon": "🐛", "params": ["title", "description", "stackTrace"],
+                 "required_credentials": []},
+            ]},
+            {"tag": "Operations", "skills": [
+                {"id": "di03", "name": "log_analyzer", "label": "Log Analyzer", "desc": "Analyze application logs to detect errors, patterns, and anomalies", "icon": "📋", "params": ["logSource", "timeRange", "level"],
+                 "required_credentials": []},
+                {"id": "di04", "name": "deploy_webhook", "label": "Deploy Webhook", "desc": "Trigger deployment pipelines via webhooks (Vercel, Railway, Render)", "icon": "🚀", "params": ["webhookUrl", "environment", "branch"],
+                 "required_credentials": []},
+                {"id": "di05", "name": "jira_ticket_creator", "label": "Jira Ticket Creator", "desc": "Create Jira tickets with project, type, priority, and assignee", "icon": "🎫", "params": ["project", "summary", "description", "type", "priority"],
+                 "required_credentials": ["JIRA_API_TOKEN", "JIRA_BASE_URL", "JIRA_EMAIL"]},
+                {"id": "di06", "name": "pagerduty_alert", "label": "PagerDuty Alert", "desc": "Trigger or resolve PagerDuty incidents for on-call alerting", "icon": "🔔", "params": ["serviceId", "title", "severity", "action"],
+                 "required_credentials": ["PAGERDUTY_API_KEY"]},
+            ]},
+        ]
+    },
+    {
+        "id": "cat-support", "name": "Customer Support", "icon": "🎧",
+        "credType": "rest_api",
+        "tags": [
+            {"tag": "Ticket Management", "skills": [
+                {"id": "cs01", "name": "ticket_classifier", "label": "Ticket Classifier", "desc": "Classify support tickets by category, priority, and sentiment using AI", "icon": "🏷️", "params": ["subject", "body"],
+                 "required_credentials": []},
+                {"id": "cs02", "name": "faq_responder", "label": "FAQ Responder", "desc": "Match customer questions to FAQ entries and generate responses", "icon": "❓", "params": ["question", "knowledgeBase"],
+                 "required_credentials": []},
+                {"id": "cs03", "name": "zendesk_integration", "label": "Zendesk Integration", "desc": "Create, update, and close Zendesk tickets programmatically", "icon": "🎫", "params": ["action", "ticketId", "subject", "body", "priority"],
+                 "required_credentials": ["ZENDESK_API_TOKEN", "ZENDESK_SUBDOMAIN", "ZENDESK_EMAIL"]},
+            ]},
+            {"tag": "Analysis", "skills": [
+                {"id": "cs04", "name": "sentiment_analyzer", "label": "Sentiment Analyzer", "desc": "Analyze customer message sentiment (positive, negative, neutral) with confidence scores", "icon": "😊", "params": ["text"],
+                 "required_credentials": []},
+                {"id": "cs05", "name": "escalation_handler", "label": "Escalation Handler", "desc": "Detect urgent tickets and auto-escalate to the right team with notifications", "icon": "🚨", "params": ["ticketId", "reason", "team"],
+                 "required_credentials": ["SENDGRID_API_KEY"]},
+            ]},
+        ]
+    },
 ]
 
 
@@ -127,3 +254,32 @@ async def list_installed_skills(current_user=Depends(get_current_user)):
             for skill in tag_group.get("skills", []):
                 skills.append({**skill, "category": cat["name"], "credType": cat["credType"]})
     return skills
+
+
+@router.get("/list")
+async def list_skills_grouped(current_user=Depends(get_current_user)):
+    """Return all skills grouped by category."""
+    result = []
+    for cat in SKILL_CATALOG:
+        skills = []
+        for tag_group in cat.get("tags", []):
+            for skill in tag_group.get("skills", []):
+                skills.append({
+                    "id": skill["id"],
+                    "name": skill["name"],
+                    "label": skill["label"],
+                    "description": skill["desc"],
+                    "icon": skill["icon"],
+                    "params": skill.get("params", []),
+                    "required_credentials": skill.get("required_credentials", []),
+                    "tag": tag_group["tag"],
+                })
+        result.append({
+            "category": cat["name"],
+            "category_id": cat["id"],
+            "icon": cat["icon"],
+            "credType": cat["credType"],
+            "skill_count": len(skills),
+            "skills": skills,
+        })
+    return result
