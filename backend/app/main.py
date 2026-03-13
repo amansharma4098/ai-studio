@@ -12,7 +12,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_client import make_asgi_app
 
-from sqlalchemy import text
 from app.db.session import engine, Base
 from app.utils.config import settings
 from app.api import auth, agents, skills, credentials, documents, playground, workflows, monitoring
@@ -34,19 +33,8 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
     logger.info("Starting AI Studio API", version="3.0.0", env=settings.ENVIRONMENT)
 
-    # Create all database tables
+    # Create all database tables (checkfirst=True by default, only creates if not exists)
     async with engine.begin() as conn:
-        # asyncpg requires individual statements - cannot batch multiple commands
-        for table in [
-            "agent_runs", "embeddings", "documents", "workflows",
-            "tools", "agents", "users",
-            "aistudio_agent_runs", "aistudio_documents", "aistudio_workflows",
-            "aistudio_tools", "aistudio_agents", "aistudio_users",
-            "credentials", "agent_skill_bindings",
-        ]:
-            await conn.execute(text(f"DROP TABLE IF EXISTS {table} CASCADE"))
-
-        # Create all tables fresh
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
 

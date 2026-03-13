@@ -29,11 +29,13 @@ async def signup(payload: SignupRequest, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.email == payload.email))
     if existing.scalar_one_or_none():
         raise HTTPException(400, "Email already registered")
+    hashed = hash_password(payload.password)
+    print(f"[AUTH] signup hash created: {hashed[:20]}...")
     user = User(
         email=payload.email,
         name=payload.name,
         organization=payload.organization,
-        password_hash=hash_password(payload.password),
+        password_hash=hashed,
     )
     db.add(user)
     await db.commit()
@@ -46,7 +48,14 @@ async def signup(payload: SignupRequest, db: AsyncSession = Depends(get_db)):
 async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
-    if not user or not verify_password(payload.password, user.password_hash):
+    print(f"[AUTH] login: email={payload.email}")
+    if not user:
+        raise HTTPException(401, "Invalid credentials")
+    print(f"[AUTH] login: hash from DB={user.password_hash[:20]}...")
+    print(f"[AUTH] login: plain password length={len(payload.password)}")
+    is_valid = verify_password(payload.password, user.password_hash)
+    print(f"[AUTH] login: verify={is_valid}")
+    if not is_valid:
         raise HTTPException(401, "Invalid credentials")
     token = create_access_token({"sub": user.id, "email": user.email})
     return {"access_token": token, "token_type": "bearer", "user": {"id": user.id, "name": user.name, "email": user.email}}

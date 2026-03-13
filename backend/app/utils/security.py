@@ -22,7 +22,15 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return _bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    try:
+        plain_bytes = plain.encode('utf-8')
+        hashed_bytes = hashed.encode('utf-8')
+        result = _bcrypt.checkpw(plain_bytes, hashed_bytes)
+        print(f"[AUTH] checkpw result: {result}")
+        return result
+    except Exception as e:
+        print(f"[AUTH] checkpw error: {e}")
+        return False
 
 
 # ── JWT ───────────────────────────────────────────────────────────
