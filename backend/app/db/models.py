@@ -82,23 +82,22 @@ class AgentSkillBinding(Base):
 # ── Credentials ───────────────────────────────────────────────────
 class Credential(Base):
     """
-    Stores encrypted Microsoft service principal credentials.
-    client_id + client_secret + tenant_id → OAuth2 token (fetched at runtime).
+    Stores encrypted credential values for any auth type.
+    credential_values is Fernet-encrypted JSON containing the dynamic fields.
     """
     __tablename__ = "credentials"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
     user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
     name = Column(String(255), nullable=False)
-    credential_type = Column(String(50), nullable=False)  # azure | entra | both
-    # Encrypted JSON containing: tenant_id, client_id, client_secret, subscription_id
-    encrypted_data = Column(Text, nullable=False)
-    # Verification status
-    is_verified = Column(Boolean, default=False)
-    last_verified_at = Column(DateTime, nullable=True)
-    # OAuth2 scopes granted
-    scopes = Column(JSON, default=list)
+    auth_type = Column(String(100), nullable=False)       # e.g. "Azure Log Analytics", "Jira", "Groq"
+    auth_category = Column(String(100), nullable=False)   # e.g. "Cloud", "ITSM", "API Key"
+    description = Column(Text, nullable=True)
+    # Fernet-encrypted JSON blob of credential field values
+    credential_values = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     owner = relationship("User", back_populates="credentials")
 

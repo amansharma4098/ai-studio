@@ -8,6 +8,7 @@ DELETE /agents/{id} - delete agent
 POST /agents/{id}/run - execute agent with LangChain
 GET  /agents/{id}/runs - get run history
 """
+import os
 import time
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
@@ -139,19 +140,30 @@ async def run_agent_endpoint(
     )
     bindings = bindings_result.scalars().all()
 
-    # Decrypt credentials for each binding
+    # Decrypt credentials for each binding and inject as env vars
     credentials_map = {}
+    injected_env_keys = []
     for binding in bindings:
         if binding.credential_id and binding.credential_id not in credentials_map:
             cred_result = await db.execute(
                 select(Credential).where(
                     Credential.id == binding.credential_id,
                     Credential.user_id == current_user.id,
+                    Credential.is_active == True,
                 )
             )
             cred = cred_result.scalar_one_or_none()
             if cred:
-                credentials_map[str(binding.credential_id)] = decrypt_credentials(cred.encrypted_data)
+                decrypted = decrypt_credentials(cred.credential_values)
+                credentials_map[str(binding.credential_id)] = decrypted
+
+                # Inject credential values as environment variables
+                # Format: CRED_{SKILL_ID}_{FIELD_KEY} = value
+                prefix = f"CRED_{binding.skill_id.upper().replace('-', '_')}"
+                for field_key, field_value in decrypted.items():
+                    env_key = f"{prefix}_{field_key.upper()}"
+                    os.environ[env_key] = str(field_value)
+                    injected_env_keys.append(env_key)
 
     # Build LangChain executor
     executor = build_agent_executor(
@@ -170,7 +182,12 @@ async def run_agent_endpoint(
     )
 
     # Execute
-    result = run_agent(executor, payload.input_text)
+    try:
+        result = run_agent(executor, payload.input_text)
+    finally:
+        # Clean up injected env vars after execution
+        for env_key in injected_env_keys:
+            os.environ.pop(env_key, None)
 
     # Persist run record
     run_record = AgentRun(

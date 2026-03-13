@@ -1,222 +1,228 @@
-"""Credentials API - encrypted Microsoft service principal storage."""
-from typing import List
+"""
+Credentials API - dynamic auth types with encrypted storage.
+
+GET  /api/credentials/auth-types     -> auth type structure (no auth)
+GET  /api/credentials/list           -> list user credentials
+POST /api/credentials/save           -> create credential
+PUT  /api/credentials/{id}           -> update credential
+DELETE /api/credentials/{id}         -> soft delete
+GET  /api/credentials/{id}/values    -> decrypted values (JWT protected)
+"""
+from typing import Optional, Dict
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from pydantic import BaseModel, ConfigDict
-import msal
 
 from app.db.session import get_db
-from app.db.models import Credential
+from app.db.models import Credential, User
 from app.utils.security import encrypt_credentials, decrypt_credentials
 from app.api.deps import get_current_user
-from datetime import datetime
+from app.services.credential_types import CREDENTIAL_AUTH_TYPES
 
 router = APIRouter()
 
 
-class CredentialCreate(BaseModel):
+# ── Schemas ──────────────────────────────────────────────────────
+class CredentialSave(BaseModel):
     name: str
-    credential_type: str  # azure | entra | both
-    tenant_id: str
-    client_id: str
-    client_secret: str
-    subscription_id: str = ""
+    auth_type: str
+    auth_category: str
+    description: Optional[str] = None
+    credential_values: Dict[str, str]
 
 
-class CredentialResponse(BaseModel):
+class CredentialUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    credential_values: Optional[Dict[str, str]] = None
+
+
+class CredentialListItem(BaseModel):
     id: str
     name: str
-    credential_type: str
-    is_verified: bool
-    last_verified_at: datetime | None
-    scopes: list
+    auth_type: str
+    auth_category: str
+    created_by_email: str
     created_at: datetime
+    updated_at: Optional[datetime] = None
+    is_active: bool
 
     model_config = ConfigDict(from_attributes=True)
 
 
-@router.post("/", response_model=CredentialResponse)
-async def create_credential(
-    payload: CredentialCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Create and verify a Microsoft credential via MSAL token fetch."""
-    # Determine scopes based on type
-    scopes_map = {
-        "azure": ["https://management.azure.com/.default"],
-        "entra": ["https://graph.microsoft.com/.default"],
-        "both": ["https://management.azure.com/.default", "https://graph.microsoft.com/.default"],
+# ── GET /auth-types  (no auth needed) ────────────────────────────
+@router.get("/auth-types")
+async def get_auth_types():
+    """Return auth types list, categories dict, and fields dict."""
+    auth_types = list(CREDENTIAL_AUTH_TYPES.keys())
+
+    # Build categories: { "Cloud": ["Azure Log Analytics", ...], ... }
+    categories: dict[str, list[str]] = {}
+    for auth_type, info in CREDENTIAL_AUTH_TYPES.items():
+        cat = info["category"]
+        categories.setdefault(cat, []).append(auth_type)
+
+    # Build fields: { "Azure Log Analytics": [...fields], ... }
+    fields = {
+        auth_type: info["fields"]
+        for auth_type, info in CREDENTIAL_AUTH_TYPES.items()
     }
-    scopes = scopes_map.get(payload.credential_type, ["https://graph.microsoft.com/.default"])
 
-    # Try to fetch token to verify credentials
-    is_verified = False
-    try:
-        app = msal.ConfidentialClientApplication(
-            client_id=payload.client_id,
-            client_credential=payload.client_secret,
-            authority=f"https://login.microsoftonline.com/{payload.tenant_id}",
-        )
-        result = app.acquire_token_for_client(scopes=scopes[:1])
-        is_verified = "access_token" in result
-    except Exception:
-        is_verified = False
-
-    # Encrypt sensitive data
-    sensitive = {
-        "tenant_id": payload.tenant_id,
-        "client_id": payload.client_id,
-        "client_secret": payload.client_secret,
-        "subscription_id": payload.subscription_id,
+    return {
+        "auth_types": auth_types,
+        "categories": categories,
+        "fields": fields,
     }
-    encrypted = encrypt_credentials(sensitive)
-
-    cred = Credential(
-        user_id=current_user.id,
-        name=payload.name,
-        credential_type=payload.credential_type,
-        encrypted_data=encrypted,
-        is_verified=is_verified,
-        last_verified_at=datetime.utcnow() if is_verified else None,
-        scopes=scopes,
-    )
-    db.add(cred)
-    await db.commit()
-    await db.refresh(cred)
-    return cred
 
 
-@router.get("/", response_model=List[CredentialResponse])
+# ── GET /list ────────────────────────────────────────────────────
+@router.get("/list")
 async def list_credentials(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
+    """List all credentials for the current user (no secrets)."""
     result = await db.execute(
         select(Credential)
-        .where(Credential.user_id == current_user.id)
+        .where(Credential.user_id == current_user.id, Credential.is_active == True)
         .order_by(desc(Credential.created_at))
     )
-    return result.scalars().all()
+    rows = result.scalars().all()
+
+    return [
+        {
+            "id": str(row.id),
+            "name": row.name,
+            "auth_type": row.auth_type,
+            "auth_category": row.auth_category,
+            "created_by_email": current_user.email,
+            "created_at": row.created_at.isoformat() if row.created_at else None,
+            "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+            "is_active": row.is_active,
+        }
+        for row in rows
+    ]
 
 
-@router.post("/{credential_id}/verify", response_model=CredentialResponse)
-async def verify_credential(
-    credential_id: str,
+# ── POST /save ───────────────────────────────────────────────────
+@router.post("/save")
+async def save_credential(
+    payload: CredentialSave,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """Re-fetch OAuth2 token to re-verify a credential."""
-    result = await db.execute(
-        select(Credential).where(Credential.id == credential_id, Credential.user_id == current_user.id)
+    """Create a new credential with encrypted values."""
+    # Validate auth_type exists
+    if payload.auth_type not in CREDENTIAL_AUTH_TYPES:
+        raise HTTPException(400, f"Unknown auth_type: {payload.auth_type}")
+
+    # Validate required fields
+    type_info = CREDENTIAL_AUTH_TYPES[payload.auth_type]
+    for field in type_info["fields"]:
+        if field["required"] and not payload.credential_values.get(field["key"]):
+            raise HTTPException(400, f"Missing required field: {field['label']}")
+
+    encrypted = encrypt_credentials(payload.credential_values)
+
+    cred = Credential(
+        user_id=current_user.id,
+        name=payload.name,
+        auth_type=payload.auth_type,
+        auth_category=payload.auth_category,
+        description=payload.description,
+        credential_values=encrypted,
     )
-    cred = result.scalar_one_or_none()
-    if not cred:
-        raise HTTPException(404, "Credential not found")
-
-    decrypted = decrypt_credentials(cred.encrypted_data)
-    try:
-        app = msal.ConfidentialClientApplication(
-            client_id=decrypted["client_id"],
-            client_credential=decrypted["client_secret"],
-            authority=f"https://login.microsoftonline.com/{decrypted['tenant_id']}",
-        )
-        result_token = app.acquire_token_for_client(scopes=cred.scopes[:1])
-        cred.is_verified = "access_token" in result_token
-        cred.last_verified_at = datetime.utcnow()
-    except Exception:
-        cred.is_verified = False
-
+    db.add(cred)
     await db.commit()
     await db.refresh(cred)
-    return cred
+
+    return {
+        "id": str(cred.id),
+        "name": cred.name,
+        "auth_type": cred.auth_type,
+        "auth_category": cred.auth_category,
+        "created_at": cred.created_at.isoformat() if cred.created_at else None,
+        "status": "saved",
+    }
 
 
-CREDENTIAL_TYPES = [
-    {
-        "category": "Sales & CRM",
-        "types": [
-            {"key": "hubspot_api_key", "label": "HubSpot API Key", "description": "API key for HubSpot CRM — contacts, deals, pipelines", "link": "https://developers.hubspot.com/docs/api/private-apps", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-            {"key": "salesforce_client_id", "label": "Salesforce Client ID", "description": "OAuth2 Connected App client ID for Salesforce", "link": "https://help.salesforce.com/s/articleView?id=sf.connected_app_create.htm", "fields": [{"name": "client_id", "label": "Client ID", "type": "text"}]},
-            {"key": "salesforce_client_secret", "label": "Salesforce Client Secret", "description": "OAuth2 Connected App client secret for Salesforce", "link": "https://help.salesforce.com/s/articleView?id=sf.connected_app_create.htm", "fields": [{"name": "client_secret", "label": "Client Secret", "type": "password"}]},
-            {"key": "linkedin_api_key", "label": "LinkedIn API Key", "description": "LinkedIn Marketing or Sales Navigator API key", "link": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-            {"key": "sendgrid_api_key", "label": "SendGrid API Key", "description": "SendGrid transactional email API key for cold outreach", "link": "https://docs.sendgrid.com/ui/account-and-settings/api-keys", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-        ],
-    },
-    {
-        "category": "Finance",
-        "types": [
-            {"key": "quickbooks_client_id", "label": "QuickBooks Client ID", "description": "Intuit QuickBooks OAuth2 app client ID", "link": "https://developer.intuit.com/app/developer/qbo/docs/get-started", "fields": [{"name": "client_id", "label": "Client ID", "type": "text"}]},
-            {"key": "quickbooks_client_secret", "label": "QuickBooks Client Secret", "description": "Intuit QuickBooks OAuth2 app client secret", "link": "https://developer.intuit.com/app/developer/qbo/docs/get-started", "fields": [{"name": "client_secret", "label": "Client Secret", "type": "password"}]},
-            {"key": "alpha_vantage_key", "label": "Alpha Vantage API Key", "description": "Free/premium API key for stock prices and financial data", "link": "https://www.alphavantage.co/support/#api-key", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-        ],
-    },
-    {
-        "category": "Dev & IT",
-        "types": [
-            {"key": "github_token", "label": "GitHub Personal Access Token", "description": "Fine-grained PAT for GitHub repos, PRs, issues", "link": "https://github.com/settings/tokens?type=beta", "fields": [{"name": "token", "label": "Token", "type": "password"}]},
-            {"key": "jira_api_token", "label": "Jira API Token", "description": "Atlassian API token for Jira Cloud", "link": "https://id.atlassian.com/manage-profile/security/api-tokens", "fields": [{"name": "api_token", "label": "API Token", "type": "password"}]},
-            {"key": "jira_base_url", "label": "Jira Base URL", "description": "Your Jira Cloud instance URL (e.g. https://yourteam.atlassian.net)", "link": "https://confluence.atlassian.com/adminjiraserver/configuring-the-base-url-938847830.html", "fields": [{"name": "base_url", "label": "Base URL", "type": "text"}]},
-            {"key": "jira_email", "label": "Jira Account Email", "description": "Email associated with your Atlassian account", "link": "https://id.atlassian.com/manage-profile/security/api-tokens", "fields": [{"name": "email", "label": "Email", "type": "text"}]},
-            {"key": "pagerduty_api_key", "label": "PagerDuty API Key", "description": "REST API v2 key for PagerDuty incident management", "link": "https://support.pagerduty.com/docs/api-access-keys", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-        ],
-    },
-    {
-        "category": "Customer Support",
-        "types": [
-            {"key": "zendesk_api_token", "label": "Zendesk API Token", "description": "API token for Zendesk Support ticketing", "link": "https://support.zendesk.com/hc/en-us/articles/4408889192858", "fields": [{"name": "api_token", "label": "API Token", "type": "password"}]},
-            {"key": "zendesk_subdomain", "label": "Zendesk Subdomain", "description": "Your Zendesk subdomain (e.g. yourcompany in yourcompany.zendesk.com)", "link": "https://support.zendesk.com/hc/en-us/articles/4408889192858", "fields": [{"name": "subdomain", "label": "Subdomain", "type": "text"}]},
-            {"key": "zendesk_email", "label": "Zendesk Agent Email", "description": "Email of the Zendesk agent for API auth", "link": "https://support.zendesk.com/hc/en-us/articles/4408889192858", "fields": [{"name": "email", "label": "Email", "type": "text"}]},
-        ],
-    },
-    {
-        "category": "Marketing",
-        "types": [
-            {"key": "google_analytics_id", "label": "Google Analytics Measurement ID", "description": "GA4 measurement ID (G-XXXXXXXXXX)", "link": "https://support.google.com/analytics/answer/9539598", "fields": [{"name": "measurement_id", "label": "Measurement ID", "type": "text"}]},
-            {"key": "google_service_account_json", "label": "Google Service Account JSON", "description": "Service account key JSON for Google APIs (Analytics, Ads, etc.)", "link": "https://cloud.google.com/iam/docs/creating-managing-service-account-keys", "fields": [{"name": "service_account_json", "label": "Service Account JSON", "type": "textarea"}]},
-            {"key": "twitter_api_key", "label": "Twitter/X API Key", "description": "API key for Twitter/X posting and analytics", "link": "https://developer.twitter.com/en/portal/dashboard", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-            {"key": "twitter_api_secret", "label": "Twitter/X API Secret", "description": "API secret for Twitter/X OAuth", "link": "https://developer.twitter.com/en/portal/dashboard", "fields": [{"name": "api_secret", "label": "API Secret", "type": "password"}]},
-        ],
-    },
-    {
-        "category": "AI & LLM",
-        "types": [
-            {"key": "openai_api_key", "label": "OpenAI API Key", "description": "API key for GPT-4, embeddings, DALL-E, etc.", "link": "https://platform.openai.com/api-keys", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-            {"key": "anthropic_api_key", "label": "Anthropic API Key", "description": "API key for Claude models", "link": "https://console.anthropic.com/settings/keys", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-            {"key": "groq_api_key", "label": "Groq API Key", "description": "API key for Groq LPU inference (Llama, Mixtral)", "link": "https://console.groq.com/keys", "fields": [{"name": "api_key", "label": "API Key", "type": "password"}]},
-        ],
-    },
-    {
-        "category": "Email & SMTP",
-        "types": [
-            {"key": "smtp_host", "label": "SMTP Host", "description": "SMTP server hostname (e.g. smtp.gmail.com)", "link": "", "fields": [{"name": "host", "label": "Host", "type": "text"}]},
-            {"key": "smtp_port", "label": "SMTP Port", "description": "SMTP server port (587 for TLS, 465 for SSL)", "link": "", "fields": [{"name": "port", "label": "Port", "type": "text"}]},
-            {"key": "smtp_user", "label": "SMTP Username", "description": "SMTP login username or email", "link": "", "fields": [{"name": "username", "label": "Username", "type": "text"}]},
-            {"key": "smtp_password", "label": "SMTP Password", "description": "SMTP login password or app password", "link": "", "fields": [{"name": "password", "label": "Password", "type": "password"}]},
-        ],
-    },
-]
+# ── PUT /{id} ────────────────────────────────────────────────────
+@router.put("/{credential_id}")
+async def update_credential(
+    credential_id: str,
+    payload: CredentialUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Update an existing credential."""
+    cred = await _get_credential_or_404(db, credential_id, current_user.id)
+
+    if payload.name is not None:
+        cred.name = payload.name
+    if payload.description is not None:
+        cred.description = payload.description
+    if payload.credential_values is not None:
+        cred.credential_values = encrypt_credentials(payload.credential_values)
+
+    cred.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(cred)
+
+    return {
+        "id": str(cred.id),
+        "name": cred.name,
+        "auth_type": cred.auth_type,
+        "auth_category": cred.auth_category,
+        "updated_at": cred.updated_at.isoformat() if cred.updated_at else None,
+        "status": "updated",
+    }
 
 
-@router.get("/types")
-async def get_credential_types():
-    """Return all supported credential types grouped by category."""
-    return CREDENTIAL_TYPES
-
-
+# ── DELETE /{id}  (soft delete) ──────────────────────────────────
 @router.delete("/{credential_id}")
 async def delete_credential(
     credential_id: str,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
+    """Soft delete a credential (set is_active=false)."""
+    cred = await _get_credential_or_404(db, credential_id, current_user.id)
+    cred.is_active = False
+    cred.updated_at = datetime.utcnow()
+    await db.commit()
+    return {"status": "deleted", "id": credential_id}
+
+
+# ── GET /{id}/values  (JWT protected) ────────────────────────────
+@router.get("/{credential_id}/values")
+async def get_credential_values(
+    credential_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Return decrypted credential_values for agent execution."""
+    cred = await _get_credential_or_404(db, credential_id, current_user.id)
+    decrypted = decrypt_credentials(cred.credential_values)
+    return {
+        "id": str(cred.id),
+        "auth_type": cred.auth_type,
+        "auth_category": cred.auth_category,
+        "credential_values": decrypted,
+    }
+
+
+# ── Helper ───────────────────────────────────────────────────────
+async def _get_credential_or_404(db: AsyncSession, credential_id: str, user_id: str):
     result = await db.execute(
-        select(Credential).where(Credential.id == credential_id, Credential.user_id == current_user.id)
+        select(Credential).where(
+            Credential.id == credential_id,
+            Credential.user_id == user_id,
+            Credential.is_active == True,
+        )
     )
     cred = result.scalar_one_or_none()
     if not cred:
         raise HTTPException(404, "Credential not found")
-    await db.delete(cred)
-    await db.commit()
-    return {"status": "deleted"}
+    return cred

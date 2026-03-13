@@ -42,6 +42,7 @@ async def lifespan(app: FastAPI):
             "tools", "agents", "users",
             "aistudio_agent_runs", "aistudio_documents", "aistudio_workflows",
             "aistudio_tools", "aistudio_agents", "aistudio_users",
+            "credentials", "agent_skill_bindings",
         ]:
             await conn.execute(text(f"DROP TABLE IF EXISTS {table} CASCADE"))
 
