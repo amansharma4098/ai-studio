@@ -162,6 +162,34 @@ class AgentRun(Base):
     agent = relationship("Agent", back_populates="runs")
 
 
+# ── Chat Threads ─────────────────────────────────────────────────
+class ChatThread(Base):
+    __tablename__ = "chat_threads"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    agent_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_agents.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = Column(String(255), default="New Chat")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    agent = relationship("Agent")
+    messages = relationship("ChatMessage", back_populates="thread", cascade="all, delete-orphan", order_by="ChatMessage.created_at")
+
+
+# ── Chat Messages ────────────────────────────────────────────────
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    thread_id = Column(UUID(as_uuid=False), ForeignKey("chat_threads.id", ondelete="CASCADE"), nullable=False, index=True)
+    role = Column(String(20), nullable=False)  # "user" or "assistant"
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    thread = relationship("ChatThread", back_populates="messages")
+
+
 # ── Workflow Runs ─────────────────────────────────────────────────
 class WorkflowRun(Base):
     __tablename__ = "workflow_runs"

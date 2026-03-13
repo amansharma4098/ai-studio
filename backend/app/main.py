@@ -14,7 +14,7 @@ from prometheus_client import make_asgi_app
 
 from app.db.session import engine, Base
 from app.utils.config import settings
-from app.api import auth, agents, skills, credentials, documents, playground, workflows, monitoring
+from app.api import auth, agents, chat, skills, credentials, documents, playground, workflows, monitoring
 
 # ── Structured Logging ────────────────────────────────────────────
 structlog.configure(
@@ -85,6 +85,7 @@ app.include_router(documents.router,   prefix="/api/documents",   tags=["Documen
 app.include_router(playground.router,  prefix="/api/playground",  tags=["Playground"])
 app.include_router(workflows.router,   prefix="/api/workflows",   tags=["Workflows"])
 app.include_router(monitoring.router,  prefix="/api/monitoring",  tags=["Monitoring"])
+app.include_router(chat.router,       prefix="/api",             tags=["Chat"])
 
 
 # ── Health Check ──────────────────────────────────────────────────
