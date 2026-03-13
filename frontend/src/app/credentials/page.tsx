@@ -1,6 +1,34 @@
 'use client'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from 'react'
 import { Key, Plus, Loader2 } from 'lucide-react'
+
+class CredentialsErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() { return { hasError: true } }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('[CredentialsPage] Error boundary caught:', error, info)
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-8">
+          <div className="text-center">
+            <h2 className="text-lg font-semibold text-red-400 mb-2">Something went wrong</h2>
+            <p className="text-sm text-muted-foreground mb-4">The credentials page encountered an error.</p>
+            <button onClick={() => this.setState({ hasError: false })}
+              className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500">
+              Try Again
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function getToken(): string {
   try {
@@ -15,6 +43,15 @@ function getToken(): string {
 }
 
 export default function CredentialsPage() {
+  return (
+    <CredentialsErrorBoundary>
+      <CredentialsPageInner />
+    </CredentialsErrorBoundary>
+  )
+}
+
+function CredentialsPageInner() {
+  const [mounted, setMounted] = useState(false)
   const [credentials, setCredentials] = useState<any[]>([])
   const [authTypes, setAuthTypes] = useState<any>({ auth_types: [], categories: {}, fields: {} })
   const [loading, setLoading] = useState(true)
@@ -27,9 +64,13 @@ export default function CredentialsPage() {
 
   const API = process.env.NEXT_PUBLIC_API_URL || ''
 
+  useEffect(() => { setMounted(true) }, [])
+
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (mounted) fetchData()
+  }, [mounted])
+
+  if (!mounted) return null
 
   const getHeaders = () => ({
     'Authorization': `Bearer ${getToken()}`,
@@ -156,7 +197,7 @@ export default function CredentialsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {credentials.map((cred: any) => (
+              {(credentials ?? []).map((cred: any) => (
                 <tr key={cred?.id} className="hover:bg-muted/20 transition-colors">
                   <td className="px-4 py-3 font-medium">{cred?.name || 'Untitled'}</td>
                   <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">{cred?.auth_type || '—'}</td>
@@ -201,7 +242,7 @@ export default function CredentialsPage() {
                 <select className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-violet-500 focus:outline-none"
                   value={form.auth_type} onChange={e => handleAuthTypeChange(e.target.value)}>
                   <option value="">Select type...</option>
-                  {(authTypes?.auth_types || []).map((t: string) => (
+                  {(authTypes?.auth_types ?? []).map((t: string) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
@@ -220,7 +261,7 @@ export default function CredentialsPage() {
               {dynamicFields.length > 0 && (
                 <div className="space-y-3 border-t border-border pt-4">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Connection Fields</p>
-                  {dynamicFields.map((field: any) => (
+                  {(dynamicFields ?? []).map((field: any) => (
                     <div key={field?.key}>
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
                         {field?.label || field?.key} {field?.required && <span className="text-red-400">*</span>}
