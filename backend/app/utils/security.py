@@ -2,16 +2,20 @@
 import base64
 import hashlib
 import json
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 
 import bcrypt as _bcrypt
+import jwt
 from cryptography.fernet import Fernet
-from jose import JWTError, jwt
 
-from app.utils.config import settings
+# ── Config ────────────────────────────────────────────────────────
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
+ALGORITHM = "HS256"
 
-# ── Password Hashing (direct bcrypt, bypasses passlib version check) ──
+
+# ── Password Hashing (direct bcrypt) ─────────────────────────────
 def hash_password(password: str) -> str:
     salt = _bcrypt.gensalt()
     return _bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
@@ -22,29 +26,23 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 # ── JWT ───────────────────────────────────────────────────────────
-ALGORITHM = "HS256"
-
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (
-        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+def create_access_token(data: dict) -> str:
+    payload = {**data, "exp": datetime.utcnow() + timedelta(hours=24)}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def decode_token(token: str) -> Optional[dict]:
     try:
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except Exception:
         return None
 
 
 # ── Credential Encryption (AES-128 via Fernet) ───────────────────
 def _get_fernet() -> Fernet:
     """Derive a 32-byte Fernet key from ENCRYPTION_KEY env var."""
-    key_bytes = hashlib.sha256(settings.ENCRYPTION_KEY.encode()).digest()
+    encryption_key = os.getenv("ENCRYPTION_KEY", "encryptionkey32byteslong_changeit")
+    key_bytes = hashlib.sha256(encryption_key.encode()).digest()
     fernet_key = base64.urlsafe_b64encode(key_bytes)
     return Fernet(fernet_key)
 

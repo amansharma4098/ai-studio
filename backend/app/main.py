@@ -66,20 +66,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── CORS — handle preflight before any routing ────────────────────
-@app.middleware("http")
-async def cors_middleware(request: Request, call_next):
-    if request.method == "OPTIONS":
-        response = Response(status_code=200)
-        response.headers["Access-Control-Allow-Origin"] = request.headers.get("origin", "*")
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
-        response.headers["Access-Control-Max-Age"] = "86400"
-        return response
-    response = await call_next(request)
-    response.headers["Access-Control-Allow-Origin"] = request.headers.get("origin", "*")
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
-    return response
+# ── CORS ─────────────────────────────────────────────────────────
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ── Global Exception Handler ──────────────────────────────────────
 @app.exception_handler(Exception)
