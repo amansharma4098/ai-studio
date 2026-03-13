@@ -8,9 +8,9 @@ from app.api.deps import get_current_user
 router = APIRouter()
 
 MODEL_MAP = {
-    "llama3": "llama3-8b-8192",
-    "mistral": "mixtral-8x7b-32768",
-    "gemma": "gemma-7b-it",
+    "llama3": "llama-3.3-70b-versatile",
+    "mistral": "mistral-saba-24b",
+    "gemma": "gemma2-9b-it",
 }
 
 
@@ -28,7 +28,7 @@ class PlaygroundRequest(BaseModel):
 async def playground_run(payload: PlaygroundRequest, current_user=Depends(get_current_user)):
     """Run a prompt directly against Groq — no agent overhead."""
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-    model_id = MODEL_MAP.get(payload.model_name, payload.model_name if payload.model_name in MODEL_MAP.values() else "llama3-8b-8192")
+    model_id = MODEL_MAP.get(payload.model_name, payload.model_name if payload.model_name in MODEL_MAP.values() else "llama-3.3-70b-versatile")
 
     messages = []
     if payload.system_prompt:

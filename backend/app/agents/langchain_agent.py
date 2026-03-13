@@ -16,15 +16,15 @@ logger = structlog.get_logger()
 
 # ── Model name mapping ───────────────────────────────────────────
 MODEL_MAP = {
-    "llama3": "llama3-8b-8192",
-    "mistral": "mixtral-8x7b-32768",
-    "gemma": "gemma-7b-it",
+    "llama3": "llama-3.3-70b-versatile",
+    "mistral": "mistral-saba-24b",
+    "gemma": "gemma2-9b-it",
 }
 
 
 def _resolve_model(model_name: str) -> str:
     """Map friendly model names to Groq model IDs."""
-    return MODEL_MAP.get(model_name, model_name if model_name in MODEL_MAP.values() else "llama3-8b-8192")
+    return MODEL_MAP.get(model_name, model_name if model_name in MODEL_MAP.values() else "llama-3.3-70b-versatile")
 
 
 # ── Groq Chat Completion ─────────────────────────────────────────
