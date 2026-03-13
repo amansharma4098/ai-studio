@@ -1,12 +1,15 @@
 """
 Agents API
-POST /agents/ - create agent
-GET  /agents/ - list agents
-GET  /agents/{id} - get agent
-PUT  /agents/{id} - update agent
-DELETE /agents/{id} - delete agent
-POST /agents/{id}/run - execute agent with LangChain
-GET  /agents/{id}/runs - get run history
+POST   /agents/                    - create agent
+GET    /agents/                    - list agents
+GET    /agents/{id}                - get agent (with skills)
+PUT    /agents/{id}                - update agent (with tools/skills)
+DELETE /agents/{id}                - delete agent
+POST   /agents/{id}/run            - execute agent
+GET    /agents/{id}/runs           - get run history
+POST   /agents/{id}/skills         - add skill to agent
+GET    /agents/{id}/skills         - list agent skills
+DELETE /agents/{id}/skills/{sid}   - remove skill from agent
 """
 import os
 import time
@@ -19,7 +22,8 @@ from app.db.session import get_db
 from app.db.models import Agent, AgentSkillBinding, AgentRun, Credential
 from app.schemas.agent_schemas import (
     AgentCreate, AgentUpdate, AgentResponse,
-    AgentRunRequest, AgentRunResponse
+    AgentRunRequest, AgentRunResponse,
+    SkillAddRequest, SkillResponse,
 )
 from app.utils.security import decode_token, decrypt_credentials
 from app.agents.langchain_agent import build_agent_executor, run_agent
@@ -54,12 +58,14 @@ async def create_agent(
             agent_id=agent.id,
             skill_id=binding.skill_id,
             skill_name=binding.skill_name,
+            skill_type=binding.skill_type,
+            config_json=binding.config_json,
             credential_id=binding.credential_id,
         ))
 
     await db.commit()
     await db.refresh(agent)
-    return agent
+    return await _agent_with_skills(db, agent)
 
 
 # ── List Agents ───────────────────────────────────────────────────
@@ -76,7 +82,7 @@ async def list_agents(
     return result.scalars().all()
 
 
-# ── Get Agent ─────────────────────────────────────────────────────
+# ── Get Agent (with skills) ───────────────────────────────────────
 @router.get("/{agent_id}", response_model=AgentResponse)
 async def get_agent(
     agent_id: str,
@@ -84,10 +90,10 @@ async def get_agent(
     current_user=Depends(get_current_user),
 ):
     agent = await _get_agent_or_404(db, agent_id, current_user.id)
-    return agent
+    return await _agent_with_skills(db, agent)
 
 
-# ── Update Agent ──────────────────────────────────────────────────
+# ── Update Agent (with optional tools/skills replacement) ────────
 @router.put("/{agent_id}", response_model=AgentResponse)
 async def update_agent(
     agent_id: str,
@@ -96,11 +102,33 @@ async def update_agent(
     current_user=Depends(get_current_user),
 ):
     agent = await _get_agent_or_404(db, agent_id, current_user.id)
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    update_data = payload.model_dump(exclude_unset=True)
+    tools = update_data.pop("tools", None)
+    for field, value in update_data.items():
         setattr(agent, field, value)
+
+    # Replace skill bindings if tools provided
+    if tools is not None:
+        # Delete existing bindings
+        existing = await db.execute(
+            select(AgentSkillBinding).where(AgentSkillBinding.agent_id == agent_id)
+        )
+        for old in existing.scalars().all():
+            await db.delete(old)
+        # Add new bindings
+        for binding in tools:
+            db.add(AgentSkillBinding(
+                agent_id=agent_id,
+                skill_id=binding.get("skill_id", binding.get("skill_name", "")),
+                skill_name=binding.get("skill_name", ""),
+                skill_type=binding.get("skill_type"),
+                config_json=binding.get("config_json"),
+                credential_id=binding.get("credential_id"),
+            ))
+
     await db.commit()
     await db.refresh(agent)
-    return agent
+    return await _agent_with_skills(db, agent)
 
 
 # ── Delete Agent ──────────────────────────────────────────────────
@@ -226,7 +254,68 @@ async def get_agent_runs(
     return result.scalars().all()
 
 
-# ── Helper ────────────────────────────────────────────────────────
+# ── Add Skill to Agent ────────────────────────────────────────────
+@router.post("/{agent_id}/skills", response_model=SkillResponse)
+async def add_skill(
+    agent_id: str,
+    payload: SkillAddRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    await _get_agent_or_404(db, agent_id, current_user.id)
+    binding = AgentSkillBinding(
+        agent_id=agent_id,
+        skill_id=payload.skill_name,
+        skill_name=payload.skill_name,
+        skill_type=payload.skill_type,
+        config_json=payload.config_json,
+    )
+    db.add(binding)
+    await db.commit()
+    await db.refresh(binding)
+    return binding
+
+
+# ── List Agent Skills ────────────────────────────────────────────
+@router.get("/{agent_id}/skills", response_model=List[SkillResponse])
+async def list_skills(
+    agent_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    await _get_agent_or_404(db, agent_id, current_user.id)
+    result = await db.execute(
+        select(AgentSkillBinding)
+        .where(AgentSkillBinding.agent_id == agent_id)
+        .order_by(AgentSkillBinding.created_at)
+    )
+    return result.scalars().all()
+
+
+# ── Delete Skill from Agent ──────────────────────────────────────
+@router.delete("/{agent_id}/skills/{skill_id}")
+async def delete_skill(
+    agent_id: str,
+    skill_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    await _get_agent_or_404(db, agent_id, current_user.id)
+    result = await db.execute(
+        select(AgentSkillBinding).where(
+            AgentSkillBinding.id == skill_id,
+            AgentSkillBinding.agent_id == agent_id,
+        )
+    )
+    binding = result.scalar_one_or_none()
+    if not binding:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    await db.delete(binding)
+    await db.commit()
+    return {"success": True}
+
+
+# ── Helpers ──────────────────────────────────────────────────────
 async def _get_agent_or_404(db, agent_id, user_id):
     result = await db.execute(
         select(Agent).where(Agent.id == agent_id, Agent.user_id == user_id)
@@ -235,3 +324,27 @@ async def _get_agent_or_404(db, agent_id, user_id):
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
     return agent
+
+
+async def _agent_with_skills(db, agent) -> dict:
+    """Return agent dict with skills list attached."""
+    result = await db.execute(
+        select(AgentSkillBinding)
+        .where(AgentSkillBinding.agent_id == agent.id)
+        .order_by(AgentSkillBinding.created_at)
+    )
+    skills = result.scalars().all()
+    agent_dict = {
+        "id": agent.id,
+        "name": agent.name,
+        "description": agent.description,
+        "system_prompt": agent.system_prompt,
+        "model_name": agent.model_name,
+        "temperature": agent.temperature,
+        "max_tokens": agent.max_tokens,
+        "memory_enabled": agent.memory_enabled,
+        "is_active": agent.is_active,
+        "created_at": agent.created_at,
+        "skills": skills,
+    }
+    return agent_dict

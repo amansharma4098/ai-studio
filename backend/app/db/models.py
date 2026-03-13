@@ -72,6 +72,8 @@ class AgentSkillBinding(Base):
     agent_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_agents.id", ondelete="CASCADE"), nullable=False)
     skill_id = Column(String(100), nullable=False)        # e.g. "en01", "az07"
     skill_name = Column(String(100), nullable=False)      # e.g. "entra_create_group"
+    skill_type = Column(String(100), nullable=True)       # e.g. "api_call", "script", "webhook"
+    config_json = Column(JSON, nullable=True, default=dict)  # arbitrary skill configuration
     credential_id = Column(UUID(as_uuid=False), ForeignKey("credentials.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
