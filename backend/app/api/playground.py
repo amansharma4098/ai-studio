@@ -1,12 +1,17 @@
 """Playground API - test prompts directly against Groq."""
+import os
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
-from langchain_groq import ChatGroq
-from langchain_core.messages import HumanMessage, SystemMessage
-from app.utils.config import settings
+from groq import Groq
 from app.api.deps import get_current_user
 
 router = APIRouter()
+
+MODEL_MAP = {
+    "llama3": "llama3-8b-8192",
+    "mistral": "mixtral-8x7b-32768",
+    "gemma": "gemma-7b-it",
+}
 
 
 class PlaygroundRequest(BaseModel):
@@ -14,7 +19,7 @@ class PlaygroundRequest(BaseModel):
 
     prompt: str
     system_prompt: str = ""
-    model_name: str = "llama3-8b-8192"
+    model_name: str = "llama3"
     temperature: float = 0.7
     max_tokens: int = 1024
 
@@ -22,15 +27,19 @@ class PlaygroundRequest(BaseModel):
 @router.post("/run")
 async def playground_run(payload: PlaygroundRequest, current_user=Depends(get_current_user)):
     """Run a prompt directly against Groq — no agent overhead."""
-    llm = ChatGroq(
-        api_key=settings.GROQ_API_KEY,
-        model=payload.model_name or settings.GROQ_MODEL,
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    model_id = MODEL_MAP.get(payload.model_name, payload.model_name if payload.model_name in MODEL_MAP.values() else "llama3-8b-8192")
+
+    messages = []
+    if payload.system_prompt:
+        messages.append({"role": "system", "content": payload.system_prompt})
+    messages.append({"role": "user", "content": payload.prompt})
+
+    response = client.chat.completions.create(
+        model=model_id,
+        messages=messages,
         temperature=payload.temperature,
         max_tokens=payload.max_tokens,
     )
-    messages = []
-    if payload.system_prompt:
-        messages.append(SystemMessage(content=payload.system_prompt))
-    messages.append(HumanMessage(content=payload.prompt))
-    response = llm.invoke(messages)
-    return {"response": response.content, "model": payload.model_name}
+
+    return {"response": response.choices[0].message.content, "model": model_id}

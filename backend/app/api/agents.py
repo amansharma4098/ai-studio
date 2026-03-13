@@ -125,10 +125,10 @@ async def run_agent_endpoint(
     current_user=Depends(get_current_user),
 ):
     """
-    Execute an agent using LangChain ReAct:
+    Execute an agent using Groq API:
     1. Load agent config and skill bindings
     2. Decrypt credentials for each bound skill
-    3. Build LangChain AgentExecutor with Ollama LLM
+    3. Build agent executor with Groq LLM
     4. Run with user input
     5. Store AgentRun record
     """

@@ -1,73 +1,65 @@
 """
-LangChain Agent Orchestration Engine
-Builds ReAct agents with Groq LLMs and dynamically bound skill tools.
+Agent Execution Engine
+Runs agents using the Groq API directly (no LangChain, no Ollama).
 """
+import os
 import time
 import json
 import structlog
 from typing import Any, Dict, List, Optional
 
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain.memory import ConversationBufferWindowMemory
-from langchain_core.prompts import PromptTemplate
-from langchain_core.tools import StructuredTool, Tool
-from langchain_groq import ChatGroq
+from groq import Groq
 
-from app.utils.config import settings
 from app.skills.registry import skill_registry
 
 logger = structlog.get_logger()
 
+# ── Model name mapping ───────────────────────────────────────────
+MODEL_MAP = {
+    "llama3": "llama3-8b-8192",
+    "mistral": "mixtral-8x7b-32768",
+    "gemma": "gemma-7b-it",
+}
 
-# ── Groq LLM Factory ──────────────────────────────────────────────
-def build_llm(model_name: str, temperature: float, max_tokens: int) -> ChatGroq:
-    """Create a LangChain ChatGroq LLM instance."""
-    return ChatGroq(
-        api_key=settings.GROQ_API_KEY,
-        model=model_name or settings.GROQ_MODEL,
+
+def _resolve_model(model_name: str) -> str:
+    """Map friendly model names to Groq model IDs."""
+    return MODEL_MAP.get(model_name, model_name if model_name in MODEL_MAP.values() else "llama3-8b-8192")
+
+
+# ── Groq Chat Completion ─────────────────────────────────────────
+def run_agent_with_groq(
+    agent_name: str,
+    system_prompt: str,
+    model_name: str,
+    temperature: float,
+    max_tokens: int,
+    input_text: str,
+    conversation_history: Optional[List[Dict[str, str]]] = None,
+) -> str:
+    """
+    Run a simple chat completion against Groq API.
+    Returns the assistant response content.
+    """
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    model_id = _resolve_model(model_name)
+
+    messages = [{"role": "system", "content": system_prompt or f"You are {agent_name}, a helpful AI assistant."}]
+    if conversation_history:
+        messages.extend(conversation_history)
+    messages.append({"role": "user", "content": input_text})
+
+    response = client.chat.completions.create(
+        model=model_id,
+        messages=messages,
         temperature=temperature,
-        max_tokens=max_tokens,
+        max_tokens=max_tokens or 2048,
     )
 
-
-# ── ReAct Prompt ──────────────────────────────────────────────────
-REACT_PROMPT_TEMPLATE = """You are {agent_name}, an AI assistant with access to specialized tools.
-
-{system_prompt}
-
-You have access to the following tools:
-{tools}
-
-Use the following format EXACTLY:
-
-Question: the input question you must answer
-Thought: think about what to do
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action (valid JSON)
-Observation: the result of the action
-... (this Thought/Action/Action Input/Observation can repeat N times)
-Thought: I now know the final answer
-Final Answer: the final answer to the original input question
-
-Important rules:
-- Always use tools when they are relevant
-- Never make up data — use tools to fetch real information
-- For Microsoft Entra or Azure operations, the credential is already injected — just call the tool
-- Be concise in Final Answer but include all key results
-
-Begin!
-
-Question: {input}
-Thought:{agent_scratchpad}"""
-
-REACT_PROMPT = PromptTemplate(
-    template=REACT_PROMPT_TEMPLATE,
-    input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
-    partial_variables={"agent_name": "AI Assistant", "system_prompt": ""},
-)
+    return response.choices[0].message.content
 
 
-# ── Agent Builder ─────────────────────────────────────────────────
+# ── Tool-calling agent loop ──────────────────────────────────────
 def build_agent_executor(
     agent_name: str,
     system_prompt: str,
@@ -77,136 +69,92 @@ def build_agent_executor(
     skill_bindings: List[Dict],
     credentials_map: Dict[str, Dict],
     memory_enabled: bool = True,
-) -> AgentExecutor:
+) -> Dict[str, Any]:
     """
-    Build a LangChain ReAct AgentExecutor with dynamically bound tools.
-
-    Args:
-        skill_bindings: List of {skill_id, skill_name, credential_id}
-        credentials_map: {credential_id: {tenant_id, client_id, client_secret, ...}}
-        memory_enabled: whether to use ConversationBufferWindowMemory
+    Build an agent config dict (no longer a LangChain executor).
+    The actual execution happens in run_agent().
     """
-    # 1. Build Groq LLM
-    llm = build_llm(model_name, temperature, max_tokens)
-
-    # 2. Build tools from skill bindings
-    tools = _build_tools(skill_bindings, credentials_map)
-
-    # 3. Build prompt with agent name + system prompt
-    prompt = REACT_PROMPT.partial(
-        agent_name=agent_name,
-        system_prompt=system_prompt,
-    )
-
-    # 4. Create ReAct agent
-    agent = create_react_agent(llm=llm, tools=tools, prompt=prompt)
-
-    # 5. Optional memory
-    memory = None
-    if memory_enabled:
-        memory = ConversationBufferWindowMemory(
-            k=10,
-            memory_key="chat_history",
-            return_messages=True,
-        )
-
-    # 6. Wrap in AgentExecutor with error handling
-    executor = AgentExecutor(
-        agent=agent,
-        tools=tools,
-        memory=memory,
-        verbose=True,
-        max_iterations=10,
-        early_stopping_method="generate",
-        handle_parsing_errors=True,
-        return_intermediate_steps=True,
-    )
-
-    return executor
-
-
-def _build_tools(skill_bindings: List[Dict], credentials_map: Dict[str, Dict]) -> List[Tool]:
-    """
-    Dynamically build LangChain Tool objects from skill bindings.
-    Each tool gets its credential injected into its closure.
-    """
+    # Resolve tools from skill bindings
     tools = []
-
     for binding in skill_bindings:
         skill_name = binding["skill_name"]
         credential_id = binding.get("credential_id")
-
-        # Get decrypted credential data for this skill
         credential_data = credentials_map.get(credential_id, {}) if credential_id else {}
 
-        # Look up the skill handler from the registry
         skill_fn = skill_registry.get(skill_name)
         if not skill_fn:
             logger.warning("Skill not found in registry", skill=skill_name)
             continue
 
-        # Create closure that injects the credential
-        def make_tool_fn(fn, cred_data):
-            def tool_fn(tool_input: str) -> str:
-                try:
-                    # Parse JSON input
-                    try:
-                        params = json.loads(tool_input)
-                    except json.JSONDecodeError:
-                        params = {"input": tool_input}
-
-                    # Inject credential into params
-                    if cred_data:
-                        params["_credential"] = cred_data
-
-                    result = fn(params)
-                    return json.dumps(result) if isinstance(result, dict) else str(result)
-                except Exception as e:
-                    return f"Error executing skill: {str(e)}"
-            return tool_fn
-
-        tool = Tool(
-            name=skill_name,
-            func=make_tool_fn(skill_fn, credential_data),
-            description=skill_registry.get_description(skill_name),
-        )
-        tools.append(tool)
+        tools.append({
+            "name": skill_name,
+            "description": skill_registry.get_description(skill_name),
+            "fn": skill_fn,
+            "credential": credential_data,
+        })
         logger.info("Tool registered", skill=skill_name, has_credential=bool(credential_data))
 
-    return tools
+    return {
+        "agent_name": agent_name,
+        "system_prompt": system_prompt,
+        "model_name": model_name,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "tools": tools,
+    }
 
 
-# ── Run Agent ─────────────────────────────────────────────────────
 def run_agent(
-    executor: AgentExecutor,
+    executor_config: Dict[str, Any],
     user_input: str,
 ) -> Dict[str, Any]:
     """
-    Execute an agent and return structured output with trace.
+    Execute an agent with tool-calling support via Groq API.
+    If the agent has tools, builds a ReAct-style prompt; otherwise does a simple chat.
     """
     start = time.time()
     trace = []
+    skills_called = []
+
+    agent_name = executor_config["agent_name"]
+    system_prompt = executor_config["system_prompt"]
+    model_name = executor_config["model_name"]
+    temperature = executor_config["temperature"]
+    max_tokens = executor_config["max_tokens"]
+    tools = executor_config.get("tools", [])
 
     try:
-        result = executor.invoke({"input": user_input})
+        if not tools:
+            # Simple chat — no tools
+            output = run_agent_with_groq(
+                agent_name=agent_name,
+                system_prompt=system_prompt,
+                model_name=model_name,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                input_text=user_input,
+            )
+        else:
+            # ReAct-style tool loop via Groq
+            output = _run_react_loop(
+                agent_name=agent_name,
+                system_prompt=system_prompt,
+                model_name=model_name,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                user_input=user_input,
+                tools=tools,
+                trace=trace,
+                skills_called=skills_called,
+            )
+
         elapsed_ms = int((time.time() - start) * 1000)
-
-        # Parse intermediate steps into trace
-        for step in result.get("intermediate_steps", []):
-            action, observation = step
-            trace.append({
-                "step": action.tool,
-                "input": action.tool_input,
-                "output": str(observation)[:500],  # truncate long outputs
-                "status": "ok",
-            })
-
         return {
-            "output": result.get("output", ""),
+            "output": output,
             "trace": trace,
             "status": "completed",
             "execution_time_ms": elapsed_ms,
-            "skills_called": [t["step"] for t in trace],
+            "skills_called": skills_called,
         }
 
     except Exception as e:
@@ -217,6 +165,134 @@ def run_agent(
             "trace": trace,
             "status": "failed",
             "execution_time_ms": elapsed_ms,
-            "skills_called": [t["step"] for t in trace],
+            "skills_called": skills_called,
             "error": str(e),
         }
+
+
+def _run_react_loop(
+    agent_name: str,
+    system_prompt: str,
+    model_name: str,
+    temperature: float,
+    max_tokens: int,
+    user_input: str,
+    tools: List[Dict],
+    trace: List[Dict],
+    skills_called: List[str],
+    max_iterations: int = 10,
+) -> str:
+    """
+    ReAct-style tool loop: ask LLM to reason, call tools, observe, repeat.
+    """
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    model_id = _resolve_model(model_name)
+
+    # Build tool descriptions for the system prompt
+    tool_descs = "\n".join(
+        f"- {t['name']}: {t['description']}" for t in tools
+    )
+    tool_names = ", ".join(t["name"] for t in tools)
+    tool_map = {t["name"]: t for t in tools}
+
+    react_system = f"""You are {agent_name}, an AI assistant with access to specialized tools.
+
+{system_prompt}
+
+You have access to the following tools:
+{tool_descs}
+
+Use the following format EXACTLY:
+
+Thought: think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action (valid JSON)
+Observation: <will be filled by the system>
+... (this Thought/Action/Observation can repeat)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+Important rules:
+- Always use tools when they are relevant to the question
+- Never make up data — use tools to fetch real information
+- Action Input must be valid JSON
+- Be concise in Final Answer but include all key results"""
+
+    messages = [
+        {"role": "system", "content": react_system},
+        {"role": "user", "content": user_input},
+    ]
+
+    for iteration in range(max_iterations):
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens or 2048,
+        )
+        assistant_text = response.choices[0].message.content or ""
+        messages.append({"role": "assistant", "content": assistant_text})
+
+        # Check for Final Answer
+        if "Final Answer:" in assistant_text:
+            final = assistant_text.split("Final Answer:")[-1].strip()
+            return final
+
+        # Parse Action and Action Input
+        action_name, action_input = _parse_action(assistant_text)
+        if not action_name:
+            # No action found — treat as final answer
+            return assistant_text
+
+        # Execute tool
+        tool = tool_map.get(action_name)
+        if not tool:
+            observation = f"Error: Unknown tool '{action_name}'. Available: {tool_names}"
+        else:
+            observation = _execute_tool(tool, action_input)
+            skills_called.append(action_name)
+
+        trace.append({
+            "step": action_name,
+            "input": action_input,
+            "output": str(observation)[:500],
+            "status": "ok" if tool else "error",
+        })
+
+        # Feed observation back
+        messages.append({"role": "user", "content": f"Observation: {observation}"})
+
+    # Max iterations reached
+    return assistant_text if 'assistant_text' in dir() else "Agent reached maximum iterations without a final answer."
+
+
+def _parse_action(text: str):
+    """Extract Action and Action Input from ReAct-formatted text."""
+    action_name = None
+    action_input = ""
+
+    for line in text.split("\n"):
+        line = line.strip()
+        if line.startswith("Action:") and not line.startswith("Action Input:"):
+            action_name = line.split("Action:", 1)[1].strip()
+        elif line.startswith("Action Input:"):
+            action_input = line.split("Action Input:", 1)[1].strip()
+
+    return action_name, action_input
+
+
+def _execute_tool(tool: Dict, tool_input: str) -> str:
+    """Execute a skill tool with credential injection."""
+    try:
+        try:
+            params = json.loads(tool_input) if tool_input else {}
+        except json.JSONDecodeError:
+            params = {"input": tool_input}
+
+        if tool.get("credential"):
+            params["_credential"] = tool["credential"]
+
+        result = tool["fn"](params)
+        return json.dumps(result) if isinstance(result, dict) else str(result)
+    except Exception as e:
+        return f"Error executing {tool['name']}: {str(e)}"
