@@ -12,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_client import make_asgi_app
 
+from sqlalchemy import text
+
 from app.db.session import engine, Base
 from app.utils.config import settings
 from app.api import auth, agents, chat, skills, credentials, documents, playground, workflows, monitoring
@@ -27,6 +29,29 @@ structlog.configure(
 logger = structlog.get_logger()
 
 
+# ── Auto-Migration (ADD COLUMN IF NOT EXISTS) ───────────────────
+async def run_migrations(engine):
+    """Add any columns missing from existing tables.
+    Safe to run every startup — IF NOT EXISTS is a no-op when the column is already present."""
+    async with engine.begin() as conn:
+        # ── aistudio_users ──
+        await conn.execute(text(
+            "ALTER TABLE aistudio_users ADD COLUMN IF NOT EXISTS account_type VARCHAR DEFAULT 'individual'"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE aistudio_users ADD COLUMN IF NOT EXISTS org_name VARCHAR"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE aistudio_users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE aistudio_users ADD COLUMN IF NOT EXISTS role VARCHAR DEFAULT 'user'"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE aistudio_users ADD COLUMN IF NOT EXISTS organization VARCHAR"
+        ))
+
+
 # ── Application Lifespan ──────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,6 +62,10 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
+
+    # Auto-migrate: add columns that create_all won't add to existing tables
+    await run_migrations(engine)
+    logger.info("Column migrations verified")
 
     yield
 
