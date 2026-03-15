@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 from app.db.session import get_db
@@ -17,6 +18,8 @@ class SignupRequest(BaseModel):
     name: str
     organization: str = ""
     password: str
+    account_type: Optional[str] = "individual"
+    org_name: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
@@ -36,6 +39,8 @@ async def signup(payload: SignupRequest, db: AsyncSession = Depends(get_db)):
         name=payload.name,
         organization=payload.organization,
         password_hash=hashed,
+        account_type=payload.account_type,
+        org_name=payload.org_name,
     )
     db.add(user)
     await db.commit()
@@ -63,4 +68,4 @@ async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
 
 @router.get("/me")
 async def me(current_user=Depends(get_current_user)):
-    return {"id": current_user.id, "name": current_user.name, "email": current_user.email, "organization": current_user.organization}
+    return {"id": current_user.id, "name": current_user.name, "email": current_user.email, "organization": current_user.organization, "account_type": current_user.account_type, "org_name": current_user.org_name}

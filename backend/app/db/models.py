@@ -29,6 +29,8 @@ class User(Base):
     organization = Column(String(255), nullable=True)
     password_hash = Column(String(255), nullable=False)
     role = Column(String(50), default="user")  # user | admin
+    account_type = Column(String(50), default="individual")  # individual | organisation
+    org_name = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
