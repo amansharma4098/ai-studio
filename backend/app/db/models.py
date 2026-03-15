@@ -36,6 +36,7 @@ class User(Base):
     credentials = relationship("Credential", back_populates="owner", cascade="all, delete-orphan")
     documents = relationship("Document", back_populates="owner", cascade="all, delete-orphan")
     workflows = relationship("Workflow", back_populates="owner", cascade="all, delete-orphan")
+    custom_skills = relationship("CustomSkill", back_populates="owner", cascade="all, delete-orphan")
 
 
 # ── Agents ────────────────────────────────────────────────────────
@@ -205,3 +206,27 @@ class WorkflowRun(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     workflow = relationship("Workflow", back_populates="runs")
+
+
+# ── Custom Skills ────────────────────────────────────────────────
+class CustomSkill(Base):
+    __tablename__ = "custom_skills"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
+    skill_name = Column(String(255), nullable=False)
+    skill_type = Column(String(100), nullable=False)       # REST API | SQL Query | Python Function | Web Scraper | Custom
+    description = Column(Text, nullable=True)
+    icon = Column(String(50), nullable=True)                # emoji or icon name
+    config_json = Column(JSON, nullable=False, default=dict)
+    is_custom = Column(Boolean, default=True)
+    is_public = Column(Boolean, default=False)              # visible in marketplace
+    version = Column(String(20), default="1.0.0")
+    test_payload = Column(Text, nullable=True)              # sample input for testing
+    install_count = Column(Integer, default=0)
+    # If installed from marketplace, link to original
+    source_skill_id = Column(UUID(as_uuid=False), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner = relationship("User", back_populates="custom_skills")

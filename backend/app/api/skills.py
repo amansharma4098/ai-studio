@@ -1,8 +1,88 @@
-"""Skills API - returns the full skill catalog to the frontend."""
-from fastapi import APIRouter, Depends
+"""Skills API - catalog + user-created custom skills with marketplace."""
+import json
+import time
+import subprocess
+import asyncio
+from typing import Optional
+
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy import select, desc, or_
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.deps import get_current_user
+from app.db.session import get_db
+from app.db.models import CustomSkill, User
 
 router = APIRouter()
+
+
+# ── Pydantic Schemas ─────────────────────────────────────────────
+
+class SkillCreate(BaseModel):
+    skill_name: str
+    skill_type: str          # REST API | SQL Query | Python Function | Web Scraper | Custom
+    description: str = ""
+    icon: str = ""           # emoji like 🔧
+    config_json: str = "{}"  # JSON string with skill config
+    is_public: bool = False
+    test_payload: str = ""
+
+class SkillUpdate(BaseModel):
+    skill_name: Optional[str] = None
+    description: Optional[str] = None
+    config_json: Optional[str] = None
+    is_public: Optional[bool] = None
+    icon: Optional[str] = None
+    test_payload: Optional[str] = None
+
+class SkillTestInput(BaseModel):
+    input: str
+
+
+# ── Helpers ──────────────────────────────────────────────────────
+
+def _bump_version(version: str) -> str:
+    """Bump patch version: 1.0.0 -> 1.0.1"""
+    parts = version.split(".")
+    if len(parts) != 3:
+        return "1.0.1"
+    parts[2] = str(int(parts[2]) + 1)
+    return ".".join(parts)
+
+
+async def _get_custom_skill_or_404(db: AsyncSession, skill_id: str, user_id: str) -> CustomSkill:
+    result = await db.execute(
+        select(CustomSkill).where(CustomSkill.id == skill_id, CustomSkill.user_id == user_id)
+    )
+    skill = result.scalar_one_or_none()
+    if not skill:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    return skill
+
+
+def _skill_to_dict(skill: CustomSkill, owner_name: str = None) -> dict:
+    return {
+        "id": skill.id,
+        "skill_name": skill.skill_name,
+        "skill_type": skill.skill_type,
+        "description": skill.description,
+        "icon": skill.icon,
+        "config_json": skill.config_json,
+        "is_custom": skill.is_custom,
+        "is_public": skill.is_public,
+        "version": skill.version,
+        "test_payload": skill.test_payload,
+        "install_count": skill.install_count,
+        "source_skill_id": skill.source_skill_id,
+        "created_at": skill.created_at.isoformat() if skill.created_at else None,
+        "updated_at": skill.updated_at.isoformat() if skill.updated_at else None,
+        **({"created_by_name": owner_name} if owner_name is not None else {}),
+    }
+
+
+# ── Built-in Skill Catalog ──────────────────────────────────────
 
 SKILL_CATALOG = [
     {
@@ -240,20 +320,11 @@ SKILL_CATALOG = [
 ]
 
 
+# ── Built-in Catalog Endpoints ───────────────────────────────────
+
 @router.get("/catalog")
 async def get_skill_catalog(current_user=Depends(get_current_user)):
     return SKILL_CATALOG
-
-
-@router.get("/")
-async def list_installed_skills(current_user=Depends(get_current_user)):
-    """Return flat list of all available skills."""
-    skills = []
-    for cat in SKILL_CATALOG:
-        for tag_group in cat.get("tags", []):
-            for skill in tag_group.get("skills", []):
-                skills.append({**skill, "category": cat["name"], "credType": cat["credType"]})
-    return skills
 
 
 @router.get("/list")
@@ -283,3 +354,278 @@ async def list_skills_grouped(current_user=Depends(get_current_user)):
             "skills": skills,
         })
     return result
+
+
+# ── Custom Skills CRUD ───────────────────────────────────────────
+
+@router.post("/create")
+async def create_custom_skill(
+    payload: SkillCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Create a new custom skill."""
+    # Validate config_json is valid JSON
+    try:
+        parsed = json.loads(payload.config_json)
+    except (json.JSONDecodeError, TypeError):
+        raise HTTPException(status_code=400, detail="config_json must be valid JSON")
+
+    valid_types = {"REST API", "SQL Query", "Python Function", "Web Scraper", "Custom"}
+    if payload.skill_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"skill_type must be one of: {', '.join(valid_types)}")
+
+    skill = CustomSkill(
+        user_id=current_user.id,
+        skill_name=payload.skill_name,
+        skill_type=payload.skill_type,
+        description=payload.description,
+        icon=payload.icon,
+        config_json=parsed,
+        is_custom=True,
+        is_public=payload.is_public,
+        test_payload=payload.test_payload,
+    )
+    db.add(skill)
+    await db.commit()
+    await db.refresh(skill)
+    return _skill_to_dict(skill)
+
+
+@router.get("/my-skills")
+async def list_my_skills(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return all custom skills created by current user."""
+    result = await db.execute(
+        select(CustomSkill)
+        .where(CustomSkill.user_id == current_user.id)
+        .order_by(desc(CustomSkill.created_at))
+    )
+    skills = result.scalars().all()
+    return [_skill_to_dict(s) for s in skills]
+
+
+@router.put("/{skill_id}")
+async def update_custom_skill(
+    skill_id: str,
+    payload: SkillUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Update a custom skill (must be owner)."""
+    skill = await _get_custom_skill_or_404(db, skill_id, current_user.id)
+
+    if payload.config_json is not None:
+        try:
+            parsed = json.loads(payload.config_json)
+        except (json.JSONDecodeError, TypeError):
+            raise HTTPException(status_code=400, detail="config_json must be valid JSON")
+        skill.config_json = parsed
+
+    if payload.skill_name is not None:
+        skill.skill_name = payload.skill_name
+    if payload.description is not None:
+        skill.description = payload.description
+    if payload.is_public is not None:
+        skill.is_public = payload.is_public
+    if payload.icon is not None:
+        skill.icon = payload.icon
+    if payload.test_payload is not None:
+        skill.test_payload = payload.test_payload
+
+    # Bump patch version
+    skill.version = _bump_version(skill.version)
+
+    await db.commit()
+    await db.refresh(skill)
+    return _skill_to_dict(skill)
+
+
+@router.delete("/{skill_id}")
+async def delete_custom_skill(
+    skill_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Delete a custom skill (must be owner)."""
+    skill = await _get_custom_skill_or_404(db, skill_id, current_user.id)
+    await db.delete(skill)
+    await db.commit()
+    return {"success": True}
+
+
+# ── Skill Testing ────────────────────────────────────────────────
+
+@router.post("/{skill_id}/test")
+async def test_custom_skill(
+    skill_id: str,
+    payload: SkillTestInput,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Test a custom skill with sample input."""
+    skill = await _get_custom_skill_or_404(db, skill_id, current_user.id)
+    config = skill.config_json or {}
+    start = time.time()
+    output = ""
+    error = ""
+    success = False
+
+    try:
+        if skill.skill_type == "REST API":
+            url = config.get("url", "")
+            method = config.get("method", "GET").upper()
+            headers = config.get("headers", {})
+            if not url:
+                raise ValueError("config_json must include 'url'")
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                if method == "POST":
+                    resp = await client.post(url, headers=headers, content=payload.input)
+                elif method == "PUT":
+                    resp = await client.put(url, headers=headers, content=payload.input)
+                else:
+                    resp = await client.get(url, headers=headers, params={"input": payload.input})
+                output = resp.text[:2000]
+                success = resp.status_code < 400
+
+        elif skill.skill_type == "Python Function":
+            code = config.get("code", "")
+            if not code:
+                raise ValueError("config_json must include 'code'")
+            # Run in subprocess with timeout for safety
+            proc = await asyncio.create_subprocess_exec(
+                "python", "-c", code,
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(
+                    proc.communicate(input=payload.input.encode()),
+                    timeout=10.0,
+                )
+                output = stdout.decode()[:2000]
+                if stderr:
+                    error = stderr.decode()[:2000]
+                success = proc.returncode == 0
+            except asyncio.TimeoutError:
+                proc.kill()
+                error = "Execution timed out (10s limit)"
+
+        elif skill.skill_type == "SQL Query":
+            query = config.get("query", "")
+            output = f"[Mock SQL Result] Query: {query}\nInput: {payload.input}\nRows returned: 3 (mock)"
+            success = True
+
+        elif skill.skill_type == "Web Scraper":
+            url = config.get("url", "")
+            if not url:
+                raise ValueError("config_json must include 'url'")
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(url)
+                output = resp.text[:500]
+                success = resp.status_code < 400
+
+        else:
+            output = f"Custom skill executed with input: {payload.input[:200]}"
+            success = True
+
+    except Exception as e:
+        error = str(e)
+
+    elapsed_ms = int((time.time() - start) * 1000)
+    return {
+        "success": success,
+        "output": output,
+        "error": error,
+        "execution_time_ms": elapsed_ms,
+    }
+
+
+# ── Marketplace ──────────────────────────────────────────────────
+
+@router.get("/marketplace")
+async def list_marketplace_skills(
+    type: Optional[str] = Query(None, description="Filter by skill type"),
+    search: Optional[str] = Query(None, description="Search by name or description"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return all public custom skills (marketplace)."""
+    query = select(CustomSkill, User.name.label("owner_name")).join(
+        User, CustomSkill.user_id == User.id
+    ).where(CustomSkill.is_public == True)
+
+    if type:
+        query = query.where(CustomSkill.skill_type == type)
+    if search:
+        pattern = f"%{search}%"
+        query = query.where(
+            or_(
+                CustomSkill.skill_name.ilike(pattern),
+                CustomSkill.description.ilike(pattern),
+            )
+        )
+
+    query = query.order_by(desc(CustomSkill.install_count))
+    result = await db.execute(query)
+    rows = result.all()
+
+    return [
+        _skill_to_dict(row.CustomSkill, owner_name=row.owner_name)
+        for row in rows
+    ]
+
+
+@router.post("/{skill_id}/install")
+async def install_marketplace_skill(
+    skill_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Install a public skill from the marketplace to current user's account."""
+    # Fetch the source skill (must be public)
+    result = await db.execute(
+        select(CustomSkill).where(CustomSkill.id == skill_id, CustomSkill.is_public == True)
+    )
+    source = result.scalar_one_or_none()
+    if not source:
+        raise HTTPException(status_code=404, detail="Marketplace skill not found")
+
+    # Create a copy for the user
+    installed = CustomSkill(
+        user_id=current_user.id,
+        skill_name=source.skill_name,
+        skill_type=source.skill_type,
+        description=source.description,
+        icon=source.icon,
+        config_json=source.config_json,
+        is_custom=True,
+        is_public=False,
+        version=source.version,
+        test_payload=source.test_payload,
+        source_skill_id=source.id,
+    )
+    db.add(installed)
+
+    # Increment install count on original
+    source.install_count = (source.install_count or 0) + 1
+
+    await db.commit()
+    await db.refresh(installed)
+    return _skill_to_dict(installed)
+
+
+# ── Flat list (keep last so /{skill_id} routes match first) ──────
+
+@router.get("/all")
+async def list_all_skills(current_user=Depends(get_current_user)):
+    """Return flat list of all built-in skills."""
+    skills = []
+    for cat in SKILL_CATALOG:
+        for tag_group in cat.get("tags", []):
+            for skill in tag_group.get("skills", []):
+                skills.append({**skill, "category": cat["name"], "credType": cat["credType"]})
+    return skills
