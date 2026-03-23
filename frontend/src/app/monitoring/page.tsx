@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { monitoringApi } from '@/lib/api'
 import { ChevronDown, ChevronRight } from 'lucide-react'
@@ -57,8 +57,8 @@ export default function MonitoringPage() {
             </thead>
             <tbody>
               {(runs as any[]).map((run: any) => (
-                <>
-                  <tr key={run.id} onClick={() => setExpanded(expanded === run.id ? null : run.id)}
+                <Fragment key={run.id}>
+                  <tr onClick={() => setExpanded(expanded === run.id ? null : run.id)}
                     className="cursor-pointer border-b border-slate-100 transition-colors hover:bg-slate-50">
                     <td className="px-4 py-2.5">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
@@ -115,7 +115,7 @@ export default function MonitoringPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>

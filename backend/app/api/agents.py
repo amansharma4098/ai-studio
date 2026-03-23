@@ -14,7 +14,7 @@ DELETE /agents/{id}/skills/{sid}   - remove skill from agent
 import os
 import time
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 
@@ -79,7 +79,8 @@ async def list_agents(
         .where(Agent.user_id == current_user.id)
         .order_by(desc(Agent.created_at))
     )
-    return result.scalars().all()
+    agents = result.scalars().all()
+    return [await _agent_with_skills(db, a) for a in agents]
 
 
 # ── Get Agent (with skills) ───────────────────────────────────────

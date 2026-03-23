@@ -154,7 +154,6 @@ async def query_documents(
 
     embeddings = get_embeddings()
     chroma_client = get_chroma_client()
-    all_sources = []
 
     # Query each document's collection and aggregate results
     combined_retriever_docs = []

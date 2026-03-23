@@ -263,7 +263,7 @@ Important rules:
         messages.append({"role": "user", "content": f"Observation: {observation}"})
 
     # Max iterations reached
-    return assistant_text if 'assistant_text' in dir() else "Agent reached maximum iterations without a final answer."
+    return assistant_text
 
 
 def _parse_action(text: str):
@@ -282,7 +282,10 @@ def _parse_action(text: str):
 
 
 def _execute_tool(tool: Dict, tool_input: str) -> str:
-    """Execute a skill tool with credential injection."""
+    """Execute a skill tool with credential injection. Handles both sync and async skill functions."""
+    import asyncio
+    import inspect
+
     try:
         try:
             params = json.loads(tool_input) if tool_input else {}
@@ -293,6 +296,18 @@ def _execute_tool(tool: Dict, tool_input: str) -> str:
             params["_credential"] = tool["credential"]
 
         result = tool["fn"](params)
+        # Handle async skill functions
+        if inspect.isawaitable(result):
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = None
+            if loop and loop.is_running():
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as pool:
+                    result = pool.submit(asyncio.run, result).result()
+            else:
+                result = asyncio.run(result)
         return json.dumps(result) if isinstance(result, dict) else str(result)
     except Exception as e:
         return f"Error executing {tool['name']}: {str(e)}"

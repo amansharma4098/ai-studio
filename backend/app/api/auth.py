@@ -33,7 +33,6 @@ async def signup(payload: SignupRequest, db: AsyncSession = Depends(get_db)):
     if existing.scalar_one_or_none():
         raise HTTPException(400, "Email already registered")
     hashed = hash_password(payload.password)
-    print(f"[AUTH] signup hash created: {hashed[:20]}...")
     user = User(
         email=payload.email,
         name=payload.name,
@@ -53,13 +52,9 @@ async def signup(payload: SignupRequest, db: AsyncSession = Depends(get_db)):
 async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
-    print(f"[AUTH] login: email={payload.email}")
     if not user:
         raise HTTPException(401, "Invalid credentials")
-    print(f"[AUTH] login: hash from DB={user.password_hash[:20]}...")
-    print(f"[AUTH] login: plain password length={len(payload.password)}")
     is_valid = verify_password(payload.password, user.password_hash)
-    print(f"[AUTH] login: verify={is_valid}")
     if not is_valid:
         raise HTTPException(401, "Invalid credentials")
     token = create_access_token({"sub": user.id, "email": user.email})

@@ -65,7 +65,7 @@ def execute_agent_task(self, agent_id: str, user_id: str, input_text: str):
                         cred_result = await db.execute(select(Credential).where(Credential.id == b.credential_id))
                         cred = cred_result.scalar_one_or_none()
                         if cred:
-                            credentials_map[str(b.credential_id)] = decrypt_credentials(cred.encrypted_data)
+                            credentials_map[str(b.credential_id)] = decrypt_credentials(cred.credential_values)
 
                 # Build and run agent
                 executor = build_agent_executor(
