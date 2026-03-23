@@ -20,10 +20,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
         {toasts.map(t => (
-          <div key={t.id} className={`rounded-lg border px-4 py-3 text-sm font-medium shadow-lg transition-all animate-in slide-in-from-bottom-2 ${
-            t.type === 'success' ? 'border-emerald-500/30 bg-card text-emerald-400' :
-            t.type === 'error' ? 'border-red-500/30 bg-card text-red-400' :
-            'border-border bg-card text-foreground'
+          <div key={t.id} className={`rounded-lg border px-4 py-3 text-sm font-medium shadow-lg transition-all ${
+            t.type === 'success' ? 'border-emerald-300 bg-white text-emerald-700' :
+            t.type === 'error' ? 'border-red-300 bg-white text-red-600' :
+            'border-slate-200 bg-white text-slate-700'
           }`}>
             {t.message}
           </div>

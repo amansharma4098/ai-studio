@@ -1,222 +1,195 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Zap, Loader2, Eye, EyeOff } from 'lucide-react'
+import Link from 'next/link'
+import { Zap, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { authApi } from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
 
 export default function LoginPage() {
   const router = useRouter()
   const setAuth = useAuthStore(s => s.setAuth)
-  const [tab, setTab] = useState<'login' | 'signup'>('login')
-  const [form, setForm] = useState({ email: '', name: '', organization: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => { setMounted(true) }, [])
+  const [showPass, setShowPass] = useState(false)
 
   const handle = async () => {
     setLoading(true); setError('')
     try {
-      const fn = tab === 'login' ? authApi.login(form.email, form.password) : authApi.signup(form)
-      const { data } = await fn
+      const { data } = await authApi.login(form.email, form.password)
+      localStorage.setItem('token', data.access_token)
       setAuth(data.user, data.access_token)
-      router.push('/skills')
+      router.push('/dashboard')
     } catch (e: any) {
       setError(e.response?.data?.detail || 'Authentication failed')
     } finally { setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex">
+      {/* Animated Left Panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #0f172a 100%)' }}>
 
-      {/* ── LEFT PANEL ── dark branding side ────────────────────── */}
-      <div
-        className="hidden md:flex md:w-full lg:w-1/2 relative overflow-hidden flex-col items-center justify-center px-10 py-16 lg:py-0"
-        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)' }}
-      >
-        {/* radial glow behind logo */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-30 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.45) 0%, rgba(16,185,129,0.2) 40%, transparent 70%)' }} />
+        <style>{`
+          @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(30px,-40px) scale(1.1)} 50%{transform:translate(-20px,-80px) scale(0.95)} 75%{transform:translate(40px,-30px) scale(1.05)} }
+          @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-40px,30px) scale(1.08)} 66%{transform:translate(50px,-20px) scale(0.92)} }
+          @keyframes float3 { 0%,100%{transform:translate(0,0)} 20%{transform:translate(60px,40px)} 40%{transform:translate(-30px,70px)} 60%{transform:translate(40px,-50px)} 80%{transform:translate(-60px,-20px)} }
+          @keyframes orbit { 0%{transform:rotate(0deg) translateX(120px) rotate(0deg)} 100%{transform:rotate(360deg) translateX(120px) rotate(-360deg)} }
+          @keyframes orbit2 { 0%{transform:rotate(0deg) translateX(80px) rotate(0deg)} 100%{transform:rotate(-360deg) translateX(80px) rotate(360deg)} }
+          @keyframes pulse { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+          @keyframes dash { 0%{stroke-dashoffset:300} 100%{stroke-dashoffset:0} }
+          @keyframes fadeSlide { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+          @keyframes gridPulse { 0%,100%{opacity:0.03} 50%{opacity:0.08} }
+        `}</style>
 
-        <div
-          className={`relative z-10 max-w-md w-full flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}
-        >
-          {/* Logo */}
-          <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 shadow-lg shadow-emerald-500/30">
-            <Zap size={26} className="text-white" />
+        {/* Grid pattern */}
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(16,185,129,0.08) 1px, transparent 1px)', backgroundSize: '40px 40px', animation: 'gridPulse 8s ease-in-out infinite' }} />
+
+        {/* Floating orbs */}
+        <div className="absolute w-72 h-72 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #10b981, transparent 70%)', top: '10%', left: '15%', animation: 'float1 12s ease-in-out infinite', filter: 'blur(40px)' }} />
+        <div className="absolute w-96 h-96 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)', bottom: '5%', right: '10%', animation: 'float2 15s ease-in-out infinite', filter: 'blur(60px)' }} />
+        <div className="absolute w-48 h-48 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #06b6d4, transparent 70%)', top: '50%', left: '60%', animation: 'float3 18s ease-in-out infinite', filter: 'blur(30px)' }} />
+
+        {/* Neural network SVG */}
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 500 500" fill="none" style={{ opacity: 0.3 }}>
+          {/* Connection lines */}
+          <line x1="150" y1="120" x2="300" y2="200" stroke="#10b981" strokeWidth="0.8" strokeDasharray="6 4" style={{ animation: 'dash 8s linear infinite' }} />
+          <line x1="300" y1="200" x2="380" y2="350" stroke="#6366f1" strokeWidth="0.8" strokeDasharray="6 4" style={{ animation: 'dash 10s linear infinite' }} />
+          <line x1="150" y1="120" x2="100" y2="300" stroke="#06b6d4" strokeWidth="0.8" strokeDasharray="6 4" style={{ animation: 'dash 12s linear infinite' }} />
+          <line x1="100" y1="300" x2="300" y2="200" stroke="#10b981" strokeWidth="0.5" strokeDasharray="4 6" style={{ animation: 'dash 9s linear infinite' }} />
+          <line x1="300" y1="200" x2="200" y2="400" stroke="#8b5cf6" strokeWidth="0.5" strokeDasharray="4 6" style={{ animation: 'dash 11s linear infinite' }} />
+          <line x1="380" y1="350" x2="200" y2="400" stroke="#06b6d4" strokeWidth="0.5" strokeDasharray="4 6" style={{ animation: 'dash 7s linear infinite' }} />
+
+          {/* Nodes */}
+          <circle cx="150" cy="120" r="5" fill="#10b981" style={{ animation: 'pulse 3s ease-in-out infinite' }} />
+          <circle cx="300" cy="200" r="6" fill="#6366f1" style={{ animation: 'pulse 4s ease-in-out infinite 0.5s' }} />
+          <circle cx="380" cy="350" r="4" fill="#06b6d4" style={{ animation: 'pulse 3.5s ease-in-out infinite 1s' }} />
+          <circle cx="100" cy="300" r="5" fill="#10b981" style={{ animation: 'pulse 4.5s ease-in-out infinite 1.5s' }} />
+          <circle cx="200" cy="400" r="4" fill="#8b5cf6" style={{ animation: 'pulse 3s ease-in-out infinite 2s' }} />
+        </svg>
+
+        {/* Orbiting particles */}
+        <div className="absolute" style={{ top: '45%', left: '45%' }}>
+          <div style={{ animation: 'orbit 10s linear infinite' }}>
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 12px #10b981' }} />
           </div>
-
-          {/* Tagline */}
-          <h1 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight">
-            Build AI Agents<br />That Actually Work
-          </h1>
-          <p className="mt-4 text-[15px] leading-relaxed text-slate-400">
-            Connect your tools, automate workflows, and deploy intelligent agents — no PhD required.
-          </p>
-
-          {/* Feature rows */}
-          <div className="mt-10 space-y-5 w-full">
-            {[
-              { icon: '\u26A1', text: 'Run on Llama 3, Mistral & Gemma \u2014 free forever' },
-              { icon: '\uD83D\uDD17', text: 'Connect 50+ tools with one click' },
-              { icon: '\uD83E\uDD16', text: 'Multi-agent workflows in minutes' },
-            ].map((f, i) => (
-              <div key={i} className="flex items-center gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-lg">{f.icon}</span>
-                <span className="text-sm text-slate-300">{f.text}</span>
-              </div>
-            ))}
+        </div>
+        <div className="absolute" style={{ top: '45%', left: '45%' }}>
+          <div style={{ animation: 'orbit2 8s linear infinite' }}>
+            <div className="w-2 h-2 rounded-full bg-violet-400" style={{ boxShadow: '0 0 10px #8b5cf6' }} />
           </div>
+        </div>
 
-          {/* Trust bar */}
-          <div className="mt-14 flex items-center gap-3">
-            <div className="flex -space-x-2">
-              {['bg-emerald-500', 'bg-violet-500', 'bg-amber-500'].map((bg, i) => (
-                <div key={i} className={`h-8 w-8 rounded-full ${bg} ring-2 ring-[#0f172a] flex items-center justify-center text-[11px] font-bold text-white`}>
-                  {['A', 'K', 'R'][i]}
-                </div>
-              ))}
+        {/* Center content */}
+        <div className="relative z-10 text-center px-12" style={{ animation: 'fadeSlide 1s ease-out' }}>
+          <div className="mb-6 flex items-center justify-center gap-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/20 backdrop-blur-sm border border-emerald-500/30">
+              <Zap size={28} className="text-emerald-400" />
             </div>
-            <span className="text-xs text-slate-500">Trusted by teams building the future</span>
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">AI Studio</h2>
+          <p className="text-emerald-200/70 text-base leading-relaxed max-w-xs mx-auto">
+            Build, deploy, and orchestrate intelligent agents with enterprise-grade tooling
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-slate-400">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-emerald-500" style={{ animation: 'pulse 2s ease-in-out infinite' }} />
+              Agents
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-violet-500" style={{ animation: 'pulse 2s ease-in-out infinite 0.5s' }} />
+              Workflows
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-cyan-500" style={{ animation: 'pulse 2s ease-in-out infinite 1s' }} />
+              RAG
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ── form side ────────────────────────────── */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center bg-[#f8fafc] px-6 py-12 md:py-16 lg:py-0 min-h-screen lg:min-h-0">
-        <div
-          className={`w-full max-w-[400px] transition-all duration-700 ease-out delay-100 ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
-        >
-          {/* Small logo */}
-          <div className="flex items-center gap-2.5 mb-10">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500">
-              <Zap size={16} className="text-white" />
-            </div>
-            <span className="text-lg font-bold text-slate-900 tracking-tight">AI Studio</span>
-          </div>
-
-          {/* Heading */}
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            {tab === 'login' ? 'Welcome back' : 'Create your account'}
-          </h2>
-          <p className="mt-1.5 text-sm text-slate-500">
-            {tab === 'login' ? 'Your AI development environment' : 'Get started with AI Studio'}
-          </p>
-
-          {/* Form */}
-          <div className="mt-8 space-y-4">
-            {tab === 'signup' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Name</label>
-                  <input
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                    placeholder="Alex Chen"
-                    value={form.name}
-                    onChange={e => setForm({ ...form, name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Organization</label>
-                  <input
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                    placeholder="Contoso Ltd"
-                    value={form.organization}
-                    onChange={e => setForm({ ...form, organization: e.target.value })}
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
-              <input
-                type="email"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                placeholder="you@company.com"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-slate-700">Password</label>
-                {tab === 'login' && (
-                  <button type="button" className="text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
-                    Forgot password?
-                  </button>
-                )}
+      {/* Right Panel – Form */}
+      <div className="flex flex-1 items-center justify-center px-4" style={{ background: '#f8fafc' }}>
+        <div className="w-full max-w-[400px]">
+          <div className="rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
+            {/* Logo – visible on mobile where left panel is hidden */}
+            <div className="mb-6 flex items-center gap-2.5 justify-center lg:hidden">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500">
+                <Zap size={18} className="text-white" />
               </div>
-              <div className="relative">
+              <span className="text-lg font-bold text-slate-800 tracking-tight">AI Studio</span>
+            </div>
+
+            <div className="mb-6 text-center">
+              <h1 className="text-xl font-bold text-slate-800">Welcome back</h1>
+              <p className="mt-1 text-sm text-slate-500">Sign in to your account</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-600">Email address</label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                  placeholder="Enter your password"
-                  value={form.password}
-                  onChange={e => setForm({ ...form, password: e.target.value })}
-                  onKeyDown={e => e.key === 'Enter' && handle()}
+                  type="email"
+                  className="auth-input"
+                  placeholder="you@company.com"
+                  value={form.email}
+                  onChange={e => setForm({ ...form, email: e.target.value })}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-600">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    className="auth-input pr-10"
+                    placeholder="••••••••"
+                    value={form.password}
+                    onChange={e => setForm({ ...form, password: e.target.value })}
+                    onKeyDown={e => e.key === 'Enter' && handle()}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <div className="flex items-start gap-2.5 rounded-lg bg-red-50 border border-red-200 px-3.5 py-3">
+                  <div className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
+                  <p className="text-xs text-red-600 leading-relaxed">{error}</p>
+                </div>
+              )}
+
+              <button
+                onClick={handle}
+                disabled={loading}
+                className="w-full rounded-lg py-[11px] text-sm font-semibold text-white transition-all duration-200 disabled:opacity-60 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600"
+                style={{ height: '44px' }}
+              >
+                {loading ? (
+                  <><Loader2 size={15} className="animate-spin" /> Signing in...</>
+                ) : (
+                  <>Sign In <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" /></>
+                )}
+              </button>
             </div>
 
-            {/* Error */}
-            {error && (
-              <p className="rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 text-xs font-medium text-red-600">{error}</p>
-            )}
-
-            {/* Submit button */}
-            <button
-              onClick={handle}
-              disabled={loading}
-              className="w-full h-12 rounded-xl bg-emerald-500 text-sm font-semibold text-white hover:bg-emerald-600 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 mt-2 shadow-lg shadow-emerald-500/20"
-            >
-              {loading ? (
-                <><Loader2 size={16} className="animate-spin" /> Authenticating...</>
-              ) : (
-                tab === 'login' ? 'Sign In \u2192' : 'Create Account \u2192'
-              )}
-            </button>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3 my-2">
-              <div className="flex-1 h-px bg-slate-200" />
-              <span className="text-xs text-slate-400">or</span>
-              <div className="flex-1 h-px bg-slate-200" />
-            </div>
-
-            {/* Toggle */}
-            <p className="text-center text-sm text-slate-500">
-              {tab === 'login' ? (
-                <>Don&apos;t have an account?{' '}
-                  <button onClick={() => { setTab('signup'); setError('') }} className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-                    Sign up
-                  </button>
-                </>
-              ) : (
-                <>Already have an account?{' '}
-                  <button onClick={() => { setTab('login'); setError('') }} className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-                    Sign in
-                  </button>
-                </>
-              )}
+            <p className="mt-6 text-center text-sm text-slate-500">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-emerald-500 hover:text-emerald-600 font-medium transition-colors">
+                Sign up
+              </Link>
             </p>
           </div>
         </div>
       </div>
-
     </div>
   )
 }

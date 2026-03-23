@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.stupidaistudio.com'
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -10,12 +10,19 @@ export const api = axios.create({
 // Attach JWT token to every request
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('ai-studio-auth')
-    if (stored) {
-      const { state } = JSON.parse(stored)
-      if (state?.token) {
-        config.headers.Authorization = `Bearer ${state.token}`
+    // Check simple token key first, then Zustand persist store
+    let token = localStorage.getItem('token')
+    if (!token) {
+      const stored = localStorage.getItem('ai-studio-auth')
+      if (stored) {
+        try {
+          const { state } = JSON.parse(stored)
+          token = state?.token || null
+        } catch {}
       }
+    }
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
   }
   return config
@@ -26,6 +33,7 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('token')
       localStorage.removeItem('ai-studio-auth')
       window.location.href = '/login'
     }
@@ -37,7 +45,7 @@ api.interceptors.response.use(
 export const authApi = {
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }),
-  signup: (data: { email: string; name: string; organization: string; password: string }) =>
+  signup: (data: { email: string; name: string; password: string; account_type?: string; org_name?: string | null }) =>
     api.post('/auth/signup', data),
   me: () => api.get('/auth/me'),
 }
@@ -52,12 +60,31 @@ export const agentsApi = {
   run: (id: string, inputText: string) =>
     api.post(`/agents/${id}/run`, { input_text: inputText }),
   getRuns: (id: string) => api.get(`/agents/${id}/runs`),
+  getSkills: (id: string) => api.get(`/agents/${id}/skills`),
+  addSkill: (id: string, data: any) => api.post(`/agents/${id}/skills`, data),
+  removeSkill: (id: string, skillId: string) => api.delete(`/agents/${id}/skills/${skillId}`),
+}
+
+// ── Threads ──────────────────────────────────────────────────────
+export const threadsApi = {
+  listByAgent: (agentId: string) => api.get(`/agents/${agentId}/threads`),
+  create: (agentId: string) => api.post(`/agents/${agentId}/threads`),
+  getMessages: (threadId: string) => api.get(`/threads/${threadId}/messages`),
+  chat: (threadId: string, message: string) =>
+    api.post(`/threads/${threadId}/chat`, { message }),
+  delete: (threadId: string) => api.delete(`/threads/${threadId}`),
 }
 
 // ── Skills ────────────────────────────────────────────────────────
 export const skillsApi = {
   getCatalog: () => api.get('/skills/catalog'),
   list: () => api.get('/skills/'),
+  mySkills: () => api.get('/skills/my-skills'),
+  create: (data: any) => api.post('/skills/create', data),
+  update: (id: string, data: any) => api.put(`/skills/${id}`, data),
+  delete: (id: string) => api.delete(`/skills/${id}`),
+  test: (id: string, payload: any) => api.post(`/skills/${id}/test`, payload),
+  install: (id: string) => api.post(`/skills/${id}/install`),
 }
 
 // ── Credentials ───────────────────────────────────────────────────
