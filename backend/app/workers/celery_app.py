@@ -41,7 +41,7 @@ def execute_agent_task(self, agent_id: str, user_id: str, input_text: str):
         from app.db.session import AsyncSessionLocal
         from app.db.models import Agent, AgentSkillBinding, AgentRun, Credential
         from app.utils.security import decrypt_credentials
-        from app.agents.langchain_agent import build_agent_executor, run_agent
+        from app.agents.claude_agent import build_agent_executor, run_agent
         from sqlalchemy import select
 
         async def _run():

@@ -43,7 +43,7 @@ const AGENT_TEMPLATES = [
     icon: '📊',
     description: 'Analyzes data and generates structured reports',
     system_prompt: 'You analyze data and generate structured reports with insights.',
-    model_name: 'llama3',
+    model_name: 'claude-sonnet',
     temperature: 0.3,
     skillPatterns: ['sql_query', 'data_analysis'],
   },
@@ -61,7 +61,7 @@ const AGENT_TEMPLATES = [
     icon: '✉️',
     description: 'Drafts professional emails and communications',
     system_prompt: 'You draft professional emails and communications.',
-    model_name: 'llama3',
+    model_name: 'claude-sonnet',
     temperature: 0.7,
     skillPatterns: ['email'],
   },
@@ -70,7 +70,7 @@ const AGENT_TEMPLATES = [
     icon: '🤖',
     description: 'A helpful assistant for general questions',
     system_prompt: 'You are a helpful assistant that answers questions.',
-    model_name: 'llama3',
+    model_name: 'claude-sonnet',
     temperature: 0.7,
     skillPatterns: [],
   },
@@ -95,7 +95,7 @@ export default function AgentsPage() {
   const qc = useQueryClient()
   const [modal, setModal] = useState<null | 'create' | { type: 'chat'; agentId: string }>(null)
   const [step, setStep] = useState(1)
-  const [form, setForm] = useState({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'llama3', temperature: 0.7, memory_enabled: true, skill_bindings: [] as SkillBinding[] })
+  const [form, setForm] = useState({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'claude-sonnet', temperature: 0.7, memory_enabled: true, skill_bindings: [] as SkillBinding[] })
   const [chatInput, setChatInput] = useState('')
   const [chatMsgs, setChatMsgs] = useState<{ role: string; content: string }[]>([])
   const [running, setRunning] = useState(false)
@@ -141,7 +141,7 @@ export default function AgentsPage() {
 
   const createMut = useMutation({
     mutationFn: (data: any) => agentsApi.create(data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['agents'] }); setModal(null); setStep(1); setForm({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'llama3', temperature: 0.7, memory_enabled: true, skill_bindings: [] }) },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['agents'] }); setModal(null); setStep(1); setForm({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'claude-sonnet', temperature: 0.7, memory_enabled: true, skill_bindings: [] }) },
   })
 
   const deleteMut = useMutation({
@@ -157,7 +157,7 @@ export default function AgentsPage() {
       setEditForm({
         name: data.name || '',
         system_prompt: data.system_prompt || '',
-        model_name: data.model_name || 'llama3',
+        model_name: data.model_name || 'claude-sonnet',
         temperature: data.temperature ?? 0.7,
       })
       setEditTab('general')
@@ -343,7 +343,7 @@ export default function AgentsPage() {
           : t
       ))
     } catch {
-      setChatMsgs(m => [...m, { role: 'assistant', content: 'Error: Agent execution failed. Check that Ollama is running.' }])
+      setChatMsgs(m => [...m, { role: 'assistant', content: 'Error: Agent execution failed. Check your API configuration.' }])
     } finally { setRunning(false) }
   }
 
@@ -456,15 +456,14 @@ export default function AgentsPage() {
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Model</label>
                       <select className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none"
                         value={form.model_name} onChange={e => setForm({ ...form, model_name: e.target.value })}>
-                        <option value="llama3">Llama 3</option>
-                        <option value="mixtral">Mixtral</option>
-                        <option value="mistral">Mistral 7B</option>
-                        <option value="gemma">Gemma</option>
+                        <option value="claude-opus">Claude Opus (Most Capable)</option>
+                        <option value="claude-sonnet">Claude Sonnet (Balanced)</option>
+                        <option value="claude-haiku">Claude Haiku (Fast)</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Temperature ({form.temperature})</label>
-                      <input type="range" min="0" max="2" step="0.1" className="w-full mt-2 accent-emerald-500" value={form.temperature}
+                      <input type="range" min="0" max="1" step="0.1" className="w-full mt-2 accent-emerald-500" value={form.temperature}
                         onChange={e => setForm({ ...form, temperature: parseFloat(e.target.value) })} />
                     </div>
                   </div>
@@ -624,7 +623,7 @@ export default function AgentsPage() {
                 <span className="text-2xl">🤖</span>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-slate-800">{(agents as any[]).find((a: any) => a.id === (modal as any).agentId)?.name}</p>
-                  <p className="text-[11px] text-slate-500">LangChain ReAct · Ollama</p>
+                  <p className="text-[11px] text-slate-500">Claude Native Tool Use</p>
                 </div>
                 <button onClick={() => setModal(null)} className="text-slate-400 hover:text-slate-600">✕</button>
               </div>
@@ -707,10 +706,9 @@ export default function AgentsPage() {
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Model</label>
                       <select className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-500 focus:outline-none"
                         value={editForm.model_name} onChange={e => setEditForm({ ...editForm, model_name: e.target.value })}>
-                        <option value="llama3">Llama 3</option>
-                        <option value="mixtral">Mixtral</option>
-                        <option value="mistral">Mistral 7B</option>
-                        <option value="gemma">Gemma</option>
+                        <option value="claude-opus">Claude Opus (Most Capable)</option>
+                        <option value="claude-sonnet">Claude Sonnet (Balanced)</option>
+                        <option value="claude-haiku">Claude Haiku (Fast)</option>
                       </select>
                     </div>
                     <div>

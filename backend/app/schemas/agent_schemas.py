@@ -36,9 +36,9 @@ class AgentCreate(BaseModel):
     name: str
     description: str = ""
     system_prompt: str
-    model_name: str = "llama3"
+    model_name: str = "claude-sonnet"
     temperature: float = 0.7
-    max_tokens: int = 2048
+    max_tokens: int = 4096
     memory_enabled: bool = True
     skill_bindings: List[SkillBindingCreate] = []
 

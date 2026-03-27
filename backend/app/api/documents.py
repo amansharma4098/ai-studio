@@ -15,7 +15,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import FakeEmbeddings
 from langchain_core.documents import Document as LangchainDocument
-from groq import Groq
+from app.agents.claude_agent import run_chat
 
 from app.db.session import get_db
 from app.db.models import Document
@@ -182,8 +182,7 @@ async def query_documents(
     # Build context
     context = "\n\n---\n\n".join([d.page_content for d in top_docs])
 
-    # Generate answer with Groq
-    client = Groq(api_key=os.getenv("GROQ_API_KEY", settings.GROQ_API_KEY))
+    # Generate answer with Claude
     prompt = f"""Answer the following question based ONLY on the provided context.
 If the answer is not in the context, say "I cannot find this information in the uploaded documents."
 
@@ -194,13 +193,15 @@ Question: {payload.question}
 
 Answer:"""
 
-    response = client.chat.completions.create(
-        model=settings.GROQ_MODEL,
-        messages=[{"role": "user", "content": prompt}],
+    model_name = payload.model_name if hasattr(payload, 'model_name') and payload.model_name else "claude-sonnet"
+    answer = run_chat(
+        agent_name="RAG Assistant",
+        system_prompt="You are a document Q&A assistant. Answer questions based only on the provided context.",
+        model_name=model_name,
         temperature=0.3,
         max_tokens=2048,
+        input_text=prompt,
     )
-    answer = response.choices[0].message.content
 
     sources = [
         {

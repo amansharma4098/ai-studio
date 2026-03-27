@@ -8,7 +8,7 @@ export default function DocumentsPage() {
   const qc = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const [question, setQuestion] = useState('')
-  const [model, setModel] = useState('llama3')
+  const [model, setModel] = useState('claude-sonnet')
   const [selectedDocs, setSelectedDocs] = useState<string[]>([])
   const [answer, setAnswer] = useState<{ answer: string; sources: any[] } | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -74,7 +74,7 @@ export default function DocumentsPage() {
           <div className="rounded-xl border border-slate-200 bg-white p-4">
             <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">RAG Pipeline</p>
             <div className="flex items-center gap-1.5 text-xs flex-wrap">
-              {['Upload', '→', 'LangChain Split', '→', 'nomic-embed-text', '→', 'ChromaDB', '→', 'Similarity Search', '→', 'Ollama LLM', '→', 'Answer'].map((s, i) => (
+              {['Upload', '→', 'Text Split', '→', 'Embeddings', '→', 'ChromaDB', '→', 'Similarity Search', '→', 'Claude', '→', 'Answer'].map((s, i) => (
                 <span key={i} className={s === '→' ? 'text-slate-300' : 'rounded bg-emerald-50 px-2 py-0.5 text-[10.5px] font-medium text-emerald-700'}>{s}</span>
               ))}
             </div>
@@ -125,9 +125,9 @@ export default function DocumentsPage() {
               <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Model</label>
               <select className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none"
                 value={model} onChange={e => setModel(e.target.value)}>
-                <option value="llama3">Llama 3</option>
-                <option value="mistral">Mistral 7B</option>
-                <option value="gemma">Gemma</option>
+                <option value="claude-opus">Claude Opus</option>
+                <option value="claude-sonnet">Claude Sonnet</option>
+                <option value="claude-haiku">Claude Haiku</option>
               </select>
             </div>
 

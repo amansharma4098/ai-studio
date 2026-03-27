@@ -89,9 +89,9 @@ export default function LoginPage() {
               <Zap size={28} className="text-emerald-400" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">AI Studio</h2>
+          <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">AI Studio <span className="text-emerald-400">v4</span></h2>
           <p className="text-emerald-200/70 text-base leading-relaxed max-w-xs mx-auto">
-            Build, deploy, and orchestrate intelligent agents with enterprise-grade tooling
+            Enterprise AI agent platform powered by Claude. Build agents in seconds, not hours.
           </p>
           <div className="mt-8 flex items-center justify-center gap-6 text-sm text-slate-400">
             <div className="flex items-center gap-2">

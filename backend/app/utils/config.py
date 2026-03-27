@@ -16,7 +16,11 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://:redis_secret@localhost:6379/0"
 
-    # Groq LLM
+    # Claude / Anthropic
+    ANTHROPIC_API_KEY: str = ""
+    CLAUDE_MODEL: str = "claude-sonnet-4-6"
+
+    # Legacy Groq (fallback)
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
 

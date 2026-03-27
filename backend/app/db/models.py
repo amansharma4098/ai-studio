@@ -1,13 +1,15 @@
 """
 SQLAlchemy ORM models for AI Studio.
-Full multi-tenant schema with agents, skills, credentials, runs.
+Enterprise-grade multi-tenant schema with agents, skills, credentials,
+teams, billing, API keys, audit logging, and agent templates.
 """
 import uuid
+import secrets
 from datetime import datetime
 
 from sqlalchemy import (
     Boolean, Column, DateTime, Float, ForeignKey,
-    Integer, String, Text, JSON, Enum as SAEnum
+    Integer, String, Text, JSON, Enum as SAEnum, BigInteger
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -17,6 +19,10 @@ from app.db.session import Base
 
 def gen_uuid():
     return str(uuid.uuid4())
+
+
+def gen_api_key():
+    return f"sk-aistudio-{secrets.token_urlsafe(32)}"
 
 
 # ── Users ─────────────────────────────────────────────────────────
@@ -232,3 +238,114 @@ class CustomSkill(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     owner = relationship("User", back_populates="custom_skills")
+
+
+# ── Teams & Workspaces ──────────────────────────────────────────
+class Team(Base):
+    __tablename__ = "aistudio_teams"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    name = Column(String(255), nullable=False)
+    slug = Column(String(255), unique=True, nullable=False, index=True)
+    description = Column(Text, nullable=True)
+    owner_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False)
+    plan = Column(String(50), default="free")  # free | pro | enterprise
+    max_agents = Column(Integer, default=5)
+    max_members = Column(Integer, default=1)
+    max_runs_per_month = Column(Integer, default=100)
+    runs_this_month = Column(Integer, default=0)
+    billing_email = Column(String(255), nullable=True)
+    stripe_customer_id = Column(String(255), nullable=True)
+    stripe_subscription_id = Column(String(255), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner = relationship("User", foreign_keys=[owner_id])
+    members = relationship("TeamMember", back_populates="team", cascade="all, delete-orphan")
+
+
+class TeamMember(Base):
+    __tablename__ = "aistudio_team_members"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    team_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_teams.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
+    role = Column(String(50), default="member")  # owner | admin | member | viewer
+    invited_by = Column(UUID(as_uuid=False), nullable=True)
+    joined_at = Column(DateTime, default=datetime.utcnow)
+
+    team = relationship("Team", back_populates="members")
+    user = relationship("User")
+
+
+# ── API Keys ────────────────────────────────────────────────────
+class ApiKey(Base):
+    __tablename__ = "aistudio_api_keys"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
+    team_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_teams.id", ondelete="SET NULL"), nullable=True)
+    name = Column(String(255), nullable=False)
+    key_prefix = Column(String(20), nullable=False)  # First 8 chars for identification
+    key_hash = Column(String(255), nullable=False)    # SHA-256 hash of full key
+    scopes = Column(JSON, default=list)               # ["agents:read", "agents:write", "agents:execute"]
+    last_used_at = Column(DateTime, nullable=True)
+    expires_at = Column(DateTime, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User")
+
+
+# ── Audit Log ───────────────────────────────────────────────────
+class AuditLog(Base):
+    __tablename__ = "aistudio_audit_logs"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="SET NULL"), nullable=True, index=True)
+    team_id = Column(UUID(as_uuid=False), nullable=True, index=True)
+    action = Column(String(100), nullable=False, index=True)  # agent.create, agent.run, team.invite, etc.
+    resource_type = Column(String(100), nullable=True)         # agent, skill, credential, team
+    resource_id = Column(String(255), nullable=True)
+    details = Column(JSON, default=dict)
+    ip_address = Column(String(50), nullable=True)
+    user_agent = Column(String(500), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+# ── Agent Templates ─────────────────────────────────────────────
+class AgentTemplate(Base):
+    __tablename__ = "aistudio_agent_templates"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    category = Column(String(100), nullable=False)  # productivity, devops, data, security, etc.
+    icon = Column(String(50), default="bot")
+    system_prompt = Column(Text, nullable=False)
+    model_name = Column(String(100), default="claude-sonnet")
+    temperature = Column(Float, default=0.7)
+    max_tokens = Column(Integer, default=4096)
+    suggested_skills = Column(JSON, default=list)
+    tags = Column(JSON, default=list)
+    is_featured = Column(Boolean, default=False)
+    use_count = Column(Integer, default=0)
+    created_by = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="SET NULL"), nullable=True)
+    is_official = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ── Usage Tracking ──────────────────────────────────────────────
+class UsageRecord(Base):
+    __tablename__ = "aistudio_usage"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
+    team_id = Column(UUID(as_uuid=False), nullable=True, index=True)
+    resource_type = Column(String(50), nullable=False)  # agent_run, api_call, document_upload
+    model_name = Column(String(100), nullable=True)
+    input_tokens = Column(BigInteger, default=0)
+    output_tokens = Column(BigInteger, default=0)
+    cost_usd = Column(Float, default=0.0)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)

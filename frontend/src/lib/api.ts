@@ -71,7 +71,7 @@ export const threadsApi = {
   create: (agentId: string) => api.post(`/agents/${agentId}/threads`),
   getMessages: (threadId: string) => api.get(`/threads/${threadId}/messages`),
   chat: (threadId: string, message: string) =>
-    api.post(`/threads/${threadId}/chat`, { message }),
+    api.post(`/threads/${threadId}/chat`, { input_text: message }),
   delete: (threadId: string) => api.delete(`/threads/${threadId}`),
 }
 
@@ -120,6 +120,7 @@ export const playgroundApi = {
     model_name?: string
     temperature?: number
     max_tokens?: number
+    stream?: boolean
   }) => api.post('/playground/run', data),
 }
 
@@ -135,4 +136,53 @@ export const workflowsApi = {
 export const monitoringApi = {
   stats: () => api.get('/monitoring/stats'),
   runs: (limit?: number) => api.get(`/monitoring/runs?limit=${limit || 100}`),
+}
+
+// ── Agent Builder (NEW) ───────────────────────────────────────────
+export const agentBuilderApi = {
+  generate: (description: string) =>
+    api.post('/agent-builder/generate', { description }),
+  create: (description: string) =>
+    api.post('/agent-builder/create', { description }),
+  templates: () => api.get('/agent-builder/templates'),
+  fromTemplate: (templateId: string) =>
+    api.post('/agent-builder/from-template', null, { params: { template_id: templateId } }),
+}
+
+// ── Teams (NEW) ───────────────────────────────────────────────────
+export const teamsApi = {
+  list: () => api.get('/teams/'),
+  get: (id: string) => api.get(`/teams/${id}`),
+  create: (data: { name: string; description?: string }) => api.post('/teams/', data),
+  update: (id: string, data: any) => api.put(`/teams/${id}`, data),
+  invite: (teamId: string, data: { email: string; role: string }) =>
+    api.post(`/teams/${teamId}/invite`, data),
+  members: (teamId: string) => api.get(`/teams/${teamId}/members`),
+  removeMember: (teamId: string, userId: string) =>
+    api.delete(`/teams/${teamId}/members/${userId}`),
+}
+
+// ── API Keys (NEW) ────────────────────────────────────────────────
+export const apiKeysApi = {
+  list: () => api.get('/api-keys/'),
+  create: (data: { name: string; scopes: string[]; expires_days?: number | null }) =>
+    api.post('/api-keys/', data),
+  scopes: () => api.get('/api-keys/scopes'),
+  revoke: (id: string) => api.delete(`/api-keys/${id}`),
+}
+
+// ── Billing (NEW) ─────────────────────────────────────────────────
+export const billingApi = {
+  plans: () => api.get('/billing/plans'),
+  myPlan: () => api.get('/billing/my-plan'),
+  usage: () => api.get('/billing/usage'),
+  upgrade: (planId: string, billingCycle?: string) =>
+    api.post('/billing/upgrade', { plan_id: planId, billing_cycle: billingCycle || 'monthly' }),
+}
+
+// ── Audit (NEW) ───────────────────────────────────────────────────
+export const auditApi = {
+  list: (params?: { action?: string; resource_type?: string; limit?: number }) =>
+    api.get('/audit/', { params }),
+  stats: () => api.get('/audit/stats'),
 }

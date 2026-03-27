@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.db.models import Agent, ChatThread, ChatMessage
-from app.agents.langchain_agent import run_agent_with_groq
+from app.agents.claude_agent import run_chat
 from app.api.deps import get_current_user
 
 router = APIRouter()
@@ -178,8 +178,8 @@ async def chat(
         for msg in previous_messages
     ]
 
-    # Call Groq with full history
-    output = run_agent_with_groq(
+    # Call Claude with full history
+    output = run_chat(
         agent_name=agent.name,
         system_prompt=agent.system_prompt,
         model_name=agent.model_name,

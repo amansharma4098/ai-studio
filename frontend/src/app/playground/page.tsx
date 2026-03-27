@@ -15,9 +15,9 @@ const QUICK_TESTS = [
 export default function PlaygroundPage() {
   const [prompt, setPrompt] = useState('List all security groups in Entra ID starting with "sg-" and show member counts.')
   const [systemPrompt, setSystemPrompt] = useState('You are a helpful Microsoft 365 and Azure administrator assistant.')
-  const [model, setModel] = useState('llama3')
+  const [model, setModel] = useState('claude-sonnet')
   const [temperature, setTemperature] = useState(0.7)
-  const [maxTokens, setMaxTokens] = useState(1024)
+  const [maxTokens, setMaxTokens] = useState(4096)
   const [response, setResponse] = useState('')
   const [latency, setLatency] = useState<number | null>(null)
 
@@ -34,7 +34,7 @@ export default function PlaygroundPage() {
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Playground</h1>
-        <p className="mt-1 text-sm text-slate-500">Test prompts directly against Ollama LLMs — no agent overhead</p>
+        <p className="mt-1 text-sm text-slate-500">Test prompts directly against Claude — no agent overhead</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5" style={{ minHeight: '580px' }}>
@@ -45,9 +45,9 @@ export default function PlaygroundPage() {
               <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Model</label>
               <select className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none"
                 value={model} onChange={e => setModel(e.target.value)}>
-                <option value="llama3">Llama 3</option>
-                <option value="mistral">Mistral 7B</option>
-                <option value="gemma">Gemma</option>
+                <option value="claude-opus">Claude Opus (Most Capable)</option>
+                <option value="claude-sonnet">Claude Sonnet (Balanced)</option>
+                <option value="claude-haiku">Claude Haiku (Fast)</option>
               </select>
             </div>
             <div>
@@ -100,14 +100,14 @@ export default function PlaygroundPage() {
           <div className="flex-1 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap text-slate-700"
             style={{ minHeight: '300px' }}>
             {runMut.isPending
-              ? <span className="text-slate-400">Querying Ollama ({model})...</span>
+              ? <span className="text-slate-400">Querying Claude ({model})...</span>
               : response || <span className="text-slate-400">Response will appear here. Click "Run Prompt" to execute.</span>}
           </div>
           <div>
             <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Execution Log</p>
             <div className="space-y-1.5">
               {[
-                { label: 'Ollama endpoint', value: `POST http://localhost:11434/api/generate`, status: 'ok' },
+                { label: 'Claude API', value: `POST https://api.anthropic.com/v1/messages`, status: 'ok' },
                 { label: 'Model', value: model, status: 'ok' },
                 { label: 'Temperature', value: String(temperature), status: 'ok' },
               ].map(l => (

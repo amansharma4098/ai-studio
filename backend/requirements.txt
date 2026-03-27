@@ -14,7 +14,10 @@ PyJWT==2.8.0
 bcrypt==4.0.1
 cryptography==42.0.7
 
-# Groq LLM
+# Claude / Anthropic
+anthropic==0.52.0
+
+# Groq LLM (legacy fallback)
 groq==0.9.0
 
 # LangChain - document loading, text splitting, vector store for RAG

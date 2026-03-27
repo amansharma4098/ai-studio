@@ -1,6 +1,7 @@
 """
-AI Studio - FastAPI Application Entry Point
-Production-grade multi-tenant AI automation platform
+AI Studio v4.0 — Enterprise AI Agent Platform
+Powered by Claude (Anthropic) with native tool_use,
+smart agent builder, multi-agent orchestration, and enterprise features.
 """
 
 import logging
@@ -16,7 +17,11 @@ from sqlalchemy import text
 
 from app.db.session import engine, Base
 from app.utils.config import settings
-from app.api import auth, agents, chat, skills, credentials, documents, playground, workflows, monitoring
+from app.api import (
+    auth, agents, chat, skills, credentials, documents,
+    playground, workflows, monitoring,
+    agent_builder, teams, api_keys, billing, audit,
+)
 
 # ── Structured Logging ────────────────────────────────────────────
 structlog.configure(
@@ -56,7 +61,7 @@ async def run_migrations(engine):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
-    logger.info("Starting AI Studio API", version="3.0.0", env=settings.ENVIRONMENT)
+    logger.info("Starting AI Studio API", version="4.0.0", env=settings.ENVIRONMENT)
 
     # Create all database tables (checkfirst=True by default, only creates if not exists)
     async with engine.begin() as conn:
@@ -66,6 +71,10 @@ async def lifespan(app: FastAPI):
     # Auto-migrate: add columns that create_all won't add to existing tables
     await run_migrations(engine)
     logger.info("Column migrations verified")
+
+    # Load skill registry
+    from app.skills.registry import skill_registry
+    skill_registry.load_all()
 
     yield
 
@@ -77,8 +86,8 @@ async def lifespan(app: FastAPI):
 # ── FastAPI App ───────────────────────────────────────────────────
 app = FastAPI(
     title="AI Studio API",
-    description="Production AI automation platform with Microsoft Entra ID & Azure Skills",
-    version="3.0.0",
+    description="Enterprise AI Agent Platform — powered by Claude. Build, deploy, and manage AI agents with native tool-calling, smart agent builder, and multi-agent orchestration.",
+    version="4.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
@@ -106,18 +115,40 @@ app.mount("/metrics", metrics_app)
 
 
 # ── API Routers ───────────────────────────────────────────────────
-app.include_router(auth.router,        prefix="/api/auth",        tags=["Authentication"])
-app.include_router(agents.router,      prefix="/api/agents",      tags=["Agents"])
-app.include_router(skills.router,      prefix="/api/skills",      tags=["Skills"])
-app.include_router(credentials.router, prefix="/api/credentials", tags=["Credentials"])
-app.include_router(documents.router,   prefix="/api/documents",   tags=["Documents"])
-app.include_router(playground.router,  prefix="/api/playground",  tags=["Playground"])
-app.include_router(workflows.router,   prefix="/api/workflows",   tags=["Workflows"])
-app.include_router(monitoring.router,  prefix="/api/monitoring",  tags=["Monitoring"])
-app.include_router(chat.router,       prefix="/api",             tags=["Chat"])
+# Core
+app.include_router(auth.router,          prefix="/api/auth",           tags=["Authentication"])
+app.include_router(agents.router,        prefix="/api/agents",         tags=["Agents"])
+app.include_router(skills.router,        prefix="/api/skills",         tags=["Skills"])
+app.include_router(credentials.router,   prefix="/api/credentials",    tags=["Credentials"])
+app.include_router(documents.router,     prefix="/api/documents",      tags=["Documents"])
+app.include_router(playground.router,    prefix="/api/playground",     tags=["Playground"])
+app.include_router(workflows.router,     prefix="/api/workflows",      tags=["Workflows"])
+app.include_router(monitoring.router,    prefix="/api/monitoring",     tags=["Monitoring"])
+app.include_router(chat.router,          prefix="/api",                tags=["Chat"])
+
+# New: Enterprise & Builder
+app.include_router(agent_builder.router, prefix="/api/agent-builder",  tags=["Agent Builder"])
+app.include_router(teams.router,         prefix="/api/teams",          tags=["Teams"])
+app.include_router(api_keys.router,      prefix="/api/api-keys",       tags=["API Keys"])
+app.include_router(billing.router,       prefix="/api/billing",        tags=["Billing"])
+app.include_router(audit.router,         prefix="/api/audit",          tags=["Audit"])
 
 
 # ── Health Check ──────────────────────────────────────────────────
 @app.get("/health", tags=["Health"])
 async def health_check():
-    return {"status": "healthy", "version": "3.0.0", "service": "AI Studio API"}
+    return {
+        "status": "healthy",
+        "version": "4.0.0",
+        "service": "AI Studio API",
+        "engine": "Claude (Anthropic)",
+        "features": [
+            "native-tool-use",
+            "smart-agent-builder",
+            "multi-agent-orchestration",
+            "streaming",
+            "enterprise-rbac",
+            "api-keys",
+            "audit-logging",
+        ],
+    }

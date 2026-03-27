@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Bot, Star, Key, Activity,
-  Terminal, GitBranch, FileText, LogOut, Zap, Menu, X
+  Terminal, GitBranch, FileText, LogOut, Zap, Menu, X,
+  Wand2, Users, KeyRound, CreditCard, Shield
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
@@ -13,6 +14,7 @@ const navSections = [
     label: 'MAIN',
     items: [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/agent-builder', label: 'Agent Builder', icon: Wand2, badge: 'AI' },
       { href: '/agents', label: 'Agents', icon: Bot },
       { href: '/playground', label: 'Playground', icon: Terminal },
     ],
@@ -29,6 +31,14 @@ const navSections = [
     items: [
       { href: '/workflows', label: 'Workflows', icon: GitBranch },
       { href: '/documents', label: 'Documents', icon: FileText },
+    ],
+  },
+  {
+    label: 'ENTERPRISE',
+    items: [
+      { href: '/teams', label: 'Teams', icon: Users },
+      { href: '/api-keys', label: 'API Keys', icon: KeyRound },
+      { href: '/billing', label: 'Plans & Billing', icon: CreditCard },
     ],
   },
   {
@@ -54,10 +64,19 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
     <>
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600">
           <Zap size={16} className="text-white" />
         </div>
-        <span className="text-[15px] font-bold text-white tracking-tight">AI Studio</span>
+        <div>
+          <span className="text-[15px] font-bold text-white tracking-tight">AI Studio</span>
+          <span className="ml-1.5 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">v4</span>
+        </div>
+      </div>
+
+      {/* Powered by badge */}
+      <div className="mx-5 mb-3 rounded-lg bg-white/5 px-3 py-1.5 flex items-center gap-1.5">
+        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="text-[10px] text-slate-400">Powered by <span className="text-white font-semibold">Claude</span></span>
       </div>
 
       {/* Nav */}
@@ -82,7 +101,12 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
                   onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
                 >
                   <item.icon size={16} className="shrink-0" />
-                  {item.label}
+                  <span className="flex-1">{item.label}</span>
+                  {'badge' in item && item.badge && (
+                    <span className="rounded-full bg-violet-500/20 px-1.5 py-0.5 text-[9px] font-bold text-violet-400">
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               )
             })}
@@ -98,7 +122,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold text-white">{user?.name || 'User'}</p>
-            <p className="truncate text-[11px]" style={{ color: '#64748b' }}>{user?.organization || 'Admin'}</p>
+            <p className="truncate text-[11px]" style={{ color: '#64748b' }}>{user?.organization || 'Personal'}</p>
           </div>
           <button
             onClick={handleLogout}
@@ -126,10 +150,11 @@ export function Sidebar() {
           <Menu size={22} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600">
             <Zap size={14} className="text-white" />
           </div>
           <span className="text-sm font-bold text-white tracking-tight">AI Studio</span>
+          <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">v4</span>
         </div>
         <div className="w-[34px]" /> {/* Spacer for centering */}
       </div>

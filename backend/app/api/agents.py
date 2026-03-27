@@ -26,7 +26,7 @@ from app.schemas.agent_schemas import (
     SkillAddRequest, SkillResponse,
 )
 from app.utils.security import decode_token, decrypt_credentials
-from app.agents.langchain_agent import build_agent_executor, run_agent
+from app.agents.claude_agent import build_agent_executor, run_agent, stream_chat
 from app.api.deps import get_current_user
 
 router = APIRouter()
@@ -154,10 +154,10 @@ async def run_agent_endpoint(
     current_user=Depends(get_current_user),
 ):
     """
-    Execute an agent using Groq API:
+    Execute an agent using Claude API:
     1. Load agent config and skill bindings
     2. Decrypt credentials for each bound skill
-    3. Build agent executor with Groq LLM
+    3. Build agent executor with Claude native tool_use
     4. Run with user input
     5. Store AgentRun record
     """
@@ -194,7 +194,7 @@ async def run_agent_endpoint(
                     os.environ[env_key] = str(field_value)
                     injected_env_keys.append(env_key)
 
-    # Build LangChain executor
+    # Build Claude executor
     executor = build_agent_executor(
         agent_name=agent.name,
         system_prompt=agent.system_prompt,
