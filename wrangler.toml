@@ -1,0 +1,6 @@
+name = "ai-studio"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "frontend/out"
+
+[build]
+command = "cd frontend && npm install && npm run build"
