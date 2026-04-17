@@ -20,9 +20,21 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     CLAUDE_MODEL: str = "claude-sonnet-4-6"
 
-    # Legacy Groq (fallback)
+    # OpenAI
+    OPENAI_API_KEY: str = ""
+
+    # Google Gemini
+    GOOGLE_API_KEY: str = ""
+
+    # Groq (fast open-source inference)
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
+
+    # Ollama (local models)
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+
+    # Default provider
+    DEFAULT_PROVIDER: str = "anthropic"
 
     # ChromaDB
     CHROMA_HOST: str = "localhost"

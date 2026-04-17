@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Bot, Star, Key, Activity,
   Terminal, GitBranch, FileText, LogOut, Zap, Menu, X,
-  Wand2, Users, KeyRound, CreditCard, Shield
+  Wand2, Users, KeyRound, CreditCard, Shield, Rocket
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
@@ -24,6 +24,12 @@ const navSections = [
     items: [
       { href: '/skills', label: 'Skills Library', icon: Star },
       { href: '/credentials', label: 'Credentials', icon: Key },
+    ],
+  },
+  {
+    label: 'DEPLOY',
+    items: [
+      { href: '/deployments', label: 'Deployments', icon: Rocket, badge: 'NEW' },
     ],
   },
   {
@@ -69,14 +75,16 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
         </div>
         <div>
           <span className="text-[15px] font-bold text-white tracking-tight">AI Studio</span>
-          <span className="ml-1.5 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">v4</span>
+          <span className="ml-1.5 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">v5</span>
         </div>
       </div>
 
-      {/* Powered by badge */}
+      {/* Multi-model badge */}
       <div className="mx-5 mb-3 rounded-lg bg-white/5 px-3 py-1.5 flex items-center gap-1.5">
         <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-[10px] text-slate-400">Powered by <span className="text-white font-semibold">Claude</span></span>
+        <span className="text-[10px] text-slate-400">
+          Multi-Model <span className="text-white font-semibold">Claude + GPT + Gemini</span>
+        </span>
       </div>
 
       {/* Nav */}
@@ -103,7 +111,9 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
                   <item.icon size={16} className="shrink-0" />
                   <span className="flex-1">{item.label}</span>
                   {'badge' in item && item.badge && (
-                    <span className="rounded-full bg-violet-500/20 px-1.5 py-0.5 text-[9px] font-bold text-violet-400">
+                    <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                      item.badge === 'NEW' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-violet-500/20 text-violet-400'
+                    }`}>
                       {item.badge}
                     </span>
                   )}
@@ -154,9 +164,9 @@ export function Sidebar() {
             <Zap size={14} className="text-white" />
           </div>
           <span className="text-sm font-bold text-white tracking-tight">AI Studio</span>
-          <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">v4</span>
+          <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">v5</span>
         </div>
-        <div className="w-[34px]" /> {/* Spacer for centering */}
+        <div className="w-[34px]" />
       </div>
 
       {/* Mobile drawer overlay */}

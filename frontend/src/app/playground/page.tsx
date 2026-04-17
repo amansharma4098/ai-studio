@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { playgroundApi } from '@/lib/api'
 import { Send, Loader2 } from 'lucide-react'
+import { ModelSelector } from '@/components/ui/ModelSelector'
 
 const QUICK_TESTS = [
   { label: 'Entra: List Groups', prompt: 'List all security groups starting with "sg-" in the Entra ID tenant' },
@@ -15,7 +16,7 @@ const QUICK_TESTS = [
 export default function PlaygroundPage() {
   const [prompt, setPrompt] = useState('List all security groups in Entra ID starting with "sg-" and show member counts.')
   const [systemPrompt, setSystemPrompt] = useState('You are a helpful Microsoft 365 and Azure administrator assistant.')
-  const [model, setModel] = useState('claude-sonnet')
+  const [model, setModel] = useState('anthropic/claude-sonnet')
   const [temperature, setTemperature] = useState(0.7)
   const [maxTokens, setMaxTokens] = useState(4096)
   const [response, setResponse] = useState('')
@@ -30,11 +31,13 @@ export default function PlaygroundPage() {
     onSuccess: (r) => setResponse(r.data.response),
   })
 
+  const providerName = model.split('/')[0] || 'anthropic'
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Playground</h1>
-        <p className="mt-1 text-sm text-slate-500">Test prompts directly against Claude — no agent overhead</p>
+        <p className="mt-1 text-sm text-slate-500">Test prompts against any model — Claude, GPT, Gemini, Llama, and more</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5" style={{ minHeight: '580px' }}>
@@ -43,12 +46,7 @@ export default function PlaygroundPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Model</label>
-              <select className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none"
-                value={model} onChange={e => setModel(e.target.value)}>
-                <option value="claude-opus">Claude Opus (Most Capable)</option>
-                <option value="claude-sonnet">Claude Sonnet (Balanced)</option>
-                <option value="claude-haiku">Claude Haiku (Fast)</option>
-              </select>
+              <ModelSelector value={model} onChange={setModel} />
             </div>
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Temperature ({temperature})</label>
@@ -100,14 +98,14 @@ export default function PlaygroundPage() {
           <div className="flex-1 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap text-slate-700"
             style={{ minHeight: '300px' }}>
             {runMut.isPending
-              ? <span className="text-slate-400">Querying Claude ({model})...</span>
-              : response || <span className="text-slate-400">Response will appear here. Click "Run Prompt" to execute.</span>}
+              ? <span className="text-slate-400">Querying {providerName} ({model.split('/')[1] || model})...</span>
+              : response || <span className="text-slate-400">Response will appear here. Click &quot;Run Prompt&quot; to execute.</span>}
           </div>
           <div>
             <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Execution Log</p>
             <div className="space-y-1.5">
               {[
-                { label: 'Claude API', value: `POST https://api.anthropic.com/v1/messages`, status: 'ok' },
+                { label: 'Provider', value: providerName, status: 'ok' },
                 { label: 'Model', value: model, status: 'ok' },
                 { label: 'Temperature', value: String(temperature), status: 'ok' },
               ].map(l => (

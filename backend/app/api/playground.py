@@ -1,22 +1,12 @@
-"""Playground API - test prompts directly against Claude."""
-import os
+"""Playground API — test prompts directly against any supported model."""
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict
-from app.agents.claude_agent import run_chat, stream_chat, _resolve_model
+from app.agents.claude_agent import run_chat, stream_chat
+from app.providers.factory import list_available_models
 from app.api.deps import get_current_user
 
 router = APIRouter()
-
-MODEL_MAP = {
-    "claude-opus": "claude-opus-4-6",
-    "claude-sonnet": "claude-sonnet-4-6",
-    "claude-haiku": "claude-haiku-4-5-20251001",
-    # Legacy mappings
-    "llama3": "claude-sonnet-4-6",
-    "mistral": "claude-sonnet-4-6",
-    "gemma": "claude-haiku-4-5-20251001",
-}
 
 
 class PlaygroundRequest(BaseModel):
@@ -24,17 +14,21 @@ class PlaygroundRequest(BaseModel):
 
     prompt: str
     system_prompt: str = ""
-    model_name: str = "claude-sonnet"
+    model_name: str = "anthropic/claude-sonnet"
     temperature: float = 0.7
     max_tokens: int = 4096
     stream: bool = False
 
 
+@router.get("/models")
+async def get_available_models(current_user=Depends(get_current_user)):
+    """Return all available models grouped by provider."""
+    return {"providers": list_available_models()}
+
+
 @router.post("/run")
 async def playground_run(payload: PlaygroundRequest, current_user=Depends(get_current_user)):
-    """Run a prompt directly against Claude — no agent overhead."""
-    model_id = _resolve_model(payload.model_name)
-
+    """Run a prompt directly against any model — no agent overhead."""
     if payload.stream:
         def event_stream():
             for chunk in stream_chat(
@@ -59,4 +53,4 @@ async def playground_run(payload: PlaygroundRequest, current_user=Depends(get_cu
         input_text=payload.prompt,
     )
 
-    return {"response": response, "model": model_id}
+    return {"response": response, "model": payload.model_name}

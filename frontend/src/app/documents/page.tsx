@@ -8,7 +8,7 @@ export default function DocumentsPage() {
   const qc = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const [question, setQuestion] = useState('')
-  const [model, setModel] = useState('claude-sonnet')
+  const [model, setModel] = useState('anthropic/claude-sonnet')
   const [selectedDocs, setSelectedDocs] = useState<string[]>([])
   const [answer, setAnswer] = useState<{ answer: string; sources: any[] } | null>(null)
   const [uploading, setUploading] = useState(false)

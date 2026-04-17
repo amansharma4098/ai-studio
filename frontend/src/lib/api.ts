@@ -10,7 +10,6 @@ export const api = axios.create({
 // Attach JWT token to every request
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // Check simple token key first, then Zustand persist store
     let token = localStorage.getItem('token')
     if (!token) {
       const stored = localStorage.getItem('ai-studio-auth')
@@ -40,6 +39,12 @@ api.interceptors.response.use(
     return Promise.reject(err)
   }
 )
+
+// Public API client (no auth)
+export const publicApi = axios.create({
+  baseURL: `${API_URL}/api`,
+  headers: { 'Content-Type': 'application/json' },
+})
 
 // ── Auth ──────────────────────────────────────────────────────────
 export const authApi = {
@@ -122,6 +127,7 @@ export const playgroundApi = {
     max_tokens?: number
     stream?: boolean
   }) => api.post('/playground/run', data),
+  models: () => api.get('/playground/models'),
 }
 
 // ── Workflows ─────────────────────────────────────────────────────
@@ -138,7 +144,7 @@ export const monitoringApi = {
   runs: (limit?: number) => api.get(`/monitoring/runs?limit=${limit || 100}`),
 }
 
-// ── Agent Builder (NEW) ───────────────────────────────────────────
+// ── Agent Builder ─────────────────────────────────────────────────
 export const agentBuilderApi = {
   generate: (description: string) =>
     api.post('/agent-builder/generate', { description }),
@@ -149,7 +155,7 @@ export const agentBuilderApi = {
     api.post('/agent-builder/from-template', null, { params: { template_id: templateId } }),
 }
 
-// ── Teams (NEW) ───────────────────────────────────────────────────
+// ── Teams ─────────────────────────────────────────────────────────
 export const teamsApi = {
   list: () => api.get('/teams/'),
   get: (id: string) => api.get(`/teams/${id}`),
@@ -162,7 +168,7 @@ export const teamsApi = {
     api.delete(`/teams/${teamId}/members/${userId}`),
 }
 
-// ── API Keys (NEW) ────────────────────────────────────────────────
+// ── API Keys ──────────────────────────────────────────────────────
 export const apiKeysApi = {
   list: () => api.get('/api-keys/'),
   create: (data: { name: string; scopes: string[]; expires_days?: number | null }) =>
@@ -171,7 +177,7 @@ export const apiKeysApi = {
   revoke: (id: string) => api.delete(`/api-keys/${id}`),
 }
 
-// ── Billing (NEW) ─────────────────────────────────────────────────
+// ── Billing ───────────────────────────────────────────────────────
 export const billingApi = {
   plans: () => api.get('/billing/plans'),
   myPlan: () => api.get('/billing/my-plan'),
@@ -180,9 +186,37 @@ export const billingApi = {
     api.post('/billing/upgrade', { plan_id: planId, billing_cycle: billingCycle || 'monthly' }),
 }
 
-// ── Audit (NEW) ───────────────────────────────────────────────────
+// ── Audit ─────────────────────────────────────────────────────────
 export const auditApi = {
   list: (params?: { action?: string; resource_type?: string; limit?: number }) =>
     api.get('/audit/', { params }),
   stats: () => api.get('/audit/stats'),
+}
+
+// ── Deployments ───────────────────────────────────────────────────
+export const deploymentsApi = {
+  deploy: (agentId: string, data?: any) =>
+    api.post(`/agents/${agentId}/deploy`, data || {}),
+  list: (agentId: string) =>
+    api.get(`/agents/${agentId}/deployments`),
+  get: (deploymentId: string) =>
+    api.get(`/deployments/${deploymentId}`),
+  update: (deploymentId: string, data: any) =>
+    api.put(`/deployments/${deploymentId}`, data),
+  delete: (deploymentId: string) =>
+    api.delete(`/deployments/${deploymentId}`),
+  regenerateToken: (deploymentId: string) =>
+    api.post(`/deployments/${deploymentId}/regenerate-token`),
+  analytics: (deploymentId: string) =>
+    api.get(`/deployments/${deploymentId}/analytics`),
+}
+
+// ── Public Agent (no auth) ────────────────────────────────────────
+export const publicAgentApi = {
+  getInfo: (slug: string) =>
+    publicApi.get(`/public/${slug}/info`),
+  chat: (slug: string, message: string, sessionId?: string) =>
+    publicApi.post(`/public/${slug}/chat`, { message, session_id: sessionId }),
+  history: (slug: string, sessionId: string) =>
+    publicApi.get(`/public/${slug}/history/${sessionId}`),
 }

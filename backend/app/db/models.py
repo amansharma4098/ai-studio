@@ -41,6 +41,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     agents = relationship("Agent", back_populates="owner", cascade="all, delete-orphan")
+    deployments = relationship("AgentDeployment", back_populates="owner", cascade="all, delete-orphan")
     credentials = relationship("Credential", back_populates="owner", cascade="all, delete-orphan")
     documents = relationship("Document", back_populates="owner", cascade="all, delete-orphan")
     workflows = relationship("Workflow", back_populates="owner", cascade="all, delete-orphan")
@@ -67,6 +68,7 @@ class Agent(Base):
     owner = relationship("User", back_populates="agents")
     skill_bindings = relationship("AgentSkillBinding", back_populates="agent", cascade="all, delete-orphan")
     runs = relationship("AgentRun", back_populates="agent", cascade="all, delete-orphan")
+    deployments = relationship("AgentDeployment", back_populates="agent", cascade="all, delete-orphan")
 
 
 # ── Skill Bindings (Agent ↔ Skill ↔ Credential) ───────────────────
@@ -349,3 +351,77 @@ class UsageRecord(Base):
     output_tokens = Column(BigInteger, default=0)
     cost_usd = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+# ── Agent Deployments ──────────────────────────────────────
+def gen_deploy_token():
+    return f"deploy-{secrets.token_urlsafe(32)}"
+
+
+def gen_slug():
+    import random
+    adjectives = ["smart", "quick", "bright", "calm", "bold", "keen", "swift", "wise", "cool", "neat"]
+    nouns = ["bot", "agent", "helper", "mind", "spark", "pilot", "guide", "ally", "scout", "sage"]
+    suffix = secrets.token_hex(3)
+    return f"{random.choice(adjectives)}-{random.choice(nouns)}-{suffix}"
+
+
+class AgentDeployment(Base):
+    """Deployment configuration for making an agent publicly accessible."""
+    __tablename__ = "agent_deployments"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    agent_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_agents.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("aistudio_users.id", ondelete="CASCADE"), nullable=False, index=True)
+    slug = Column(String(100), unique=True, nullable=False, index=True, default=gen_slug)
+    deploy_token = Column(String(255), unique=True, nullable=False, index=True, default=gen_deploy_token)
+    deploy_type = Column(String(50), default="all")  # link | widget | api | all
+    is_active = Column(Boolean, default=True)
+    # Customization & settings
+    settings = Column(JSON, default=lambda: {
+        "welcome_message": "Hi! How can I help you today?",
+        "theme_color": "#10b981",
+        "bot_name": "",
+        "bot_avatar": "",
+        "placeholder_text": "Type your message...",
+        "show_branding": True,
+    })
+    allowed_domains = Column(JSON, default=list)  # For widget embedding
+    rate_limit_rpm = Column(Integer, default=30)   # Requests per minute
+    # Stats
+    total_conversations = Column(Integer, default=0)
+    total_messages = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    agent = relationship("Agent", back_populates="deployments")
+    owner = relationship("User", back_populates="deployments")
+    conversations = relationship("DeploymentConversation", back_populates="deployment", cascade="all, delete-orphan")
+
+
+class DeploymentConversation(Base):
+    """Anonymous conversations via deployed agents."""
+    __tablename__ = "deployment_conversations"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    deployment_id = Column(UUID(as_uuid=False), ForeignKey("agent_deployments.id", ondelete="CASCADE"), nullable=False, index=True)
+    session_id = Column(String(255), nullable=False, index=True)
+    visitor_info = Column(JSON, default=dict)  # IP, user-agent, referrer
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    deployment = relationship("AgentDeployment", back_populates="conversations")
+    messages = relationship("DeploymentMessage", back_populates="conversation", cascade="all, delete-orphan", order_by="DeploymentMessage.created_at")
+
+
+class DeploymentMessage(Base):
+    """Messages in deployment conversations."""
+    __tablename__ = "deployment_messages"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    conversation_id = Column(UUID(as_uuid=False), ForeignKey("deployment_conversations.id", ondelete="CASCADE"), nullable=False, index=True)
+    role = Column(String(20), nullable=False)  # user | assistant
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    conversation = relationship("DeploymentConversation", back_populates="messages")

@@ -1,9 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Bot, Send, Trash2, Loader2, CheckCircle, Sparkles, Zap, AlertTriangle, Check, MessageSquare, X, Pencil } from 'lucide-react'
+import { Plus, Bot, Send, Trash2, Loader2, CheckCircle, Sparkles, Zap, AlertTriangle, Check, MessageSquare, X, Pencil, Rocket } from 'lucide-react'
 import { agentsApi, skillsApi, credentialsApi, threadsApi } from '@/lib/api'
 import Link from 'next/link'
+import { ModelSelector } from '@/components/ui/ModelSelector'
 
 interface SkillBinding { skillId: string; skillName: string; credentialId: string | null }
 
@@ -43,7 +44,7 @@ const AGENT_TEMPLATES = [
     icon: '📊',
     description: 'Analyzes data and generates structured reports',
     system_prompt: 'You analyze data and generate structured reports with insights.',
-    model_name: 'claude-sonnet',
+    model_name: 'anthropic/claude-sonnet',
     temperature: 0.3,
     skillPatterns: ['sql_query', 'data_analysis'],
   },
@@ -52,7 +53,7 @@ const AGENT_TEMPLATES = [
     icon: '🔍',
     description: 'Researches topics online and summarizes findings',
     system_prompt: 'You research topics online and summarize findings clearly.',
-    model_name: 'mixtral',
+    model_name: 'anthropic/claude-sonnet',
     temperature: 0.5,
     skillPatterns: ['web_scraping', 'rest_api'],
   },
@@ -61,7 +62,7 @@ const AGENT_TEMPLATES = [
     icon: '✉️',
     description: 'Drafts professional emails and communications',
     system_prompt: 'You draft professional emails and communications.',
-    model_name: 'claude-sonnet',
+    model_name: 'anthropic/claude-sonnet',
     temperature: 0.7,
     skillPatterns: ['email'],
   },
@@ -70,7 +71,7 @@ const AGENT_TEMPLATES = [
     icon: '🤖',
     description: 'A helpful assistant for general questions',
     system_prompt: 'You are a helpful assistant that answers questions.',
-    model_name: 'claude-sonnet',
+    model_name: 'anthropic/claude-sonnet',
     temperature: 0.7,
     skillPatterns: [],
   },
@@ -95,7 +96,7 @@ export default function AgentsPage() {
   const qc = useQueryClient()
   const [modal, setModal] = useState<null | 'create' | { type: 'chat'; agentId: string }>(null)
   const [step, setStep] = useState(1)
-  const [form, setForm] = useState({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'claude-sonnet', temperature: 0.7, memory_enabled: true, skill_bindings: [] as SkillBinding[] })
+  const [form, setForm] = useState({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'anthropic/claude-sonnet', temperature: 0.7, memory_enabled: true, skill_bindings: [] as SkillBinding[] })
   const [chatInput, setChatInput] = useState('')
   const [chatMsgs, setChatMsgs] = useState<{ role: string; content: string }[]>([])
   const [running, setRunning] = useState(false)
@@ -141,7 +142,7 @@ export default function AgentsPage() {
 
   const createMut = useMutation({
     mutationFn: (data: any) => agentsApi.create(data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['agents'] }); setModal(null); setStep(1); setForm({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'claude-sonnet', temperature: 0.7, memory_enabled: true, skill_bindings: [] }) },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['agents'] }); setModal(null); setStep(1); setForm({ name: '', description: '', system_prompt: 'You are a helpful Microsoft 365 and Azure assistant.', model_name: 'anthropic/claude-sonnet', temperature: 0.7, memory_enabled: true, skill_bindings: [] }) },
   })
 
   const deleteMut = useMutation({
@@ -352,7 +353,7 @@ export default function AgentsPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Agents</h1>
-          <p className="mt-1 text-sm text-slate-500">LangChain ReAct agents with skill and credential bindings</p>
+          <p className="mt-1 text-sm text-slate-500">Multi-model AI agents with skill and credential bindings</p>
         </div>
         <button onClick={() => { setModal('create'); setStep(1) }} className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors">
           <Plus size={14} /> New Agent
@@ -381,7 +382,13 @@ export default function AgentsPage() {
               <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-600">temp {agent.temperature}</span>
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${agent.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>{agent.is_active ? 'active' : 'inactive'}</span>
             </div>
-            <p className="text-[11px] text-emerald-500 font-medium">Click to chat →</p>
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] text-emerald-500 font-medium">Click to chat →</p>
+              <Link href="/deployments" onClick={e => e.stopPropagation()}
+                className="flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+                <Rocket size={10} /> Deploy
+              </Link>
+            </div>
           </div>
         ))}
       </div>
@@ -454,12 +461,7 @@ export default function AgentsPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Model</label>
-                      <select className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none"
-                        value={form.model_name} onChange={e => setForm({ ...form, model_name: e.target.value })}>
-                        <option value="claude-opus">Claude Opus (Most Capable)</option>
-                        <option value="claude-sonnet">Claude Sonnet (Balanced)</option>
-                        <option value="claude-haiku">Claude Haiku (Fast)</option>
-                      </select>
+                      <ModelSelector value={form.model_name} onChange={(v) => setForm({ ...form, model_name: v })} />
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Temperature ({form.temperature})</label>

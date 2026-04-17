@@ -40,12 +40,12 @@ export default function DashboardPage() {
       <div className="mb-7 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-500">AI Studio v4 — Powered by Claude</p>
+          <p className="mt-1 text-sm text-slate-500">AI Studio v5 — Multi-Model (Claude, GPT, Gemini, Llama)</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5">
             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-medium text-emerald-700">Claude Online</span>
+            <span className="text-xs font-medium text-emerald-700">Multi-Model Active</span>
           </div>
         </div>
       </div>

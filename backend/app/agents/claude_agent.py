@@ -1,7 +1,7 @@
 """
-Claude Agent Engine — powered by Anthropic Claude API.
-Uses native tool_use for function calling (no ReAct prompt hacking).
-Supports streaming, extended thinking, and multi-agent orchestration.
+Agent Engine — Multi-model support via provider abstraction.
+Supports Anthropic Claude, OpenAI, Google Gemini, Groq, and Ollama.
+Uses native tool_use/function calling per provider.
 """
 import os
 import time
@@ -9,18 +9,16 @@ import json
 import structlog
 from typing import Any, Dict, List, Optional
 
-import anthropic
-
 from app.skills.registry import skill_registry
+from app.providers.factory import get_provider, parse_model_string
 
 logger = structlog.get_logger()
 
-# ── Model name mapping ───────────────────────────────────────────
+# Legacy model map kept for backward compatibility
 MODEL_MAP = {
     "claude-opus": "claude-opus-4-6",
     "claude-sonnet": "claude-sonnet-4-6",
     "claude-haiku": "claude-haiku-4-5-20251001",
-    # Keep legacy mappings for backward compat
     "llama3": "claude-sonnet-4-6",
     "mistral": "claude-sonnet-4-6",
     "gemma": "claude-haiku-4-5-20251001",
@@ -30,22 +28,14 @@ DEFAULT_MODEL = "claude-sonnet-4-6"
 
 
 def _resolve_model(model_name: str) -> str:
-    """Map friendly model names to Claude model IDs."""
+    """Map friendly model names to model IDs (legacy compatibility)."""
     return MODEL_MAP.get(model_name, model_name if "claude" in model_name else DEFAULT_MODEL)
 
 
-def _get_client() -> anthropic.Anthropic:
-    """Get Anthropic client. Falls back to Groq-style key check."""
-    api_key = os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
-    if not api_key:
-        raise ValueError("ANTHROPIC_API_KEY environment variable is required")
-    return anthropic.Anthropic(api_key=api_key)
-
-
-# ── Build Claude Tools from skill bindings ─────────────────────
-def _build_claude_tools(skill_bindings: List[Dict], credentials_map: Dict) -> tuple:
+# ── Build Tools from skill bindings ─────────────────────
+def _build_tools(skill_bindings: List[Dict], credentials_map: Dict) -> tuple:
     """
-    Convert skill bindings into Claude native tool definitions.
+    Convert skill bindings into tool definitions (Claude format — providers normalize as needed).
     Returns (tools_list, tool_map) where tool_map maps name -> {fn, credential}.
     """
     tools = []
@@ -63,7 +53,6 @@ def _build_claude_tools(skill_bindings: List[Dict], credentials_map: Dict) -> tu
 
         description = skill_registry.get_description(skill_name)
 
-        # Claude native tool definition
         tools.append({
             "name": skill_name,
             "description": description,
@@ -84,12 +73,12 @@ def _build_claude_tools(skill_bindings: List[Dict], credentials_map: Dict) -> tu
             "credential": credential_data,
         }
 
-        logger.info("Claude tool registered", skill=skill_name, has_credential=bool(credential_data))
+        logger.info("Tool registered", skill=skill_name, has_credential=bool(credential_data))
 
     return tools, tool_map
 
 
-# ── Simple Chat Completion ─────────────────────────────────────
+# ── Simple Chat Completion (multi-model) ─────────────────
 def run_chat(
     agent_name: str,
     system_prompt: str,
@@ -99,9 +88,8 @@ def run_chat(
     input_text: str,
     conversation_history: Optional[List[Dict[str, str]]] = None,
 ) -> str:
-    """Run a simple chat completion against Claude API."""
-    client = _get_client()
-    model_id = _resolve_model(model_name)
+    """Run a simple chat completion against any supported model."""
+    provider, model_id = get_provider(model_name)
 
     messages = []
     if conversation_history:
@@ -110,18 +98,16 @@ def run_chat(
 
     system = system_prompt or f"You are {agent_name}, a helpful AI assistant."
 
-    response = client.messages.create(
-        model=model_id,
-        max_tokens=max_tokens or 4096,
-        system=system,
+    return provider.chat_completion(
+        system_prompt=system,
         messages=messages,
+        model_name=model_id,
         temperature=temperature,
+        max_tokens=max_tokens or 4096,
     )
 
-    return response.content[0].text
 
-
-# ── Build Agent Executor ──────────────────────────────────────
+# ── Build Agent Executor ──────────────────────────────────
 def build_agent_executor(
     agent_name: str,
     system_prompt: str,
@@ -132,8 +118,8 @@ def build_agent_executor(
     credentials_map: Dict[str, Dict],
     memory_enabled: bool = True,
 ) -> Dict[str, Any]:
-    """Build an agent config dict for Claude execution."""
-    tools, tool_map = _build_claude_tools(skill_bindings, credentials_map)
+    """Build an agent config dict for execution."""
+    tools, tool_map = _build_tools(skill_bindings, credentials_map)
 
     return {
         "agent_name": agent_name,
@@ -146,15 +132,12 @@ def build_agent_executor(
     }
 
 
-# ── Execute Agent ────────────────────────────────────────────
+# ── Execute Agent (multi-model) ────────────────────────────
 def run_agent(
     executor_config: Dict[str, Any],
     user_input: str,
 ) -> Dict[str, Any]:
-    """
-    Execute an agent with Claude's native tool_use.
-    No ReAct prompting needed — Claude handles tool calls natively.
-    """
+    """Execute an agent with native tool calling via any provider."""
     start = time.time()
     trace = []
     skills_called = []
@@ -180,7 +163,7 @@ def run_agent(
                 input_text=user_input,
             )
         else:
-            output = _run_tool_loop(
+            output, tokens = _run_tool_loop(
                 agent_name=agent_name,
                 system_prompt=system_prompt,
                 model_name=model_name,
@@ -191,8 +174,9 @@ def run_agent(
                 tool_map=tool_map,
                 trace=trace,
                 skills_called=skills_called,
-                token_counter={"input": 0, "output": 0},
             )
+            total_input_tokens = tokens.get("input", 0)
+            total_output_tokens = tokens.get("output", 0)
 
         elapsed_ms = int((time.time() - start) * 1000)
         return {
@@ -229,15 +213,14 @@ def _run_tool_loop(
     tool_map: Dict[str, Dict],
     trace: List[Dict],
     skills_called: List[str],
-    token_counter: Dict[str, int],
     max_iterations: int = 15,
-) -> str:
+) -> tuple[str, Dict[str, int]]:
     """
-    Claude native tool_use loop.
-    Claude decides when to call tools and when to give a final answer.
+    Universal tool loop — works with any provider via the abstraction layer.
     """
-    client = _get_client()
-    model_id = _resolve_model(model_name)
+    provider, model_id = get_provider(model_name)
+    provider_name = provider.provider_name
+    token_counter = {"input": 0, "output": 0}
 
     system = f"""You are {agent_name}, a powerful AI agent with access to specialized tools.
 
@@ -249,74 +232,117 @@ Important:
 - Be thorough but concise in your final response
 - If a tool fails, explain what happened and try an alternative approach"""
 
+    # For Anthropic, messages are structured differently than OpenAI-style
+    if provider_name == "anthropic":
+        return _run_anthropic_tool_loop(
+            provider, model_id, system, user_input, tools, tool_map,
+            trace, skills_called, token_counter, temperature, max_tokens, max_iterations,
+        )
+    else:
+        return _run_openai_style_tool_loop(
+            provider, model_id, system, user_input, tools, tool_map,
+            trace, skills_called, token_counter, temperature, max_tokens, max_iterations,
+        )
+
+
+def _run_anthropic_tool_loop(provider, model_id, system, user_input, tools, tool_map,
+                              trace, skills_called, token_counter, temperature, max_tokens, max_iterations):
+    """Tool loop for Anthropic Claude (uses content blocks)."""
     messages = [{"role": "user", "content": user_input}]
 
     for iteration in range(max_iterations):
-        response = client.messages.create(
-            model=model_id,
-            max_tokens=max_tokens or 4096,
-            system=system,
+        response = provider.chat_with_tools(
+            system_prompt=system,
             messages=messages,
             tools=tools,
             temperature=temperature,
+            max_tokens=max_tokens or 4096,
+            model_name=model_id,
         )
 
-        # Track tokens
-        token_counter["input"] += response.usage.input_tokens
-        token_counter["output"] += response.usage.output_tokens
+        token_counter["input"] += response.input_tokens
+        token_counter["output"] += response.output_tokens
 
-        # Check if Claude wants to use tools
-        if response.stop_reason == "tool_use":
-            # Process all tool calls in this response
+        if response.stop_reason == "tool_use" and response.tool_calls:
             tool_results = []
-            assistant_content = response.content
+            for tc in response.tool_calls:
+                result_text = _execute_tool(tool_map.get(tc.name), tc.arguments)
+                skills_called.append(tc.name)
+                trace.append({
+                    "step": tc.name,
+                    "input": tc.arguments,
+                    "output": str(result_text)[:500],
+                    "status": "ok" if not str(result_text).startswith("Error") else "error",
+                    "iteration": iteration,
+                })
+                tool_results.append({"id": tc.id, "result": result_text})
 
-            for block in response.content:
-                if block.type == "tool_use":
-                    tool_name = block.name
-                    tool_input = block.input
-                    tool_use_id = block.id
-
-                    # Execute the tool
-                    tool_info = tool_map.get(tool_name)
-                    if not tool_info:
-                        result_text = f"Error: Unknown tool '{tool_name}'"
-                        status = "error"
-                    else:
-                        result_text = _execute_tool(tool_info, tool_input)
-                        skills_called.append(tool_name)
-                        status = "ok"
-
-                    trace.append({
-                        "step": tool_name,
-                        "input": tool_input,
-                        "output": str(result_text)[:500],
-                        "status": status,
-                        "iteration": iteration,
-                    })
-
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": tool_use_id,
-                        "content": str(result_text),
-                    })
-
-            # Add assistant message and tool results to conversation
-            messages.append({"role": "assistant", "content": assistant_content})
-            messages.append({"role": "user", "content": tool_results})
+            # Continue conversation with tool results
+            raw_content = provider.get_raw_assistant_content(response)
+            messages.append({"role": "assistant", "content": raw_content})
+            messages.append({"role": "user", "content": provider.format_tool_results(tool_results)})
 
         elif response.stop_reason == "end_turn":
-            # Claude is done — extract text response
-            text_parts = [b.text for b in response.content if hasattr(b, "text")]
-            return "\n".join(text_parts) if text_parts else "Task completed."
-
+            return response.content or "Task completed.", token_counter
         else:
-            # Max tokens or other stop reason
-            text_parts = [b.text for b in response.content if hasattr(b, "text")]
-            return "\n".join(text_parts) if text_parts else "Response truncated."
+            return response.content or "Response truncated.", token_counter
 
-    # Max iterations reached
-    return "Maximum tool iterations reached. Please try a more specific request."
+    return "Maximum tool iterations reached. Please try a more specific request.", token_counter
+
+
+def _run_openai_style_tool_loop(provider, model_id, system, user_input, tools, tool_map,
+                                 trace, skills_called, token_counter, temperature, max_tokens, max_iterations):
+    """Tool loop for OpenAI-style APIs (OpenAI, Groq, Ollama)."""
+    messages = [{"role": "user", "content": user_input}]
+
+    for iteration in range(max_iterations):
+        response = provider.chat_with_tools(
+            system_prompt=system,
+            messages=messages,
+            tools=tools,
+            temperature=temperature,
+            max_tokens=max_tokens or 4096,
+            model_name=model_id,
+        )
+
+        token_counter["input"] += response.input_tokens
+        token_counter["output"] += response.output_tokens
+
+        if response.stop_reason == "tool_use" and response.tool_calls:
+            # Add assistant message with tool calls
+            raw_content = provider.get_raw_assistant_content(response)
+            if hasattr(raw_content, "model_dump"):
+                messages.append(raw_content.model_dump())
+            elif isinstance(raw_content, dict):
+                messages.append({"role": "assistant", **raw_content})
+            else:
+                messages.append({"role": "assistant", "content": response.content or "", "tool_calls": [
+                    {"id": tc.id, "type": "function", "function": {"name": tc.name, "arguments": json.dumps(tc.arguments)}}
+                    for tc in response.tool_calls
+                ]})
+
+            # Execute tools and add results
+            for tc in response.tool_calls:
+                result_text = _execute_tool(tool_map.get(tc.name), tc.arguments)
+                skills_called.append(tc.name)
+                trace.append({
+                    "step": tc.name,
+                    "input": tc.arguments,
+                    "output": str(result_text)[:500],
+                    "status": "ok" if not str(result_text).startswith("Error") else "error",
+                    "iteration": iteration,
+                })
+                tool_result_msgs = provider.format_tool_results([{
+                    "id": tc.id, "name": tc.name, "result": result_text,
+                }])
+                messages.extend(tool_result_msgs)
+
+        elif response.stop_reason == "end_turn":
+            return response.content or "Task completed.", token_counter
+        else:
+            return response.content or "Response truncated.", token_counter
+
+    return "Maximum tool iterations reached. Please try a more specific request.", token_counter
 
 
 def _execute_tool(tool_info: Dict, tool_input: Any) -> str:
@@ -324,10 +350,12 @@ def _execute_tool(tool_info: Dict, tool_input: Any) -> str:
     import asyncio
     import inspect
 
+    if not tool_info:
+        return "Error: Unknown tool"
+
     try:
         params = tool_input if isinstance(tool_input, dict) else {}
 
-        # Unwrap if params are nested under "params" key
         if "params" in params and isinstance(params["params"], dict):
             params = params["params"]
 
@@ -336,7 +364,6 @@ def _execute_tool(tool_info: Dict, tool_input: Any) -> str:
 
         result = tool_info["fn"](params)
 
-        # Handle async skill functions
         if inspect.isawaitable(result):
             try:
                 loop = asyncio.get_running_loop()
@@ -354,23 +381,18 @@ def _execute_tool(tool_info: Dict, tool_input: Any) -> str:
         return f"Error executing tool: {str(e)}"
 
 
-# ── Smart Agent Builder ───────────────────────────────────────
+# ── Smart Agent Builder ───────────────────────────────────
 def generate_agent_from_description(description: str, available_skills: List[Dict]) -> Dict[str, Any]:
-    """
-    Use Claude to generate a complete agent configuration from a natural language description.
-    This is the killer feature — describe what you want, get a production agent.
-    """
-    client = _get_client()
+    """Use Claude to generate a complete agent config from a natural language description."""
+    provider, model_id = get_provider("anthropic/claude-sonnet")
 
     skills_text = "\n".join(
         f"- {s['name']}: {s['description']} (category: {s.get('category', 'general')})"
         for s in available_skills
     )
 
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=4096,
-        system="""You are an AI agent architect. Given a user's description of what they want an agent to do,
+    response = provider.chat_completion(
+        system_prompt="""You are an AI agent architect. Given a user's description of what they want an agent to do,
 generate a complete agent configuration. You must return ONLY valid JSON with no markdown or extra text.
 
 Return this exact JSON structure:
@@ -378,7 +400,7 @@ Return this exact JSON structure:
     "name": "Short agent name",
     "description": "What this agent does",
     "system_prompt": "Detailed system prompt that makes the agent excellent at its job",
-    "model_name": "claude-sonnet",
+    "model_name": "anthropic/claude-sonnet",
     "temperature": 0.7,
     "max_tokens": 4096,
     "suggested_skills": ["skill_name_1", "skill_name_2"],
@@ -391,7 +413,14 @@ Guidelines for the system prompt:
 - Include instructions for tone, format, and approach
 - Reference the tools/skills the agent will have access to
 - Include error handling instructions
-- Make it production-quality""",
+- Make it production-quality
+
+For model_name, use the format "provider/model-id":
+- "anthropic/claude-sonnet" for balanced tasks
+- "anthropic/claude-opus" for complex reasoning
+- "openai/gpt-4o" for general tasks
+- "google/gemini-2.5-pro" for large context tasks
+- "groq/llama-3.3-70b" for fast open-source inference""",
         messages=[{
             "role": "user",
             "content": f"""Create an agent for this description: "{description}"
@@ -401,11 +430,11 @@ Available skills that can be attached:
 
 Choose the most relevant skills from the list above. Return ONLY the JSON configuration."""
         }],
+        model_name=model_id,
         temperature=0.3,
     )
 
-    text = response.content[0].text.strip()
-    # Clean up any markdown code blocks
+    text = response.strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1]
         if text.endswith("```"):
@@ -415,19 +444,15 @@ Choose the most relevant skills from the list above. Return ONLY the JSON config
     return json.loads(text)
 
 
-# ── Multi-Agent Orchestration ─────────────────────────────────
+# ── Multi-Agent Orchestration ─────────────────────────────
 def run_multi_agent(
     orchestrator_prompt: str,
     sub_agents: List[Dict[str, Any]],
     user_input: str,
-    model_name: str = "claude-sonnet",
+    model_name: str = "anthropic/claude-sonnet",
 ) -> Dict[str, Any]:
-    """
-    Run a multi-agent pipeline where an orchestrator delegates to sub-agents.
-    Each sub-agent is a full agent executor config.
-    """
-    client = _get_client()
-    model_id = _resolve_model(model_name)
+    """Run a multi-agent pipeline where an orchestrator delegates to sub-agents."""
+    provider, model_id = get_provider(model_name)
     start = time.time()
 
     agent_descriptions = "\n".join(
@@ -435,11 +460,8 @@ def run_multi_agent(
         for a in sub_agents
     )
 
-    # Step 1: Orchestrator decides the plan
-    plan_response = client.messages.create(
-        model=model_id,
-        max_tokens=2048,
-        system=f"""You are an AI orchestrator that coordinates multiple specialized agents.
+    plan_text = provider.chat_completion(
+        system_prompt=f"""You are an AI orchestrator that coordinates multiple specialized agents.
 
 {orchestrator_prompt}
 
@@ -456,17 +478,16 @@ Return ONLY valid JSON:
     "final_synthesis": "How to combine results"
 }}""",
         messages=[{"role": "user", "content": user_input}],
+        model_name=model_id,
         temperature=0.2,
     )
 
-    plan_text = plan_response.content[0].text.strip()
     if plan_text.startswith("```"):
         plan_text = plan_text.split("\n", 1)[1]
         if plan_text.endswith("```"):
             plan_text = plan_text[:-3]
     plan = json.loads(plan_text)
 
-    # Step 2: Execute each step
     results = []
     agent_map = {a["agent_name"]: a for a in sub_agents}
 
@@ -484,11 +505,8 @@ Return ONLY valid JSON:
             "status": step_result["status"],
         })
 
-    # Step 3: Synthesize results
-    synthesis_response = client.messages.create(
-        model=model_id,
-        max_tokens=4096,
-        system="Synthesize the results from multiple agents into a coherent, comprehensive response.",
+    synthesis = provider.chat_completion(
+        system_prompt="Synthesize the results from multiple agents into a coherent, comprehensive response.",
         messages=[{
             "role": "user",
             "content": f"""Original request: {user_input}
@@ -498,13 +516,14 @@ Agent results:
 
 Synthesis instruction: {plan.get('final_synthesis', 'Combine all results coherently.')}"""
         }],
+        model_name=model_id,
         temperature=0.3,
     )
 
     elapsed_ms = int((time.time() - start) * 1000)
 
     return {
-        "output": synthesis_response.content[0].text,
+        "output": synthesis,
         "plan": plan,
         "agent_results": results,
         "execution_time_ms": elapsed_ms,
@@ -512,7 +531,7 @@ Synthesis instruction: {plan.get('final_synthesis', 'Combine all results coheren
     }
 
 
-# ── Streaming Support ─────────────────────────────────────────
+# ── Streaming Support (multi-model) ─────────────────────
 def stream_chat(
     agent_name: str,
     system_prompt: str,
@@ -522,12 +541,8 @@ def stream_chat(
     input_text: str,
     conversation_history: Optional[List[Dict[str, str]]] = None,
 ):
-    """
-    Stream a chat response from Claude. Yields text chunks.
-    Use with FastAPI StreamingResponse for SSE.
-    """
-    client = _get_client()
-    model_id = _resolve_model(model_name)
+    """Stream a chat response from any provider. Yields text chunks."""
+    provider, model_id = get_provider(model_name)
 
     messages = []
     if conversation_history:
@@ -536,12 +551,10 @@ def stream_chat(
 
     system = system_prompt or f"You are {agent_name}, a helpful AI assistant."
 
-    with client.messages.stream(
-        model=model_id,
-        max_tokens=max_tokens or 4096,
-        system=system,
+    yield from provider.stream(
+        system_prompt=system,
         messages=messages,
         temperature=temperature,
-    ) as stream:
-        for text in stream.text_stream:
-            yield text
+        max_tokens=max_tokens or 4096,
+        model_name=model_id,
+    )

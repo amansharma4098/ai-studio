@@ -1,7 +1,7 @@
 """
-AI Studio v4.0 — Enterprise AI Agent Platform
-Powered by Claude (Anthropic) with native tool_use,
-smart agent builder, multi-agent orchestration, and enterprise features.
+AI Studio v5.0 — Enterprise AI Agent Platform
+Multi-model support (Claude, GPT, Gemini, Llama, Ollama) with native tool_use,
+smart agent builder, multi-agent orchestration, agent deployment, and enterprise features.
 """
 
 import logging
@@ -21,6 +21,7 @@ from app.api import (
     auth, agents, chat, skills, credentials, documents,
     playground, workflows, monitoring,
     agent_builder, teams, api_keys, billing, audit,
+    deployments, public_agent,
 )
 
 # ── Structured Logging ────────────────────────────────────────────
@@ -61,7 +62,7 @@ async def run_migrations(engine):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
-    logger.info("Starting AI Studio API", version="4.0.0", env=settings.ENVIRONMENT)
+    logger.info("Starting AI Studio API", version="5.0.0", env=settings.ENVIRONMENT)
 
     # Create all database tables (checkfirst=True by default, only creates if not exists)
     async with engine.begin() as conn:
@@ -86,8 +87,8 @@ async def lifespan(app: FastAPI):
 # ── FastAPI App ───────────────────────────────────────────────────
 app = FastAPI(
     title="AI Studio API",
-    description="Enterprise AI Agent Platform — powered by Claude. Build, deploy, and manage AI agents with native tool-calling, smart agent builder, and multi-agent orchestration.",
-    version="4.0.0",
+    description="Enterprise AI Agent Platform — multi-model support (Claude, GPT, Gemini, Llama). Build, deploy, and manage AI agents with native tool-calling, smart agent builder, and multi-agent orchestration.",
+    version="5.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
@@ -133,19 +134,28 @@ app.include_router(api_keys.router,      prefix="/api/api-keys",       tags=["AP
 app.include_router(billing.router,       prefix="/api/billing",        tags=["Billing"])
 app.include_router(audit.router,         prefix="/api/audit",          tags=["Audit"])
 
+# Agent Deployment & Public Access
+app.include_router(deployments.router,   prefix="/api",                tags=["Deployments"])
+app.include_router(public_agent.router,  prefix="/api",                tags=["Public Agent"])
+
 
 # ── Health Check ──────────────────────────────────────────────────
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {
         "status": "healthy",
-        "version": "4.0.0",
+        "version": "5.0.0",
         "service": "AI Studio API",
-        "engine": "Claude (Anthropic)",
+        "engine": "Multi-Model (Claude, GPT, Gemini, Llama, Ollama)",
         "features": [
+            "multi-model-support",
             "native-tool-use",
             "smart-agent-builder",
             "multi-agent-orchestration",
+            "agent-deployment",
+            "embed-widget",
+            "share-links",
+            "api-endpoints",
             "streaming",
             "enterprise-rbac",
             "api-keys",
