@@ -27,7 +27,7 @@ interface CustomSkill {
 // ── Skill Catalog Definitions ────────────────────────────────────
 const SKILL_CATEGORIES = [
   {
-    name: 'AI & Language', icon: '🧠', color: 'violet',
+    name: 'AI & Language', icon: '\u{1F9E0}', color: 'violet',
     skills: [
       { id: 'groq_chat', name: 'Groq Chat', description: 'Fast inference with Groq-hosted LLMs', requiredCredentials: ['groq'], install_count: 234 },
       { id: 'openai_chat', name: 'OpenAI Chat', description: 'Chat completions with GPT models', requiredCredentials: ['openai'], install_count: 512 },
@@ -35,7 +35,7 @@ const SKILL_CATEGORIES = [
     ],
   },
   {
-    name: 'Data & Analytics', icon: '📊', color: 'blue',
+    name: 'Data & Analytics', icon: '\u{1F4CA}', color: 'blue',
     skills: [
       { id: 'sql_query', name: 'SQL Query', description: 'Query databases and analyze structured data', requiredCredentials: [], install_count: 178 },
       { id: 'data_analysis', name: 'Data Analysis', description: 'Analyze datasets and generate insights', requiredCredentials: [], install_count: 145 },
@@ -43,21 +43,21 @@ const SKILL_CATEGORIES = [
     ],
   },
   {
-    name: 'Web & APIs', icon: '🌐', color: 'sky',
+    name: 'Web & APIs', icon: '\u{1F310}', color: 'sky',
     skills: [
       { id: 'web_scraping', name: 'Web Scraper', description: 'Scrape and extract data from websites', requiredCredentials: [], install_count: 267 },
       { id: 'rest_api', name: 'REST API', description: 'Call external REST APIs to fetch or send data', requiredCredentials: [], install_count: 321 },
     ],
   },
   {
-    name: 'Communication', icon: '💬', color: 'emerald',
+    name: 'Communication', icon: '\u{1F4AC}', color: 'emerald',
     skills: [
       { id: 'sendgrid_email', name: 'SendGrid Email', description: 'Send transactional emails via SendGrid', requiredCredentials: ['sendgrid'], install_count: 156 },
       { id: 'smtp_email', name: 'SMTP Email', description: 'Send emails via custom SMTP server', requiredCredentials: ['smtp'], install_count: 88 },
     ],
   },
   {
-    name: 'Sales & CRM', icon: '💼', color: 'orange',
+    name: 'Sales & CRM', icon: '\u{1F4BC}', color: 'orange',
     skills: [
       { id: 'hubspot_crm', name: 'HubSpot CRM', description: 'Manage contacts and deals in HubSpot', requiredCredentials: ['hubspot'], install_count: 201 },
       { id: 'salesforce_query', name: 'Salesforce Query', description: 'Query and manage Salesforce records', requiredCredentials: ['salesforce'], install_count: 175 },
@@ -65,7 +65,7 @@ const SKILL_CATEGORIES = [
     ],
   },
   {
-    name: 'Dev & IT', icon: '⚙️', color: 'slate',
+    name: 'Dev & IT', icon: '\u{2699}\u{FE0F}', color: 'slate',
     skills: [
       { id: 'github_issues', name: 'GitHub Issues', description: 'Create and manage GitHub issues and PRs', requiredCredentials: ['github'], install_count: 445 },
       { id: 'jira_tickets', name: 'Jira Tickets', description: 'Create and track Jira issues', requiredCredentials: ['jira'], install_count: 287 },
@@ -73,13 +73,13 @@ const SKILL_CATEGORIES = [
     ],
   },
   {
-    name: 'Support', icon: '🎧', color: 'teal',
+    name: 'Support', icon: '\u{1F3A7}', color: 'teal',
     skills: [
       { id: 'zendesk_tickets', name: 'Zendesk Tickets', description: 'Manage support tickets and customer queries', requiredCredentials: ['zendesk'], install_count: 134 },
     ],
   },
   {
-    name: 'Marketing', icon: '📣', color: 'amber',
+    name: 'Marketing', icon: '\u{1F4E3}', color: 'amber',
     skills: [
       { id: 'google_analytics', name: 'Google Analytics', description: 'Fetch website analytics and traffic reports', requiredCredentials: ['google_analytics'], install_count: 256 },
       { id: 'twitter_posts', name: 'Twitter / X', description: 'Post tweets and monitor social mentions', requiredCredentials: ['twitter'], install_count: 189 },
@@ -109,14 +109,14 @@ const CRED_LABELS: Record<string, string> = {
 
 // ── Skill Type Definitions ───────────────────────────────────────
 const SKILL_TYPES = [
-  { id: 'REST API', icon: '🌐', label: 'REST API' },
-  { id: 'SQL', icon: '🗄️', label: 'SQL' },
-  { id: 'Python', icon: '🐍', label: 'Python' },
-  { id: 'Scraper', icon: '🔍', label: 'Scraper' },
-  { id: 'Custom', icon: '⚡', label: 'Custom' },
+  { id: 'REST API', icon: '\u{1F310}', label: 'REST API' },
+  { id: 'SQL', icon: '\u{1F5C4}\u{FE0F}', label: 'SQL' },
+  { id: 'Python', icon: '\u{1F40D}', label: 'Python' },
+  { id: 'Scraper', icon: '\u{1F50D}', label: 'Scraper' },
+  { id: 'Custom', icon: '\u{26A1}', label: 'Custom' },
 ]
 
-const QUICK_EMOJIS = ['🔧', '⚡', '🌐', '📊', '🔍', '💬', '🗄️', '🤖']
+const QUICK_EMOJIS = ['\u{1F527}', '\u{26A1}', '\u{1F310}', '\u{1F4CA}', '\u{1F50D}', '\u{1F4AC}', '\u{1F5C4}\u{FE0F}', '\u{1F916}']
 
 const TYPE_BADGE_COLORS: Record<string, string> = {
   'REST API': 'bg-sky-100 text-sky-700',
@@ -240,6 +240,18 @@ function schemaToExample(schema: any): any {
   return {}
 }
 
+// ── Neon color map for categories ────────────────────────────────
+const NEON_CAT_COLORS: Record<string, { glow: string; text: string; border: string; bg: string }> = {
+  violet: { glow: '#8b5cf6', text: '#c4b5fd', border: 'rgba(139,92,246,0.4)', bg: 'rgba(139,92,246,0.08)' },
+  blue:   { glow: '#00f0ff', text: '#67e8f9', border: 'rgba(0,240,255,0.4)',   bg: 'rgba(0,240,255,0.08)' },
+  sky:    { glow: '#00f0ff', text: '#67e8f9', border: 'rgba(0,240,255,0.4)',   bg: 'rgba(0,240,255,0.08)' },
+  emerald:{ glow: '#00ff88', text: '#6ee7b7', border: 'rgba(0,255,136,0.4)',   bg: 'rgba(0,255,136,0.08)' },
+  orange: { glow: '#ff8800', text: '#fdba74', border: 'rgba(255,136,0,0.4)',   bg: 'rgba(255,136,0,0.08)' },
+  slate:  { glow: '#00f0ff', text: '#94a3b8', border: 'rgba(0,240,255,0.3)',   bg: 'rgba(0,240,255,0.05)' },
+  teal:   { glow: '#00ff88', text: '#5eead4', border: 'rgba(0,255,136,0.4)',   bg: 'rgba(0,255,136,0.08)' },
+  amber:  { glow: '#ff00aa', text: '#fbbf24', border: 'rgba(255,0,170,0.4)',   bg: 'rgba(255,0,170,0.08)' },
+}
+
 // ── Main Component ───────────────────────────────────────────────
 export default function SkillsPage() {
   const [mounted, setMounted] = useState(false)
@@ -248,9 +260,12 @@ export default function SkillsPage() {
   const { addToast: toast } = useToast()
   const queryClient = useQueryClient()
 
+  // Collapsible categories
+  const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set())
+
   // Create / Edit form state
   const [skillType, setSkillType] = useState('REST API')
-  const [icon, setIcon] = useState('🔧')
+  const [icon, setIcon] = useState('\u{1F527}')
   const [skillName, setSkillName] = useState('')
   const [description, setDescription] = useState('')
   const [configJson, setConfigJson] = useState(CONFIG_TEMPLATES['REST API'])
@@ -357,10 +372,19 @@ export default function SkillsPage() {
       })).filter(cat => cat.skills.length > 0)
     : SKILL_CATEGORIES
 
+  function toggleCategory(name: string) {
+    setCollapsedCats(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) next.delete(name)
+      else next.add(name)
+      return next
+    })
+  }
+
   function resetForm() {
     setSkillName('')
     setDescription('')
-    setIcon('🔧')
+    setIcon('\u{1F527}')
     setSkillType('REST API')
     setConfigJson(CONFIG_TEMPLATES['REST API'])
     setIsPublic(false)
@@ -432,7 +456,7 @@ export default function SkillsPage() {
 
     setAutoFilledFields(new Set(['url', 'method', 'headers', 'body']))
     setRestConfigMode('manual')
-    toast('Endpoint imported — review the fields below', 'success')
+    toast('Endpoint imported -- review the fields below', 'success')
   }
 
   function handleSpecFileDrop(e: React.DragEvent<HTMLTextAreaElement>) {
@@ -588,166 +612,540 @@ export default function SkillsPage() {
   ]
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="animate-fade-in min-h-screen p-4 sm:p-6 lg:p-8" style={{ background: '#12121a' }}>
+
+      {/* ── Inline Styles for Gaming Aesthetic ── */}
+      <style>{`
+        .game-card {
+          background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 12px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .game-card:hover {
+          border-color: rgba(0,240,255,0.3);
+          box-shadow: 0 0 20px rgba(0,240,255,0.08), inset 0 0 20px rgba(0,240,255,0.02);
+          transform: translateY(-2px);
+        }
+        .game-btn {
+          background: linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%);
+          color: #fff;
+          font-weight: 700;
+          border: none;
+          border-radius: 8px;
+          padding: 8px 18px;
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+          box-shadow: 0 0 15px rgba(0,240,255,0.2);
+        }
+        .game-btn:hover {
+          box-shadow: 0 0 25px rgba(0,240,255,0.4), 0 0 50px rgba(139,92,246,0.2);
+          transform: translateY(-1px);
+        }
+        .game-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+        .game-btn-secondary {
+          background: transparent;
+          color: #00f0ff;
+          font-weight: 600;
+          border: 1px solid rgba(0,240,255,0.3);
+          border-radius: 8px;
+          padding: 8px 18px;
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+        .game-btn-secondary:hover {
+          background: rgba(0,240,255,0.08);
+          border-color: rgba(0,240,255,0.6);
+          box-shadow: 0 0 15px rgba(0,240,255,0.15);
+        }
+        .game-btn-danger {
+          background: transparent;
+          color: #ff4466;
+          font-weight: 600;
+          border: 1px solid rgba(255,68,102,0.3);
+          border-radius: 8px;
+          padding: 8px 18px;
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+        .game-btn-danger:hover {
+          background: rgba(255,68,102,0.1);
+          border-color: rgba(255,68,102,0.6);
+          box-shadow: 0 0 15px rgba(255,68,102,0.2);
+        }
+        .game-input {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 8px;
+          color: #e2e8f0;
+          font-size: 13px;
+          padding: 10px 14px;
+          transition: all 0.25s ease;
+          width: 100%;
+        }
+        .game-input:focus {
+          outline: none;
+          border-color: rgba(0,240,255,0.5);
+          box-shadow: 0 0 12px rgba(0,240,255,0.15);
+          background: rgba(0,240,255,0.03);
+        }
+        .game-input::placeholder {
+          color: rgba(255,255,255,0.2);
+        }
+        .game-modal-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.7);
+          backdrop-filter: blur(8px);
+          padding: 20px;
+        }
+        .game-modal {
+          background: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
+          border: 1px solid rgba(139,92,246,0.3);
+          border-radius: 16px;
+          box-shadow: 0 0 40px rgba(139,92,246,0.15), 0 0 80px rgba(0,0,0,0.5);
+          max-height: 90vh;
+          width: 100%;
+          max-width: 680px;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .game-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        .game-table th {
+          text-align: left;
+          color: rgba(255,255,255,0.4);
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          padding: 8px 12px;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .game-table td {
+          padding: 10px 12px;
+          border-bottom: 1px solid rgba(255,255,255,0.03);
+          color: rgba(255,255,255,0.7);
+          font-size: 12px;
+        }
+        .badge-success {
+          background: rgba(0,255,136,0.12);
+          color: #00ff88;
+          border: 1px solid rgba(0,255,136,0.25);
+          border-radius: 9999px;
+          padding: 2px 10px;
+          font-size: 10px;
+          font-weight: 700;
+        }
+        .badge-info {
+          background: rgba(0,240,255,0.1);
+          color: #00f0ff;
+          border: 1px solid rgba(0,240,255,0.2);
+          border-radius: 9999px;
+          padding: 2px 10px;
+          font-size: 10px;
+          font-weight: 700;
+        }
+        .badge-purple {
+          background: rgba(139,92,246,0.12);
+          color: #a78bfa;
+          border: 1px solid rgba(139,92,246,0.25);
+          border-radius: 9999px;
+          padding: 2px 10px;
+          font-size: 10px;
+          font-weight: 700;
+        }
+        .neon-text {
+          background: linear-gradient(135deg, #00f0ff 0%, #8b5cf6 50%, #ff00aa 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes neonPulse {
+          0%, 100% { box-shadow: 0 0 5px rgba(0,240,255,0.3); }
+          50% { box-shadow: 0 0 20px rgba(0,240,255,0.5), 0 0 40px rgba(0,240,255,0.1); }
+        }
+        @keyframes glowRotate {
+          0% { filter: hue-rotate(0deg); }
+          100% { filter: hue-rotate(360deg); }
+        }
+        .skill-node {
+          position: relative;
+        }
+        .skill-node::before {
+          content: '';
+          position: absolute;
+          top: -1px;
+          left: 50%;
+          width: 2px;
+          height: 12px;
+          background: linear-gradient(to bottom, rgba(0,240,255,0.3), transparent);
+          transform: translateX(-50%) translateY(-12px);
+          pointer-events: none;
+        }
+        .xp-bar {
+          height: 3px;
+          background: rgba(255,255,255,0.06);
+          border-radius: 2px;
+          overflow: hidden;
+          margin-top: 6px;
+        }
+        .xp-bar-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #00f0ff, #8b5cf6);
+          border-radius: 2px;
+          transition: width 0.5s ease;
+        }
+        .cat-header-line {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+        }
+      `}</style>
+
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Skills Library</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Build, manage, and discover skills for your AI agents
-        </p>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: 'linear-gradient(135deg, rgba(0,240,255,0.15), rgba(139,92,246,0.15))',
+            border: '1px solid rgba(0,240,255,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 20,
+            boxShadow: '0 0 20px rgba(0,240,255,0.1)',
+          }}>
+            {'\u{1F3AE}'}
+          </div>
+          <div>
+            <h1 className="neon-text" style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' }}>
+              SKILL TREE
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 2 }}>
+              Unlock, craft, and master abilities for your AI agents
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+      <div className="mb-6 flex gap-1 p-1" style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 10,
+      }}>
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? 'bg-white text-slate-800 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
-            }`}
+            style={{
+              flex: 1,
+              padding: '10px 16px',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+              transition: 'all 0.25s ease',
+              border: 'none',
+              cursor: 'pointer',
+              ...(activeTab === tab.id
+                ? {
+                    background: 'linear-gradient(135deg, rgba(0,240,255,0.12), rgba(139,92,246,0.12))',
+                    color: '#00f0ff',
+                    boxShadow: '0 0 15px rgba(0,240,255,0.1)',
+                    border: '1px solid rgba(0,240,255,0.2)',
+                  }
+                : {
+                    background: 'transparent',
+                    color: 'rgba(255,255,255,0.35)',
+                    border: '1px solid transparent',
+                  }),
+            }}
           >
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* TAB 1: SKILL CATALOG                                      */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ================================================================= */}
+      {/* TAB 1: SKILL CATALOG                                              */}
+      {/* ================================================================= */}
       {activeTab === 'catalog' && (
-        <>
-          <div className="mb-4 flex items-center gap-3 text-xs text-slate-500">
-            <span>{totalSkills} skills across {SKILL_CATEGORIES.length} categories</span>
+        <div className="animate-fade-in">
+          {/* Stats bar */}
+          <div className="mb-4 flex items-center gap-3" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+            <span>{totalSkills} skills across {SKILL_CATEGORIES.length} branches</span>
             {!credsLoading && (
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                {readyCount} ready
+              <span className="badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                {readyCount} UNLOCKED
               </span>
             )}
           </div>
 
           {/* Search */}
           <div className="relative mb-5">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(0,240,255,0.4)' }} />
             <input
-              className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              placeholder="Search skills — e.g. email, GitHub, analytics..."
+              className="game-input"
+              style={{ paddingLeft: 36 }}
+              placeholder="Search skills -- e.g. email, GitHub, analytics..."
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
 
-          {/* Category pills */}
-          <div className="mb-5 flex flex-wrap gap-2">
+          {/* Category filter pills */}
+          <div className="mb-6 flex flex-wrap gap-2">
             {SKILL_CATEGORIES.map(cat => {
-              const colors = COLOR_MAP[cat.color] || COLOR_MAP.slate
+              const neon = NEON_CAT_COLORS[cat.color] || NEON_CAT_COLORS.slate
               return (
                 <button key={cat.name} onClick={() => setSearch('')}
-                  className={`flex items-center gap-1.5 rounded-lg border ${colors.header} bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-slate-50`}>
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    borderRadius: 9999,
+                    border: `1px solid ${neon.border}`,
+                    background: neon.bg,
+                    padding: '6px 14px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: neon.text,
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                  }}>
                   <span>{cat.icon}</span>
                   {cat.name}
-                  <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${colors.badge}`}>{cat.skills.length}</span>
+                  <span style={{
+                    background: `${neon.glow}22`,
+                    color: neon.glow,
+                    borderRadius: 9999,
+                    padding: '1px 7px',
+                    fontSize: 9,
+                    fontWeight: 800,
+                  }}>{cat.skills.length}</span>
                 </button>
               )
             })}
           </div>
 
-          {credsLoading && <div className="text-center py-20 text-slate-400">Loading...</div>}
+          {credsLoading && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>
+              <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto 12px', color: '#00f0ff' }} />
+              Loading skill tree...
+            </div>
+          )}
 
-          {/* Skill Categories */}
+          {/* Skill Tree Categories */}
           {filtered.map(cat => {
-            const colors = COLOR_MAP[cat.color] || COLOR_MAP.slate
+            const neon = NEON_CAT_COLORS[cat.color] || NEON_CAT_COLORS.slate
+            const isCollapsed = collapsedCats.has(cat.name)
             return (
-              <div key={cat.name} className="mb-6">
-                <div className={`flex items-center gap-2 rounded-lg border ${colors.header} bg-white px-4 py-3 mb-3`}>
-                  <span className="text-lg">{cat.icon}</span>
-                  <h2 className="text-sm font-semibold text-slate-800">{cat.name}</h2>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${colors.badge}`}>
+              <div key={cat.name} className="mb-6 animate-fade-in">
+                {/* Category Header - collapsible with neon */}
+                <button
+                  onClick={() => toggleCategory(cat.name)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                    padding: '12px 16px', marginBottom: isCollapsed ? 0 : 12,
+                    borderRadius: 10,
+                    border: `1px solid ${neon.border}`,
+                    background: `linear-gradient(135deg, ${neon.bg}, transparent)`,
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                  }}
+                >
+                  <span style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    background: `${neon.glow}18`,
+                    border: `1px solid ${neon.border}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16,
+                    boxShadow: `0 0 12px ${neon.glow}20`,
+                  }}>{cat.icon}</span>
+                  <h2 style={{ fontSize: 14, fontWeight: 700, color: neon.text, letterSpacing: '0.03em' }}>
+                    {cat.name.toUpperCase()}
+                  </h2>
+                  <span style={{
+                    background: `${neon.glow}15`,
+                    color: neon.glow,
+                    border: `1px solid ${neon.border}`,
+                    borderRadius: 9999,
+                    padding: '2px 10px',
+                    fontSize: 10,
+                    fontWeight: 800,
+                  }}>
                     {cat.skills.length} {cat.skills.length === 1 ? 'skill' : 'skills'}
                   </span>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {cat.skills.map(skill => {
-                    const ready = isReady(skill.requiredCredentials)
-                    const missingCreds = skill.requiredCredentials.filter(c => !configuredTypes.has(c))
-                    return (
-                      <div key={skill.id} className="rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-sm">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">{skill.name}</p>
-                            <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{skill.description}</p>
-                          </div>
-                          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500 whitespace-nowrap">
-                            <Download size={9} />
-                            {skill.install_count}
-                          </span>
-                        </div>
-                        {/* Required credential tags */}
-                        {skill.requiredCredentials.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 mb-2.5">
-                            {skill.requiredCredentials.map(credId => (
-                              <span key={credId} className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                configuredTypes.has(credId) ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
-                              }`}>
-                                {CRED_LABELS[credId] || credId}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between">
-                          {ready ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700">
-                              <CheckCircle size={10} /> Ready
+                  <div className="cat-header-line" />
+                  <ChevronRight
+                    size={14}
+                    style={{
+                      color: neon.text,
+                      transition: 'transform 0.25s ease',
+                      transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+                    }}
+                  />
+                </button>
+
+                {/* Skills Grid */}
+                {!isCollapsed && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    {cat.skills.map(skill => {
+                      const ready = isReady(skill.requiredCredentials)
+                      const missingCreds = skill.requiredCredentials.filter(c => !configuredTypes.has(c))
+                      const xpPercent = Math.min((skill.install_count / 600) * 100, 100)
+                      return (
+                        <div key={skill.id} className="game-card skill-node" style={{ padding: 16 }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
+                            <div style={{ flex: 1 }}>
+                              <p style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0' }}>{skill.name}</p>
+                              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, lineHeight: 1.5 }}>{skill.description}</p>
+                            </div>
+                            {/* XP counter */}
+                            <span style={{
+                              display: 'flex', alignItems: 'center', gap: 4,
+                              background: 'rgba(139,92,246,0.1)',
+                              border: '1px solid rgba(139,92,246,0.2)',
+                              borderRadius: 9999,
+                              padding: '2px 8px',
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: '#a78bfa',
+                              whiteSpace: 'nowrap',
+                            }}>
+                              <span style={{ color: '#8b5cf6' }}>XP</span>
+                              {skill.install_count}
                             </span>
-                          ) : (
-                            <Link href={`/credentials?highlight=${missingCreds[0]}`}
-                              className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700 hover:bg-amber-200 transition-colors">
-                              <AlertTriangle size={10} /> Setup needed &rarr;
-                            </Link>
+                          </div>
+
+                          {/* XP bar */}
+                          <div className="xp-bar">
+                            <div className="xp-bar-fill" style={{ width: `${xpPercent}%` }} />
+                          </div>
+
+                          {/* Required credential tags */}
+                          {skill.requiredCredentials.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8, marginBottom: 8 }}>
+                              {skill.requiredCredentials.map(credId => (
+                                <span key={credId} style={{
+                                  borderRadius: 9999,
+                                  padding: '2px 8px',
+                                  fontSize: 10,
+                                  fontWeight: 600,
+                                  ...(configuredTypes.has(credId)
+                                    ? { background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }
+                                    : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.06)' }),
+                                }}>
+                                  {CRED_LABELS[credId] || credId}
+                                </span>
+                              ))}
+                            </div>
                           )}
-                          <button
-                            onClick={() => installMutation.mutate(skill.id)}
-                            className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors"
-                          >
-                            <Download size={11} /> Install
-                          </button>
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+                            {ready ? (
+                              <span className="badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                <CheckCircle size={10} /> UNLOCKED
+                              </span>
+                            ) : (
+                              <Link href={`/credentials?highlight=${missingCreds[0]}`}
+                                style={{
+                                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                                  background: 'rgba(255,136,0,0.1)',
+                                  color: '#ff8800',
+                                  border: '1px solid rgba(255,136,0,0.25)',
+                                  borderRadius: 9999,
+                                  padding: '2px 10px',
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  textDecoration: 'none',
+                                  transition: 'all 0.2s ease',
+                                }}>
+                                <AlertTriangle size={10} /> LOCKED &rarr;
+                              </Link>
+                            )}
+                            <button
+                              onClick={() => installMutation.mutate(skill.id)}
+                              className="game-btn"
+                              style={{ padding: '6px 14px', fontSize: 11 }}
+                            >
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                <Download size={11} /> Install
+                              </span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             )
           })}
 
           {filtered.length === 0 && !credsLoading && (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-3">🔍</div>
-              <p className="text-sm font-semibold text-slate-400">No skills match &quot;{search}&quot;</p>
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.5 }}>{'\u{1F50D}'}</div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.3)' }}>No skills match &quot;{search}&quot;</p>
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* TAB 2: MY SKILLS                                          */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ================================================================= */}
+      {/* TAB 2: MY SKILLS (Crafted Abilities)                              */}
+      {/* ================================================================= */}
       {activeTab === 'my-skills' && (
-        <>
-          {mySkillsLoading && <div className="text-center py-20 text-slate-400">Loading your skills...</div>}
+        <div className="animate-fade-in">
+          {mySkillsLoading && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>
+              <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto 12px', color: '#8b5cf6' }} />
+              Loading crafted abilities...
+            </div>
+          )}
 
           {!mySkillsLoading && mySkills.length === 0 && (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-3">🛠️</div>
-              <p className="text-sm font-semibold text-slate-600 mb-1">You haven&apos;t created any skills yet.</p>
-              <p className="text-xs text-slate-400 mb-4">Click Create Skill to get started.</p>
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <div style={{
+                width: 80, height: 80, borderRadius: 16, margin: '0 auto 16px',
+                background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(0,240,255,0.1))',
+                border: '1px solid rgba(139,92,246,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 36,
+                boxShadow: '0 0 30px rgba(139,92,246,0.1)',
+              }}>{'\u{1F6E0}\u{FE0F}'}</div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 4 }}>
+                No crafted abilities yet
+              </p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>
+                Forge your first skill to expand your power
+              </p>
               <button
                 onClick={() => setActiveTab('create')}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors"
+                className="game-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 24px', fontSize: 13 }}
               >
-                <Plus size={14} /> Create Skill
+                <Plus size={14} /> Craft Ability
               </button>
             </div>
           )}
@@ -755,25 +1153,43 @@ export default function SkillsPage() {
           {!mySkillsLoading && mySkills.length > 0 && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {mySkills.map(skill => (
-                <div key={skill.id} className="rounded-xl border border-slate-200 bg-white p-5 transition-all hover:shadow-md">
+                <div key={skill.id} className="game-card" style={{ padding: 20 }}>
                   {/* Header row */}
-                  <div className="flex items-start gap-3 mb-3">
-                    <span className="text-2xl">{skill.icon || '🔧'}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 truncate">{skill.name}</p>
-                      <div className="flex flex-wrap gap-1.5 mt-1">
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${TYPE_BADGE_COLORS[skill.skill_type] || 'bg-slate-100 text-slate-600'}`}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
+                    <span style={{
+                      width: 44, height: 44, borderRadius: 10,
+                      background: 'linear-gradient(135deg, rgba(0,240,255,0.12), rgba(139,92,246,0.12))',
+                      border: '1px solid rgba(0,240,255,0.2)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 22,
+                      boxShadow: '0 0 15px rgba(0,240,255,0.08)',
+                    }}>{skill.icon || '\u{1F527}'}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {skill.name}
+                      </p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
+                        <span className="badge-info">
                           {skill.skill_type}
                         </span>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+                        <span className="badge-purple">
                           {skill.version || 'v1.0.0'}
                         </span>
                         {skill.is_public ? (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-600">
+                          <span className="badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                             <Globe size={8} /> Public
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-semibold text-orange-600">
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 3,
+                            background: 'rgba(255,136,0,0.1)',
+                            color: '#ff8800',
+                            border: '1px solid rgba(255,136,0,0.2)',
+                            borderRadius: 9999,
+                            padding: '2px 10px',
+                            fontSize: 10,
+                            fontWeight: 700,
+                          }}>
                             <Lock size={8} /> Private
                           </span>
                         )}
@@ -782,20 +1198,27 @@ export default function SkillsPage() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-[11px] text-slate-500 leading-relaxed mb-3 line-clamp-2">
+                  <p style={{
+                    fontSize: 11, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5,
+                    marginBottom: 10,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>
                     {skill.description || 'No description'}
                   </p>
 
                   {/* Install count for public skills */}
                   {skill.is_public && (
-                    <div className="flex items-center gap-1 mb-3 text-[10px] text-slate-400">
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 4, marginBottom: 10,
+                      fontSize: 10, color: 'rgba(255,255,255,0.3)',
+                    }}>
                       <Download size={9} />
                       <span>{skill.install_count || 0} installs</span>
                     </div>
                   )}
 
                   {/* Action buttons */}
-                  <div className="flex gap-2 pt-3 border-t border-slate-100">
+                  <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                     <button
                       onClick={() => {
                         setTestPayload('')
@@ -815,19 +1238,22 @@ export default function SkillsPage() {
                           })
                         }, 1200)
                       }}
-                      className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="game-btn-secondary"
+                      style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '7px 8px', fontSize: 11 }}
                     >
                       <Play size={10} /> Test
                     </button>
                     <button
                       onClick={() => openEdit(skill)}
-                      className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="game-btn-secondary"
+                      style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '7px 8px', fontSize: 11 }}
                     >
                       <Pencil size={10} /> Edit
                     </button>
                     <button
                       onClick={() => { if (confirm('Delete this skill?')) deleteMutation.mutate(skill.id) }}
-                      className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-[11px] font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                      className="game-btn-danger"
+                      style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '7px 8px', fontSize: 11 }}
                     >
                       <Trash2 size={10} /> Delete
                     </button>
@@ -836,41 +1262,66 @@ export default function SkillsPage() {
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* TAB 3: CREATE SKILL                                       */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ================================================================= */}
+      {/* TAB 3: CREATE SKILL (Ability Crafting Interface)                   */}
+      {/* ================================================================= */}
       {activeTab === 'create' && (
-        <div className="flex gap-0">
-          <div className={`flex-1 transition-all ${testPanelOpen ? 'mr-[420px]' : ''}`}>
-            <div className="max-w-3xl">
+        <div className="animate-fade-in" style={{ display: 'flex', gap: 0 }}>
+          <div style={{ flex: 1, transition: 'all 0.3s ease', marginRight: testPanelOpen ? 420 : 0 }}>
+            <div style={{ maxWidth: 720 }}>
+
+              {/* Crafting header */}
+              <div className="game-card" style={{ padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 16 }}>{'\u{2694}\u{FE0F}'}</span>
+                <span className="neon-text" style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.05em' }}>ABILITY FORGE</span>
+                <div className="cat-header-line" />
+              </div>
+
               {/* ROW 1: Icon + Name */}
-              <div className="mb-5">
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Skill Identity</label>
-                <div className="flex gap-3">
-                  <div className="flex flex-col items-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-2xl">
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>
+                  SKILL IDENTITY
+                </label>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{
+                      width: 48, height: 48, borderRadius: 12,
+                      border: '1px solid rgba(139,92,246,0.3)',
+                      background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(0,240,255,0.08))',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 24,
+                      boxShadow: '0 0 15px rgba(139,92,246,0.1)',
+                    }}>
                       {icon}
                     </div>
-                    <div className="flex gap-1 mt-2 flex-wrap max-w-[120px] justify-center">
+                    <div style={{ display: 'flex', gap: 3, marginTop: 8, flexWrap: 'wrap', maxWidth: 120, justifyContent: 'center' }}>
                       {QUICK_EMOJIS.map(e => (
                         <button key={e} onClick={() => setIcon(e)}
-                          className={`text-lg p-0.5 rounded hover:bg-slate-100 ${icon === e ? 'ring-2 ring-emerald-500 bg-emerald-50' : ''}`}>
+                          style={{
+                            fontSize: 16, padding: 3, borderRadius: 6, cursor: 'pointer',
+                            border: 'none',
+                            background: icon === e ? 'rgba(0,240,255,0.15)' : 'transparent',
+                            boxShadow: icon === e ? '0 0 8px rgba(0,240,255,0.3)' : 'none',
+                            transition: 'all 0.15s ease',
+                          }}>
                           {e}
                         </button>
                       ))}
                     </div>
                     <input
-                      className="mt-1 w-[120px] rounded border border-slate-200 px-2 py-1 text-center text-sm"
+                      className="game-input"
+                      style={{ marginTop: 6, width: 120, textAlign: 'center', fontSize: 13 }}
                       placeholder="or type emoji"
                       value={icon}
                       onChange={e => setIcon(e.target.value)}
                     />
                   </div>
                   <input
-                    className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="game-input"
+                    style={{ flex: 1, fontSize: 14 }}
                     placeholder="Skill name (e.g. Fetch Weather Data)"
                     value={skillName}
                     onChange={e => setSkillName(e.target.value)}
@@ -879,31 +1330,44 @@ export default function SkillsPage() {
               </div>
 
               {/* ROW 2: Skill Type Selector */}
-              <div className="mb-5">
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Skill Type</label>
-                <div className="grid grid-cols-5 gap-3">
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>
+                  SKILL CLASS
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
                   {SKILL_TYPES.map(st => (
                     <button
                       key={st.id}
                       onClick={() => handleTypeSelect(st.id)}
-                      className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-4 transition-all ${
-                        skillType === st.id
-                          ? 'border-emerald-500 bg-emerald-50 shadow-sm'
-                          : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
-                      }`}
+                      style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                        borderRadius: 12, padding: 14,
+                        cursor: 'pointer',
+                        transition: 'all 0.25s ease',
+                        border: skillType === st.id ? '2px solid #00f0ff' : '2px solid rgba(255,255,255,0.06)',
+                        background: skillType === st.id
+                          ? 'linear-gradient(135deg, rgba(0,240,255,0.1), rgba(139,92,246,0.08))'
+                          : 'rgba(255,255,255,0.02)',
+                        boxShadow: skillType === st.id ? '0 0 20px rgba(0,240,255,0.12)' : 'none',
+                      }}
                     >
-                      <span className="text-2xl">{st.icon}</span>
-                      <span className="text-xs font-semibold text-slate-700">{st.label}</span>
+                      <span style={{ fontSize: 24 }}>{st.icon}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: skillType === st.id ? '#00f0ff' : 'rgba(255,255,255,0.5)' }}>
+                        {st.label}
+                      </span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* ROW 3: Description */}
-              <div className="mb-5">
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Description</label>
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>
+                  DESCRIPTION
+                </label>
                 <textarea
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="game-input"
+                  style={{ minHeight: 64, resize: 'vertical', fontFamily: 'inherit' }}
                   rows={2}
                   placeholder="Briefly describe what this skill does..."
                   value={description}
@@ -912,65 +1376,83 @@ export default function SkillsPage() {
               </div>
 
               {/* ROW 4: Configuration (type-specific) */}
-              <div className="mb-5">
-                <label className="block text-xs font-semibold text-slate-700 mb-2">
-                  Configuration
-                  <span className="ml-2 text-[10px] font-normal text-slate-400">({skillType})</span>
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>
+                  CONFIGURATION
+                  <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>({skillType})</span>
                 </label>
 
                 {/* REST API config */}
                 {skillType === 'REST API' && (
-                  <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="game-card" style={{ padding: 16 }}>
                     {/* Mode toggle */}
-                    <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+                    <div style={{
+                      display: 'flex', borderRadius: 8, padding: 2, marginBottom: 14,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                    }}>
                       <button onClick={() => setRestConfigMode('manual')}
-                        className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                          restConfigMode === 'manual' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                        }`}>
+                        style={{
+                          flex: 1, borderRadius: 6, padding: '8px 12px', fontSize: 11, fontWeight: 700,
+                          border: 'none', cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          ...(restConfigMode === 'manual'
+                            ? { background: 'linear-gradient(135deg, #00f0ff, #8b5cf6)', color: '#fff', boxShadow: '0 0 12px rgba(0,240,255,0.2)' }
+                            : { background: 'transparent', color: 'rgba(255,255,255,0.4)' }),
+                        }}>
                         Manual Setup
                       </button>
                       <button onClick={() => setRestConfigMode('openapi')}
-                        className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                          restConfigMode === 'openapi' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                        }`}>
+                        style={{
+                          flex: 1, borderRadius: 6, padding: '8px 12px', fontSize: 11, fontWeight: 700,
+                          border: 'none', cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          ...(restConfigMode === 'openapi'
+                            ? { background: 'linear-gradient(135deg, #00f0ff, #8b5cf6)', color: '#fff', boxShadow: '0 0 12px rgba(0,240,255,0.2)' }
+                            : { background: 'transparent', color: 'rgba(255,255,255,0.4)' }),
+                        }}>
                         Import OpenAPI Spec
                       </button>
                     </div>
 
-                    {/* ── Manual mode ── */}
+                    {/* Manual mode */}
                     {restConfigMode === 'manual' && (
-                      <div className="space-y-3">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <div>
-                          <label className="flex items-center gap-2 text-[11px] font-medium text-slate-500 mb-1">
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>
                             URL
                             {autoFilledFields.has('url') && (
-                              <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold text-violet-600">Parsed from spec</span>
+                              <span className="badge-purple">Parsed from spec</span>
                             )}
                           </label>
                           <input
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            className="game-input"
+                            style={{ fontFamily: 'monospace' }}
                             placeholder="https://api.example.com/data"
                             value={restUrl}
                             onChange={e => { setRestUrl(e.target.value); setAutoFilledFields(p => { const n = new Set(p); n.delete('url'); return n }) }}
                           />
                         </div>
                         <div>
-                          <label className="flex items-center gap-2 text-[11px] font-medium text-slate-500 mb-1">
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>
                             Method
                             {autoFilledFields.has('method') && (
-                              <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold text-violet-600">Parsed from spec</span>
+                              <span className="badge-purple">Parsed from spec</span>
                             )}
                           </label>
-                          <div className="flex gap-2">
+                          <div style={{ display: 'flex', gap: 6 }}>
                             {['GET', 'POST', 'PUT', 'DELETE'].map(m => (
                               <button
                                 key={m}
                                 onClick={() => { setRestMethod(m); setAutoFilledFields(p => { const n = new Set(p); n.delete('method'); return n }) }}
-                                className={`rounded-lg px-4 py-1.5 text-xs font-bold transition-all ${
-                                  restMethod === m
-                                    ? 'bg-emerald-600 text-white'
-                                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                }`}
+                                style={{
+                                  borderRadius: 8, padding: '7px 16px', fontSize: 11, fontWeight: 800,
+                                  cursor: 'pointer', transition: 'all 0.2s ease',
+                                  border: restMethod === m ? '1px solid #00f0ff' : '1px solid rgba(255,255,255,0.06)',
+                                  background: restMethod === m ? 'rgba(0,240,255,0.12)' : 'rgba(255,255,255,0.02)',
+                                  color: restMethod === m ? '#00f0ff' : 'rgba(255,255,255,0.4)',
+                                  boxShadow: restMethod === m ? '0 0 10px rgba(0,240,255,0.15)' : 'none',
+                                }}
                               >
                                 {m}
                               </button>
@@ -978,28 +1460,30 @@ export default function SkillsPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="flex items-center gap-2 text-[11px] font-medium text-slate-500 mb-1">
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>
                             Headers (JSON)
                             {autoFilledFields.has('headers') && (
-                              <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold text-violet-600">Parsed from spec</span>
+                              <span className="badge-purple">Parsed from spec</span>
                             )}
                           </label>
                           <textarea
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            className="game-input"
+                            style={{ fontFamily: 'monospace', minHeight: 72, resize: 'vertical' }}
                             rows={3}
                             value={restHeaders}
                             onChange={e => { setRestHeaders(e.target.value); setAutoFilledFields(p => { const n = new Set(p); n.delete('headers'); return n }) }}
                           />
                         </div>
                         <div>
-                          <label className="flex items-center gap-2 text-[11px] font-medium text-slate-500 mb-1">
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>
                             Body Template
                             {autoFilledFields.has('body') && (
-                              <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold text-violet-600">Parsed from spec</span>
+                              <span className="badge-purple">Parsed from spec</span>
                             )}
                           </label>
                           <textarea
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            className="game-input"
+                            style={{ fontFamily: 'monospace', minHeight: 72, resize: 'vertical' }}
                             rows={3}
                             value={restBody}
                             onChange={e => { setRestBody(e.target.value); setAutoFilledFields(p => { const n = new Set(p); n.delete('body'); return n }) }}
@@ -1008,15 +1492,15 @@ export default function SkillsPage() {
                       </div>
                     )}
 
-                    {/* ── OpenAPI Import mode ── */}
+                    {/* OpenAPI Import mode */}
                     {restConfigMode === 'openapi' && (
-                      <div className="space-y-3">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <textarea
-                          className={`w-full min-h-[192px] rounded-lg border-2 px-4 py-3 text-sm font-mono text-slate-800 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
-                            isDragOver
-                              ? 'border-emerald-500 bg-emerald-50/50'
-                              : 'border-slate-200 bg-white focus:border-emerald-500'
-                          }`}
+                          className="game-input"
+                          style={{
+                            fontFamily: 'monospace', minHeight: 192, resize: 'vertical',
+                            ...(isDragOver ? { borderColor: 'rgba(0,240,255,0.5)', background: 'rgba(0,240,255,0.05)' } : {}),
+                          }}
                           placeholder={`Paste your OpenAPI/Swagger spec here (JSON or YAML)\n\nExample:\n{\n  "openapi": "3.0.0",\n  "info": { "title": "My API" },\n  "paths": {\n    "/users": {\n      "get": {\n        "summary": "Get all users",\n        "parameters": [...]\n      }\n    }\n  }\n}`}
                           value={openApiSpec}
                           onChange={e => setOpenApiSpec(e.target.value)}
@@ -1025,72 +1509,96 @@ export default function SkillsPage() {
                           onDrop={handleSpecFileDrop}
                         />
 
-                        <div className="flex items-center gap-3">
-                          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <label className="game-btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '7px 14px' }}>
                             <Upload size={12} />
                             Upload .json / .yaml file
-                            <input type="file" accept=".json,.yaml,.yml" className="hidden" onChange={handleSpecFileUpload} />
+                            <input type="file" accept=".json,.yaml,.yml" style={{ display: 'none' }} onChange={handleSpecFileUpload} />
                           </label>
-                          <span className="text-[10px] text-slate-400">or drag &amp; drop onto the textarea</span>
+                          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>or drag &amp; drop onto the textarea</span>
                         </div>
 
                         <button
                           onClick={handleParseSpec}
                           disabled={!openApiSpec.trim()}
-                          className="w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="game-btn"
+                          style={{ width: '100%', padding: '10px 0', fontSize: 13 }}
                         >
                           Parse Spec
                         </button>
 
                         {parseError && (
-                          <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5">
-                            <AlertTriangle size={13} className="mt-0.5 text-red-500 shrink-0" />
-                            <p className="text-xs text-red-600">{parseError}</p>
+                          <div style={{
+                            display: 'flex', alignItems: 'flex-start', gap: 8,
+                            borderRadius: 8, padding: '10px 14px',
+                            background: 'rgba(255,68,102,0.08)',
+                            border: '1px solid rgba(255,68,102,0.25)',
+                          }}>
+                            <AlertTriangle size={13} style={{ marginTop: 1, color: '#ff4466', flexShrink: 0 }} />
+                            <p style={{ fontSize: 12, color: '#ff6b88' }}>{parseError}</p>
                           </div>
                         )}
 
                         {/* Parsed endpoints list */}
                         {parsedEndpoints.length > 0 && (
                           <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-xs font-semibold text-slate-700">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0' }}>
                                 Select endpoints
-                                <span className="ml-1.5 text-[10px] font-normal text-slate-400">({parsedEndpoints.length} found)</span>
+                                <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>({parsedEndpoints.length} found)</span>
                               </p>
                               {selectedEndpoints.size > 0 && (
                                 <button
                                   onClick={applySelectedEndpoints}
-                                  className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 transition-colors"
+                                  className="game-btn"
+                                  style={{ padding: '5px 14px', fontSize: 11 }}
                                 >
-                                  <CheckCircle size={11} /> Apply Selected
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                    <CheckCircle size={11} /> Apply Selected
+                                  </span>
                                 </button>
                               )}
                             </div>
-                            <div className="max-h-[280px] overflow-auto rounded-lg border border-slate-200">
+                            <div style={{
+                              maxHeight: 280, overflowY: 'auto',
+                              borderRadius: 8,
+                              border: '1px solid rgba(255,255,255,0.06)',
+                            }}>
                               {parsedEndpoints.map((ep, idx) => {
                                 const isSelected = selectedEndpoints.has(idx)
                                 return (
                                   <button
                                     key={`${ep.method}-${ep.path}`}
                                     onClick={() => toggleEndpointSelection(idx)}
-                                    className={`flex w-full items-center gap-3 border-b border-slate-100 px-3 py-2.5 text-left transition-colors last:border-b-0 ${
-                                      isSelected ? 'bg-emerald-50' : 'bg-white hover:bg-slate-50'
-                                    }`}
+                                    style={{
+                                      display: 'flex', width: '100%', alignItems: 'center', gap: 10,
+                                      borderBottom: '1px solid rgba(255,255,255,0.03)',
+                                      padding: '10px 12px', textAlign: 'left',
+                                      cursor: 'pointer', border: 'none',
+                                      transition: 'all 0.15s ease',
+                                      background: isSelected ? 'rgba(0,240,255,0.06)' : 'rgba(255,255,255,0.01)',
+                                    }}
                                   >
                                     <input
                                       type="checkbox"
                                       checked={isSelected}
                                       readOnly
-                                      className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 accent-emerald-600"
+                                      style={{ accentColor: '#00f0ff' }}
                                     />
-                                    <span className={`inline-flex min-w-[52px] items-center justify-center rounded px-2 py-0.5 text-[10px] font-bold ${METHOD_COLORS[ep.method] || 'bg-slate-100 text-slate-700'}`}>
+                                    <span style={{
+                                      display: 'inline-flex', minWidth: 52, alignItems: 'center', justifyContent: 'center',
+                                      borderRadius: 4, padding: '3px 8px',
+                                      fontSize: 10, fontWeight: 800,
+                                      background: 'rgba(0,240,255,0.1)',
+                                      color: '#00f0ff',
+                                    }}>
                                       {ep.method}
                                     </span>
-                                    <span className="font-mono text-xs text-slate-700">{ep.path}</span>
+                                    <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#e2e8f0' }}>{ep.path}</span>
                                     {ep.summary && (
                                       <>
-                                        <span className="text-slate-300">—</span>
-                                        <span className="truncate text-[11px] text-slate-500">{ep.summary}</span>
+                                        <span style={{ color: 'rgba(255,255,255,0.15)' }}>--</span>
+                                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ep.summary}</span>
                                       </>
                                     )}
                                   </button>
@@ -1106,20 +1614,22 @@ export default function SkillsPage() {
 
                 {/* SQL config */}
                 {skillType === 'SQL' && (
-                  <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="game-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div>
-                      <label className="block text-[11px] font-medium text-slate-500 mb-1">Connection String</label>
+                      <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>Connection String</label>
                       <input
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="game-input"
+                        style={{ fontFamily: 'monospace' }}
                         placeholder="postgresql://user:pass@host/db"
                         value={sqlConnection}
                         onChange={e => setSqlConnection(e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-medium text-slate-500 mb-1">Query</label>
+                      <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>Query</label>
                       <textarea
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="game-input"
+                        style={{ fontFamily: 'monospace', minHeight: 96, resize: 'vertical' }}
                         rows={4}
                         value={sqlQuery}
                         onChange={e => setSqlQuery(e.target.value)}
@@ -1130,10 +1640,16 @@ export default function SkillsPage() {
 
                 {/* Python config */}
                 {skillType === 'Python' && (
-                  <div className="rounded-xl border border-slate-200 bg-white p-4">
-                    <p className="text-[10px] text-slate-400 mb-2">Function receives &apos;input&apos; variable, must return a value</p>
+                  <div className="game-card" style={{ padding: 16 }}>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>Function receives &apos;input&apos; variable, must return a value</p>
                     <textarea
-                      className="w-full min-h-[192px] rounded-lg border border-slate-200 bg-slate-900 px-4 py-3 text-sm font-mono text-emerald-400 placeholder:text-slate-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      className="game-input"
+                      style={{
+                        fontFamily: 'monospace', minHeight: 192, resize: 'vertical',
+                        background: 'rgba(0,0,0,0.4)',
+                        color: '#00ff88',
+                        borderColor: 'rgba(0,255,136,0.15)',
+                      }}
                       value={configJson}
                       onChange={e => setConfigJson(e.target.value)}
                     />
@@ -1142,20 +1658,22 @@ export default function SkillsPage() {
 
                 {/* Scraper config */}
                 {skillType === 'Scraper' && (
-                  <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="game-card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div>
-                      <label className="block text-[11px] font-medium text-slate-500 mb-1">URL</label>
+                      <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>URL</label>
                       <input
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="game-input"
+                        style={{ fontFamily: 'monospace' }}
                         placeholder="https://example.com"
                         value={scraperUrl}
                         onChange={e => setScraperUrl(e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-medium text-slate-500 mb-1">CSS Selector</label>
+                      <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>CSS Selector</label>
                       <input
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="game-input"
+                        style={{ fontFamily: 'monospace' }}
                         placeholder=".article-content"
                         value={scraperSelector}
                         onChange={e => setScraperSelector(e.target.value)}
@@ -1166,10 +1684,11 @@ export default function SkillsPage() {
 
                 {/* Custom config */}
                 {skillType === 'Custom' && (
-                  <div className="rounded-xl border border-slate-200 bg-white p-4">
-                    <p className="text-[10px] text-slate-400 mb-2">Free-form JSON configuration. Define your own schema.</p>
+                  <div className="game-card" style={{ padding: 16 }}>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>Free-form JSON configuration. Define your own schema.</p>
                     <textarea
-                      className="w-full min-h-[160px] rounded-lg border border-slate-200 px-4 py-3 text-sm font-mono text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      className="game-input"
+                      style={{ fontFamily: 'monospace', minHeight: 160, resize: 'vertical' }}
                       value={configJson}
                       onChange={e => setConfigJson(e.target.value)}
                     />
@@ -1178,41 +1697,56 @@ export default function SkillsPage() {
               </div>
 
               {/* ROW 5: Visibility */}
-              <div className="mb-5">
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Visibility</label>
-                <div className="flex gap-3">
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>
+                  VISIBILITY
+                </label>
+                <div style={{ display: 'flex', gap: 10 }}>
                   <button
                     onClick={() => setIsPublic(false)}
-                    className={`flex-1 flex items-center gap-3 rounded-xl border-2 p-4 transition-all ${
-                      !isPublic ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-white hover:border-slate-300'
-                    }`}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', gap: 12,
+                      borderRadius: 12, padding: 16, cursor: 'pointer',
+                      transition: 'all 0.25s ease',
+                      border: !isPublic ? '2px solid #ff00aa' : '2px solid rgba(255,255,255,0.06)',
+                      background: !isPublic ? 'rgba(255,0,170,0.06)' : 'rgba(255,255,255,0.02)',
+                      boxShadow: !isPublic ? '0 0 20px rgba(255,0,170,0.1)' : 'none',
+                    }}
                   >
-                    <Lock size={16} className={!isPublic ? 'text-emerald-600' : 'text-slate-400'} />
-                    <div className="text-left">
-                      <p className="text-sm font-semibold text-slate-700">Private</p>
-                      <p className="text-[11px] text-slate-500">Only you can use this skill</p>
+                    <Lock size={16} style={{ color: !isPublic ? '#ff00aa' : 'rgba(255,255,255,0.25)' }} />
+                    <div style={{ textAlign: 'left' }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: !isPublic ? '#ff00aa' : 'rgba(255,255,255,0.5)' }}>Private</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Only you can use this skill</p>
                     </div>
                   </button>
                   <button
                     onClick={() => setIsPublic(true)}
-                    className={`flex-1 flex items-center gap-3 rounded-xl border-2 p-4 transition-all ${
-                      isPublic ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-white hover:border-slate-300'
-                    }`}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', gap: 12,
+                      borderRadius: 12, padding: 16, cursor: 'pointer',
+                      transition: 'all 0.25s ease',
+                      border: isPublic ? '2px solid #00ff88' : '2px solid rgba(255,255,255,0.06)',
+                      background: isPublic ? 'rgba(0,255,136,0.06)' : 'rgba(255,255,255,0.02)',
+                      boxShadow: isPublic ? '0 0 20px rgba(0,255,136,0.1)' : 'none',
+                    }}
                   >
-                    <Globe size={16} className={isPublic ? 'text-emerald-600' : 'text-slate-400'} />
-                    <div className="text-left">
-                      <p className="text-sm font-semibold text-slate-700">Public</p>
-                      <p className="text-[11px] text-slate-500">Publish to marketplace for others to install</p>
+                    <Globe size={16} style={{ color: isPublic ? '#00ff88' : 'rgba(255,255,255,0.25)' }} />
+                    <div style={{ textAlign: 'left' }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: isPublic ? '#00ff88' : 'rgba(255,255,255,0.5)' }}>Public</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Publish to marketplace for others to install</p>
                     </div>
                   </button>
                 </div>
               </div>
 
               {/* ROW 6: Test Payload */}
-              <div className="mb-6">
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Test Payload</label>
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>
+                  TEST PAYLOAD
+                </label>
                 <input
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="game-input"
+                  style={{ fontSize: 13 }}
                   placeholder="Sample input to test your skill"
                   value={testPayload}
                   onChange={e => setTestPayload(e.target.value)}
@@ -1220,24 +1754,27 @@ export default function SkillsPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pb-8">
+              <div style={{ display: 'flex', gap: 10, paddingBottom: 32 }}>
                 <button
                   onClick={handleTest}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="game-btn-secondary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', fontSize: 12 }}
                 >
                   <Play size={14} /> Test Skill
                 </button>
                 <button
                   onClick={() => handleSave(false)}
                   disabled={createMutation.isPending}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition-colors disabled:opacity-50"
+                  className="game-btn-secondary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', fontSize: 12 }}
                 >
                   Save as Draft
                 </button>
                 <button
                   onClick={() => handleSave(true)}
                   disabled={createMutation.isPending}
-                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                  className="game-btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 24px', fontSize: 12 }}
                 >
                   {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <ChevronRight size={14} />}
                   Publish Skill
@@ -1246,53 +1783,76 @@ export default function SkillsPage() {
             </div>
           </div>
 
-          {/* ── Test Panel (slides in from right) ─────────────── */}
+          {/* Test Panel (slides in from right) */}
           {testPanelOpen && (
-            <div className="fixed right-0 top-0 z-40 flex h-full w-[400px] flex-col border-l border-slate-200 bg-white shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                <h3 className="text-sm font-bold text-slate-800">Test Results</h3>
-                <button onClick={() => setTestPanelOpen(false)} className="rounded-lg p-1 hover:bg-slate-100">
-                  <X size={16} className="text-slate-400" />
+            <div style={{
+              position: 'fixed', right: 0, top: 0, zIndex: 40,
+              display: 'flex', height: '100%', width: 400, flexDirection: 'column',
+              background: 'linear-gradient(180deg, #1a1a2e 0%, #12121a 100%)',
+              borderLeft: '1px solid rgba(0,240,255,0.15)',
+              boxShadow: '-10px 0 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,240,255,0.05)',
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                padding: '16px 20px',
+              }}>
+                <h3 className="neon-text" style={{ fontSize: 14, fontWeight: 800, letterSpacing: '0.03em' }}>TEST RESULTS</h3>
+                <button onClick={() => setTestPanelOpen(false)} style={{
+                  padding: 6, borderRadius: 8, border: 'none', cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.04)',
+                  transition: 'all 0.15s ease',
+                }}>
+                  <X size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />
                 </button>
               </div>
-              <div className="flex-1 overflow-auto p-5">
+              <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
                 {isTesting && (
-                  <div className="flex flex-col items-center justify-center py-12">
-                    <Loader2 size={32} className="animate-spin text-emerald-500 mb-3" />
-                    <p className="text-sm font-medium text-slate-600">Testing skill...</p>
-                    <p className="text-xs text-slate-400 mt-1">{skillName} ({skillType})</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+                    <Loader2 size={32} className="animate-spin" style={{ color: '#00f0ff', marginBottom: 12 }} />
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Running ability test...</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>{skillName} ({skillType})</p>
                   </div>
                 )}
                 {!isTesting && testResult && (
                   <div>
                     {/* Status */}
-                    <div className={`mb-4 rounded-xl border-2 p-4 ${
-                      testResult.success ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'
-                    }`}>
-                      <div className="flex items-center gap-2 mb-2">
+                    <div style={{
+                      marginBottom: 16, borderRadius: 12, padding: 16,
+                      border: testResult.success ? '1px solid rgba(0,255,136,0.25)' : '1px solid rgba(255,68,102,0.25)',
+                      background: testResult.success ? 'rgba(0,255,136,0.06)' : 'rgba(255,68,102,0.06)',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         {testResult.success ? (
-                          <CheckCircle size={16} className="text-emerald-600" />
+                          <CheckCircle size={16} style={{ color: '#00ff88' }} />
                         ) : (
-                          <AlertTriangle size={16} className="text-red-600" />
+                          <AlertTriangle size={16} style={{ color: '#ff4466' }} />
                         )}
-                        <span className={`text-sm font-bold ${testResult.success ? 'text-emerald-700' : 'text-red-700'}`}>
-                          {testResult.success ? 'Success' : 'Error'}
+                        <span style={{ fontSize: 13, fontWeight: 800, color: testResult.success ? '#00ff88' : '#ff4466' }}>
+                          {testResult.success ? 'SUCCESS' : 'FAILED'}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600">{testResult.output}</p>
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{testResult.output}</p>
                     </div>
 
                     {/* Execution time */}
-                    <div className="mb-4">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+                    <div style={{ marginBottom: 16 }}>
+                      <span className="badge-info" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', fontSize: 11 }}>
                         Execution: {testResult.execution_time}
                       </span>
                     </div>
 
                     {/* Raw Response */}
                     <div>
-                      <p className="text-[11px] font-semibold text-slate-500 mb-2">Raw Response</p>
-                      <pre className="rounded-lg bg-slate-900 p-4 text-xs text-emerald-400 overflow-auto max-h-[300px]">
+                      <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, letterSpacing: '0.05em' }}>RAW RESPONSE</p>
+                      <pre style={{
+                        borderRadius: 10, padding: 16, fontSize: 11,
+                        overflow: 'auto', maxHeight: 300,
+                        background: 'rgba(0,0,0,0.4)',
+                        border: '1px solid rgba(0,255,136,0.1)',
+                        color: '#00ff88',
+                        fontFamily: 'monospace',
+                      }}>
                         {JSON.stringify(testResult.raw, null, 2)}
                       </pre>
                     </div>
@@ -1304,39 +1864,63 @@ export default function SkillsPage() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* EDIT SKILL MODAL                                          */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ================================================================= */}
+      {/* EDIT SKILL MODAL (Ability Recrafting Interface)                    */}
+      {/* ================================================================= */}
       {editingSkill && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-5" onClick={() => setEditingSkill(null)}>
-          <div className="flex w-full max-w-2xl mx-4 flex-col rounded-xl border border-slate-200 bg-white shadow-xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="game-modal-overlay" onClick={() => setEditingSkill(null)}>
+          <div className="game-modal" onClick={e => e.stopPropagation()}>
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-              <h2 className="text-lg font-bold text-slate-800">Edit Skill</h2>
-              <button onClick={() => setEditingSkill(null)} className="rounded-lg p-1 hover:bg-slate-100">
-                <X size={18} className="text-slate-400" />
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              borderBottom: '1px solid rgba(139,92,246,0.15)',
+              padding: '18px 24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 18 }}>{'\u{2694}\u{FE0F}'}</span>
+                <h2 className="neon-text" style={{ fontSize: 18, fontWeight: 800 }}>RECRAFT ABILITY</h2>
+              </div>
+              <button onClick={() => setEditingSkill(null)} style={{
+                padding: 6, borderRadius: 8, border: 'none', cursor: 'pointer',
+                background: 'rgba(255,255,255,0.04)',
+              }}>
+                <X size={18} style={{ color: 'rgba(255,255,255,0.4)' }} />
               </button>
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-auto p-6 space-y-5">
+            <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 18 }}>
               {/* Icon + Name */}
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-2xl">
+              <div style={{ display: 'flex', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{
+                    width: 48, height: 48, borderRadius: 12,
+                    border: '1px solid rgba(139,92,246,0.3)',
+                    background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(0,240,255,0.08))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 24,
+                    boxShadow: '0 0 15px rgba(139,92,246,0.1)',
+                  }}>
                     {icon}
                   </div>
-                  <div className="flex gap-1 mt-2 flex-wrap max-w-[120px] justify-center">
+                  <div style={{ display: 'flex', gap: 3, marginTop: 8, flexWrap: 'wrap', maxWidth: 120, justifyContent: 'center' }}>
                     {QUICK_EMOJIS.map(e => (
                       <button key={e} onClick={() => setIcon(e)}
-                        className={`text-lg p-0.5 rounded hover:bg-slate-100 ${icon === e ? 'ring-2 ring-emerald-500 bg-emerald-50' : ''}`}>
+                        style={{
+                          fontSize: 16, padding: 3, borderRadius: 6, cursor: 'pointer',
+                          border: 'none',
+                          background: icon === e ? 'rgba(0,240,255,0.15)' : 'transparent',
+                          boxShadow: icon === e ? '0 0 8px rgba(0,240,255,0.3)' : 'none',
+                          transition: 'all 0.15s ease',
+                        }}>
                         {e}
                       </button>
                     ))}
                   </div>
                 </div>
                 <input
-                  className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="game-input"
+                  style={{ flex: 1 }}
                   placeholder="Skill name"
                   value={skillName}
                   onChange={e => setSkillName(e.target.value)}
@@ -1345,19 +1929,23 @@ export default function SkillsPage() {
 
               {/* Type */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Skill Type</label>
-                <div className="grid grid-cols-5 gap-2">
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>SKILL CLASS</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 }}>
                   {SKILL_TYPES.map(st => (
                     <button
                       key={st.id}
                       onClick={() => handleTypeSelect(st.id)}
-                      className={`flex flex-col items-center gap-1 rounded-lg border-2 p-3 text-xs font-semibold transition-all ${
-                        skillType === st.id
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-slate-200 bg-white hover:border-slate-300'
-                      }`}
+                      style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                        borderRadius: 10, padding: 10, fontSize: 11, fontWeight: 700,
+                        cursor: 'pointer', transition: 'all 0.2s ease',
+                        border: skillType === st.id ? '2px solid #00f0ff' : '2px solid rgba(255,255,255,0.06)',
+                        background: skillType === st.id ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)',
+                        color: skillType === st.id ? '#00f0ff' : 'rgba(255,255,255,0.4)',
+                        boxShadow: skillType === st.id ? '0 0 12px rgba(0,240,255,0.12)' : 'none',
+                      }}
                     >
-                      <span className="text-xl">{st.icon}</span>
+                      <span style={{ fontSize: 20 }}>{st.icon}</span>
                       {st.label}
                     </button>
                   ))}
@@ -1366,9 +1954,10 @@ export default function SkillsPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Description</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>DESCRIPTION</label>
                 <textarea
-                  className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="game-input"
+                  style={{ minHeight: 56, resize: 'vertical', fontFamily: 'inherit' }}
                   rows={2}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
@@ -1377,65 +1966,91 @@ export default function SkillsPage() {
 
               {/* Config */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-2">Configuration</label>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#00f0ff', marginBottom: 8, letterSpacing: '0.05em' }}>CONFIGURATION</label>
                 {skillType === 'REST API' && (
-                  <div className="space-y-3">
-                    <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" placeholder="URL" value={restUrl} onChange={e => setRestUrl(e.target.value)} />
-                    <div className="flex gap-2">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <input className="game-input" style={{ fontFamily: 'monospace' }} placeholder="URL" value={restUrl} onChange={e => setRestUrl(e.target.value)} />
+                    <div style={{ display: 'flex', gap: 6 }}>
                       {['GET', 'POST', 'PUT', 'DELETE'].map(m => (
                         <button key={m} onClick={() => setRestMethod(m)}
-                          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${restMethod === m ? 'bg-emerald-600 text-white' : 'border border-slate-200 text-slate-600'}`}>
+                          style={{
+                            borderRadius: 8, padding: '6px 14px', fontSize: 11, fontWeight: 800,
+                            cursor: 'pointer', transition: 'all 0.2s ease',
+                            border: restMethod === m ? '1px solid #00f0ff' : '1px solid rgba(255,255,255,0.06)',
+                            background: restMethod === m ? 'rgba(0,240,255,0.12)' : 'transparent',
+                            color: restMethod === m ? '#00f0ff' : 'rgba(255,255,255,0.4)',
+                          }}>
                           {m}
                         </button>
                       ))}
                     </div>
-                    <textarea className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" rows={3} placeholder="Headers JSON" value={restHeaders} onChange={e => setRestHeaders(e.target.value)} />
-                    <textarea className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" rows={3} placeholder="Body template" value={restBody} onChange={e => setRestBody(e.target.value)} />
+                    <textarea className="game-input" style={{ fontFamily: 'monospace', minHeight: 72, resize: 'vertical' }} rows={3} placeholder="Headers JSON" value={restHeaders} onChange={e => setRestHeaders(e.target.value)} />
+                    <textarea className="game-input" style={{ fontFamily: 'monospace', minHeight: 72, resize: 'vertical' }} rows={3} placeholder="Body template" value={restBody} onChange={e => setRestBody(e.target.value)} />
                   </div>
                 )}
                 {skillType === 'SQL' && (
-                  <div className="space-y-3">
-                    <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" placeholder="Connection string" value={sqlConnection} onChange={e => setSqlConnection(e.target.value)} />
-                    <textarea className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" rows={4} placeholder="Query" value={sqlQuery} onChange={e => setSqlQuery(e.target.value)} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <input className="game-input" style={{ fontFamily: 'monospace' }} placeholder="Connection string" value={sqlConnection} onChange={e => setSqlConnection(e.target.value)} />
+                    <textarea className="game-input" style={{ fontFamily: 'monospace', minHeight: 96, resize: 'vertical' }} rows={4} placeholder="Query" value={sqlQuery} onChange={e => setSqlQuery(e.target.value)} />
                   </div>
                 )}
                 {skillType === 'Python' && (
-                  <textarea className="w-full min-h-[160px] rounded-lg border border-slate-200 bg-slate-900 px-4 py-3 text-sm font-mono text-emerald-400 focus:border-emerald-500 focus:outline-none" value={configJson} onChange={e => setConfigJson(e.target.value)} />
+                  <textarea className="game-input" style={{ fontFamily: 'monospace', minHeight: 160, resize: 'vertical', background: 'rgba(0,0,0,0.4)', color: '#00ff88', borderColor: 'rgba(0,255,136,0.15)' }} value={configJson} onChange={e => setConfigJson(e.target.value)} />
                 )}
                 {skillType === 'Scraper' && (
-                  <div className="space-y-3">
-                    <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" placeholder="URL" value={scraperUrl} onChange={e => setScraperUrl(e.target.value)} />
-                    <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" placeholder="CSS Selector" value={scraperSelector} onChange={e => setScraperSelector(e.target.value)} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <input className="game-input" style={{ fontFamily: 'monospace' }} placeholder="URL" value={scraperUrl} onChange={e => setScraperUrl(e.target.value)} />
+                    <input className="game-input" style={{ fontFamily: 'monospace' }} placeholder="CSS Selector" value={scraperSelector} onChange={e => setScraperSelector(e.target.value)} />
                   </div>
                 )}
                 {skillType === 'Custom' && (
-                  <textarea className="w-full min-h-[160px] rounded-lg border border-slate-200 px-4 py-3 text-sm font-mono focus:border-emerald-500 focus:outline-none" value={configJson} onChange={e => setConfigJson(e.target.value)} />
+                  <textarea className="game-input" style={{ fontFamily: 'monospace', minHeight: 160, resize: 'vertical' }} value={configJson} onChange={e => setConfigJson(e.target.value)} />
                 )}
               </div>
 
               {/* Visibility */}
-              <div className="flex gap-3">
+              <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setIsPublic(false)}
-                  className={`flex-1 flex items-center gap-2 rounded-lg border-2 p-3 text-sm font-semibold transition-all ${!isPublic ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200'}`}>
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', gap: 8,
+                    borderRadius: 10, padding: 12, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', transition: 'all 0.2s ease',
+                    border: !isPublic ? '2px solid #ff00aa' : '2px solid rgba(255,255,255,0.06)',
+                    background: !isPublic ? 'rgba(255,0,170,0.06)' : 'transparent',
+                    color: !isPublic ? '#ff00aa' : 'rgba(255,255,255,0.4)',
+                  }}>
                   <Lock size={14} /> Private
                 </button>
                 <button onClick={() => setIsPublic(true)}
-                  className={`flex-1 flex items-center gap-2 rounded-lg border-2 p-3 text-sm font-semibold transition-all ${isPublic ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200'}`}>
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', gap: 8,
+                    borderRadius: 10, padding: 12, fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', transition: 'all 0.2s ease',
+                    border: isPublic ? '2px solid #00ff88' : '2px solid rgba(255,255,255,0.06)',
+                    background: isPublic ? 'rgba(0,255,136,0.06)' : 'transparent',
+                    color: isPublic ? '#00ff88' : 'rgba(255,255,255,0.4)',
+                  }}>
                   <Globe size={14} /> Public
                 </button>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
+            <div style={{
+              display: 'flex', justifyContent: 'flex-end', gap: 10,
+              borderTop: '1px solid rgba(139,92,246,0.15)',
+              padding: '16px 24px',
+            }}>
               <button onClick={() => setEditingSkill(null)}
-                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                className="game-btn-secondary"
+                style={{ padding: '9px 18px', fontSize: 12 }}>
                 Cancel
               </button>
               <button
                 onClick={handleEditSave}
                 disabled={updateMutation.isPending}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                className="game-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 20px', fontSize: 12 }}
               >
                 {updateMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
                 Save Changes

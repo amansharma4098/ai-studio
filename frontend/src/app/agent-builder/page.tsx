@@ -61,84 +61,198 @@ export default function AgentBuilderPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
-            <Wand2 size={20} className="text-white" />
+    <div className="animate-fade-in p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto" style={{ background: '#12121a', minHeight: '100vh' }}>
+
+      {/* ── Header: Forge Title ──────────────────────────────── */}
+      <div className="mb-10">
+        <div className="flex items-center gap-4 mb-2">
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-xl animate-float"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0,240,255,0.15), rgba(139,92,246,0.15))',
+              border: '1px solid rgba(0,240,255,0.25)',
+              boxShadow: '0 0 20px rgba(0,240,255,0.15), 0 0 40px rgba(139,92,246,0.08)',
+            }}
+          >
+            <Wand2 size={22} style={{ color: '#00f0ff' }} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Smart Agent Builder</h1>
-            <p className="text-sm text-slate-500">Describe what you need. Claude builds the agent.</p>
+            <h1 className="neon-text text-2xl font-black tracking-tight" style={{ letterSpacing: '0.5px' }}>
+              AGENT FORGE
+            </h1>
+            <p style={{ color: '#64748b', fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 500 }}>
+              Describe your vision &mdash; the forge brings it to life
+            </p>
           </div>
         </div>
+        {/* Decorative line */}
+        <div style={{ height: '1px', background: 'linear-gradient(90deg, rgba(0,240,255,0.3), rgba(139,92,246,0.2), transparent)', marginTop: '16px' }} />
       </div>
 
-      {/* Description Input */}
-      <div className="mb-8 rounded-2xl border-2 border-dashed border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 p-6">
-        <label className="block text-sm font-semibold text-slate-700 mb-3">
-          Describe your agent in plain English
+      {/* ── Description Input: Glowing Forge Zone ────────────── */}
+      <div
+        className="mb-10"
+        style={{
+          borderRadius: '16px',
+          border: '2px dashed rgba(0,240,255,0.25)',
+          background: 'linear-gradient(135deg, rgba(0,240,255,0.03), rgba(139,92,246,0.04), rgba(0,255,136,0.02))',
+          padding: '28px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Corner accents */}
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '50px', height: '3px', background: 'linear-gradient(90deg, #00f0ff, transparent)', borderRadius: '0 0 4px 0' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '50px', background: 'linear-gradient(180deg, #00f0ff, transparent)', borderRadius: '0 0 0 4px' }} />
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: '50px', height: '3px', background: 'linear-gradient(270deg, #8b5cf6, transparent)' }} />
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: '3px', height: '50px', background: 'linear-gradient(0deg, #8b5cf6, transparent)' }} />
+
+        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#00f0ff', marginBottom: '12px' }}>
+          &gt; FORGE INPUT &mdash; Describe your agent in plain English
         </label>
         <textarea
           value={description}
           onChange={e => setDescription(e.target.value)}
           placeholder="e.g., I need an agent that monitors my Azure costs daily, identifies any spending anomalies, and sends a Slack alert if costs exceed the budget by more than 10%..."
-          className="w-full rounded-xl border border-violet-200 bg-white p-4 text-sm text-slate-700 placeholder-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100 resize-none"
+          className="game-input"
+          style={{
+            resize: 'none',
+            minHeight: '110px',
+            fontSize: '14px',
+            background: 'rgba(15,15,24,0.8)',
+            borderColor: 'rgba(0,240,255,0.12)',
+          }}
           rows={4}
         />
-        <div className="mt-4 flex gap-3">
+
+        {/* Action buttons */}
+        <div className="mt-5 flex flex-wrap gap-3">
           <button
             onClick={handleGenerate}
             disabled={!description.trim() || generateMutation.isPending}
-            className="flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-violet-700 disabled:opacity-50"
+            className="game-btn-secondary"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 24px',
+              fontSize: '12px',
+              letterSpacing: '0.8px',
+              textTransform: 'uppercase',
+              fontWeight: 700,
+            }}
           >
             {generateMutation.isPending ? (
-              <><Loader2 size={16} className="animate-spin" /> Generating...</>
+              <><Loader2 size={15} className="animate-spin" /> Generating...</>
             ) : (
-              <><Sparkles size={16} /> Preview Agent Config</>
+              <><Sparkles size={15} /> Preview Agent Config</>
             )}
           </button>
           <button
             onClick={handleCreateNow}
             disabled={!description.trim() || createMutation.isPending}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
+            className="game-btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'linear-gradient(135deg, #00ff88, #00f0ff)',
+              fontSize: '12px',
+              letterSpacing: '0.8px',
+            }}
           >
             {createMutation.isPending ? (
-              <><Loader2 size={16} className="animate-spin" /> Creating...</>
+              <><Loader2 size={15} className="animate-spin" /> Creating...</>
             ) : (
-              <><Zap size={16} /> Create Instantly</>
+              <><Zap size={15} /> Create Instantly</>
             )}
           </button>
         </div>
 
-        {/* Quick suggestions */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {[
-            "Monitor Azure costs and alert on anomalies",
-            "Review Entra ID security configurations",
-            "Research any topic and create a report",
-            "Handle customer support tickets via email",
-            "Analyze SQL data and generate insights",
-          ].map(suggestion => (
-            <button
-              key={suggestion}
-              onClick={() => setDescription(suggestion)}
-              className="rounded-full border border-violet-200 bg-white px-3 py-1 text-[11px] text-violet-600 hover:bg-violet-50 transition-colors"
-            >
-              {suggestion}
-            </button>
-          ))}
+        {/* Quick suggestions: Ability Chips */}
+        <div className="mt-5">
+          <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#64748b' }}>
+            Quick Abilities:
+          </span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {[
+              "Monitor Azure costs and alert on anomalies",
+              "Review Entra ID security configurations",
+              "Research any topic and create a report",
+              "Handle customer support tickets via email",
+              "Analyze SQL data and generate insights",
+            ].map(suggestion => (
+              <button
+                key={suggestion}
+                onClick={() => setDescription(suggestion)}
+                style={{
+                  borderRadius: '999px',
+                  border: '1px solid rgba(139,92,246,0.25)',
+                  background: 'rgba(139,92,246,0.06)',
+                  padding: '5px 14px',
+                  fontSize: '11px',
+                  color: '#a78bfa',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  letterSpacing: '0.3px',
+                }}
+                onMouseEnter={e => {
+                  (e.target as HTMLElement).style.background = 'rgba(139,92,246,0.15)';
+                  (e.target as HTMLElement).style.borderColor = 'rgba(139,92,246,0.45)';
+                  (e.target as HTMLElement).style.boxShadow = '0 0 15px rgba(139,92,246,0.12)';
+                  (e.target as HTMLElement).style.color = '#c4b5fd';
+                }}
+                onMouseLeave={e => {
+                  (e.target as HTMLElement).style.background = 'rgba(139,92,246,0.06)';
+                  (e.target as HTMLElement).style.borderColor = 'rgba(139,92,246,0.25)';
+                  (e.target as HTMLElement).style.boxShadow = 'none';
+                  (e.target as HTMLElement).style.color = '#a78bfa';
+                }}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Generated Config Preview */}
+      {/* ── Generated Config Preview: Blueprint / Schematic ──── */}
       {generatedConfig && (
-        <div className="mb-8 rounded-2xl border border-emerald-200 bg-white p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Bot size={20} className="text-emerald-600" />
-              <h2 className="text-lg font-bold text-slate-800">Generated Agent</h2>
+        <div
+          className="game-card animate-fade-in mb-10"
+          style={{
+            padding: '28px',
+            borderColor: 'rgba(0,255,136,0.15)',
+            background: 'linear-gradient(135deg, rgba(0,255,136,0.03), #12121a 60%)',
+            position: 'relative',
+          }}
+        >
+          {/* Top neon accent bar */}
+          <div style={{ position: 'absolute', top: 0, left: '24px', right: '24px', height: '2px', background: 'linear-gradient(90deg, transparent, #00ff88, #00f0ff, transparent)', borderRadius: '0 0 2px 2px' }} />
+
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  background: 'rgba(0,255,136,0.08)',
+                  border: '1px solid rgba(0,255,136,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Bot size={18} style={{ color: '#00ff88' }} />
+              </div>
+              <div>
+                <h2 className="neon-text-green" style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                  Blueprint Generated
+                </h2>
+                <span style={{ fontSize: '10px', color: '#64748b', letterSpacing: '1px', textTransform: 'uppercase' }}>Agent Schematic Ready</span>
+              </div>
             </div>
             <button
               onClick={() => {
@@ -146,86 +260,192 @@ export default function AgentBuilderPage() {
                 setCopied(true)
                 setTimeout(() => setCopied(false), 2000)
               }}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+              className="game-btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', fontSize: '11px' }}
             >
               {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? 'Copied' : 'Copy Config'}
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <div className="mb-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Name</span>
-                <p className="text-sm font-semibold text-slate-800">{generatedConfig.icon} {generatedConfig.name}</p>
-              </div>
-              <div className="mb-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Description</span>
-                <p className="text-sm text-slate-600">{generatedConfig.description}</p>
-              </div>
-              <div className="mb-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Model</span>
-                <p className="text-sm text-slate-600">{generatedConfig.model_name} | temp: {generatedConfig.temperature}</p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Name */}
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Skills</span>
-                <div className="mt-1 flex flex-wrap gap-1">
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#00f0ff' }}>
+                  // Designation
+                </span>
+                <p style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginTop: '4px' }}>
+                  {generatedConfig.icon} {generatedConfig.name}
+                </p>
+              </div>
+              {/* Description */}
+              <div>
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#00f0ff' }}>
+                  // Mission Brief
+                </span>
+                <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px', lineHeight: '1.6' }}>
+                  {generatedConfig.description}
+                </p>
+              </div>
+              {/* Model */}
+              <div>
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#00f0ff' }}>
+                  // Core Module
+                </span>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="badge-info">{generatedConfig.model_name}</span>
+                  <span className="badge-purple">temp: {generatedConfig.temperature}</span>
+                </div>
+              </div>
+              {/* Skills */}
+              <div>
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#00f0ff' }}>
+                  // Equipped Skills
+                </span>
+                <div className="mt-2 flex flex-wrap gap-1.5">
                   {generatedConfig.suggested_skills?.map((s: string) => (
-                    <span key={s} className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700">{s}</span>
+                    <span
+                      key={s}
+                      style={{
+                        borderRadius: '6px',
+                        background: 'rgba(0,255,136,0.08)',
+                        border: '1px solid rgba(0,255,136,0.2)',
+                        padding: '3px 10px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#00ff88',
+                        letterSpacing: '0.3px',
+                      }}
+                    >
+                      {s}
+                    </span>
                   ))}
                 </div>
               </div>
             </div>
+
+            {/* System Prompt */}
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">System Prompt</span>
-              <pre className="mt-1 rounded-lg bg-slate-50 p-3 text-[12px] text-slate-600 max-h-48 overflow-y-auto whitespace-pre-wrap">
+              <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#8b5cf6' }}>
+                // System Directive
+              </span>
+              <pre
+                style={{
+                  marginTop: '8px',
+                  borderRadius: '10px',
+                  background: 'rgba(15,15,24,0.8)',
+                  border: '1px solid rgba(139,92,246,0.12)',
+                  padding: '16px',
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  maxHeight: '220px',
+                  overflowY: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                  lineHeight: '1.6',
+                }}
+              >
                 {generatedConfig.system_prompt}
               </pre>
             </div>
           </div>
 
-          <div className="mt-4 flex gap-3">
+          {/* Create button */}
+          <div style={{ marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px' }}>
             <button
               onClick={handleCreateNow}
               disabled={createMutation.isPending}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+              className="game-btn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'linear-gradient(135deg, #00ff88, #00f0ff)',
+                fontSize: '12px',
+                letterSpacing: '1px',
+              }}
             >
               {createMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
-              Create This Agent
+              Deploy This Agent
             </button>
           </div>
         </div>
       )}
 
-      {/* Templates */}
+      {/* ── Templates: Achievement Cards ────────────────────── */}
       <div>
-        <h2 className="text-lg font-bold text-slate-800 mb-4">Pre-built Templates</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div style={{ width: '4px', height: '20px', borderRadius: '2px', background: 'linear-gradient(180deg, #8b5cf6, #00f0ff)' }} />
+          <h2 style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', color: '#e2e8f0' }}>
+            Pre-forged Templates
+          </h2>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, rgba(139,92,246,0.2), transparent)' }} />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {(templates as any[]).map((tpl: any) => {
             const Icon = TEMPLATE_ICONS[tpl.icon] || Bot
             return (
               <div
                 key={tpl.id}
-                className="group rounded-xl border border-slate-200 bg-white p-5 transition-all hover:border-violet-300 hover:shadow-md cursor-pointer"
+                className="game-card group"
+                style={{
+                  padding: '22px',
+                  cursor: 'pointer',
+                  position: 'relative',
+                }}
                 onClick={() => templateMutation.mutate(tpl.id)}
               >
+                {/* Achievement-style top bar */}
+                <div style={{ position: 'absolute', top: 0, left: '20px', width: '40px', height: '3px', background: 'linear-gradient(90deg, #8b5cf6, transparent)', borderRadius: '0 0 4px 4px', transition: 'width 0.3s' }} className="group-hover:!w-[80px]" />
+
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100 text-violet-600 group-hover:bg-violet-600 group-hover:text-white transition-colors">
-                    <Icon size={20} />
+                  <div
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '10px',
+                      background: 'rgba(139,92,246,0.08)',
+                      border: '1px solid rgba(139,92,246,0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s',
+                    }}
+                    className="group-hover:!border-[rgba(0,240,255,0.35)] group-hover:!bg-[rgba(0,240,255,0.08)] group-hover:shadow-[0_0_15px_rgba(0,240,255,0.1)]"
+                  >
+                    <Icon size={20} style={{ color: '#8b5cf6', transition: 'color 0.3s' }} className="group-hover:!text-[#00f0ff]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-800">{tpl.name}</h3>
-                    <span className="text-[10px] font-medium text-slate-400 uppercase">{tpl.category}</span>
+                    <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#e2e8f0', letterSpacing: '0.3px' }}>
+                      {tpl.name}
+                    </h3>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                      {tpl.category}
+                    </span>
                   </div>
                 </div>
-                <p className="text-[12px] text-slate-500 mb-3 line-clamp-2">{tpl.description}</p>
-                <div className="flex flex-wrap gap-1">
+
+                <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {tpl.description}
+                </p>
+
+                {/* Tags as mini badges */}
+                <div className="flex flex-wrap gap-1.5">
                   {tpl.tags?.slice(0, 3).map((tag: string) => (
-                    <span key={tag} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500">{tag}</span>
+                    <span key={tag} className="badge-purple" style={{ fontSize: '10px', padding: '1px 8px' }}>
+                      {tag}
+                    </span>
                   ))}
                 </div>
-                <div className="mt-3 flex items-center gap-1 text-[11px] text-violet-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  Use template <ChevronRight size={12} />
+
+                {/* Hover reveal action */}
+                <div
+                  className="flex items-center gap-1 mt-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ fontSize: '11px', fontWeight: 700, color: '#00f0ff', letterSpacing: '1px', textTransform: 'uppercase' }}
+                >
+                  Activate Template <ChevronRight size={13} />
                 </div>
               </div>
             )

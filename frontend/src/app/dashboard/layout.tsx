@@ -3,9 +3,9 @@ import { Sidebar } from '@/components/layout/Sidebar'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen" style={{ background: '#f8fafc' }}>
+    <div className="flex min-h-screen" style={{ background: '#0a0a0f' }}>
       <Sidebar />
-      <main className="pt-14 lg:ml-[240px] lg:pt-0 flex-1 overflow-y-auto">{children}</main>
+      <main className="pt-14 lg:ml-[240px] lg:pt-0 flex-1 overflow-y-auto page-bg grid-pattern">{children}</main>
     </div>
   )
 }
