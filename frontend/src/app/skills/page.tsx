@@ -867,7 +867,6 @@ export default function SkillsPage() {
               fontWeight: 700,
               letterSpacing: '0.02em',
               transition: 'all 0.25s ease',
-              border: 'none',
               cursor: 'pointer',
               ...(activeTab === tab.id
                 ? {
