@@ -473,7 +473,7 @@ export default function WorkflowsPage() {
                   display: 'flex', alignItems: 'center', gap: '6px',
                   borderRadius: '8px', padding: '6px 14px',
                   fontSize: '11px', fontWeight: 600,
-                  border: 'none', cursor: 'pointer',
+                  cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   ...(activeWf === wf.id
                     ? {
@@ -484,6 +484,7 @@ export default function WorkflowsPage() {
                     : {
                         color: '#12121a',
                         background: 'linear-gradient(135deg, #00ff88 0%, #00cc6a 100%)',
+                        border: 'none',
                       }
                   ),
                 }}
