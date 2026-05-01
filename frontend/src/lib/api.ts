@@ -34,7 +34,6 @@ api.interceptors.response.use(
     if (err.response?.status === 401 && typeof window !== 'undefined') {
       localStorage.removeItem('token')
       localStorage.removeItem('ai-studio-auth')
-      window.location.href = '/login'
     }
     return Promise.reject(err)
   }

@@ -63,7 +63,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
   const handleLogout = () => {
     localStorage.removeItem('token')
     logout()
-    router.push('/login')
+    router.push('/dashboard')
   }
 
   return (
