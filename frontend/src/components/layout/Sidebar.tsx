@@ -85,7 +85,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
       <div className="mx-4 mb-3 rounded-lg px-3 py-2 flex items-center gap-2"
         style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.08)' }}>
         <div className="h-1.5 w-1.5 rounded-full" style={{ background: '#00ff88', boxShadow: '0 0 6px #00ff88', animation: 'pulse-glow 2s ease-in-out infinite' }} />
-        <span className="text-[10px]" style={{ color: '#64748b' }}>
+        <span className="text-[10px]" style={{ color: '#8b92a8' }}>
           MULTI-MODEL <span className="font-bold" style={{ color: '#00f0ff' }}>ONLINE</span>
         </span>
       </div>
@@ -94,7 +94,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
       <nav className="flex-1 overflow-y-auto px-3 py-1">
         {navSections.map((section) => (
           <div key={section.label} className="mb-1">
-            <p className="px-3 py-2 text-[9px] font-black uppercase tracking-[3px]" style={{ color: '#475569' }}>
+            <p className="px-3 py-2 text-[9px] font-black uppercase tracking-[3px]" style={{ color: '#6b7394' }}>
               {section.label}
             </p>
             {section.items.map((item) => {
@@ -112,7 +112,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
                         borderLeft: '2px solid #00f0ff',
                         boxShadow: 'inset 0 0 20px rgba(0,240,255,0.05)',
                       }
-                    : { color: '#64748b', borderLeft: '2px solid transparent' }}
+                    : { color: '#8b92a8', borderLeft: '2px solid transparent' }}
                 >
                   <item.icon size={16} className="shrink-0" style={active ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))' } : {}} />
                   <span className="flex-1">{item.label}</span>
@@ -141,14 +141,14 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-bold" style={{ color: '#e2e8f0' }}>{user?.name || 'Player 1'}</p>
-            <p className="truncate text-[10px]" style={{ color: '#475569' }}>{user?.organization || 'Solo Mode'}</p>
+            <p className="truncate text-[10px]" style={{ color: '#6b7394' }}>{user?.organization || 'Solo Mode'}</p>
           </div>
           <button
             onClick={handleLogout}
             className="rounded-lg p-1.5 transition-all duration-300"
-            style={{ color: '#475569' }}
+            style={{ color: '#6b7394' }}
             onMouseEnter={e => { e.currentTarget.style.color = '#ff4d6a'; e.currentTarget.style.background = 'rgba(255,0,85,0.1)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#475569'; e.currentTarget.style.background = 'transparent' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#6b7394'; e.currentTarget.style.background = 'transparent' }}
           >
             <LogOut size={14} />
           </button>
@@ -165,7 +165,7 @@ export function Sidebar() {
     <>
       {/* Mobile top bar */}
       <div className="fixed left-0 top-0 z-40 flex h-14 w-full items-center justify-between px-4 lg:hidden"
-        style={{ background: '#08080d', borderBottom: '1px solid rgba(0,240,255,0.08)' }}>
+        style={{ background: '#111220', borderBottom: '1px solid rgba(0,240,255,0.08)' }}>
         <button onClick={() => setMobileOpen(true)} className="p-1.5" style={{ color: '#00f0ff' }}>
           <Menu size={22} />
         </button>
@@ -187,11 +187,11 @@ export function Sidebar() {
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }} />
           <aside
             className="absolute left-0 top-0 z-50 flex h-full w-72 flex-col"
-            style={{ background: '#08080d', borderRight: '1px solid rgba(0,240,255,0.08)' }}
+            style={{ background: '#111220', borderRight: '1px solid rgba(0,240,255,0.08)' }}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex justify-end px-4 pt-4">
-              <button onClick={() => setMobileOpen(false)} className="p-1" style={{ color: '#64748b' }}>
+              <button onClick={() => setMobileOpen(false)} className="p-1" style={{ color: '#8b92a8' }}>
                 <X size={20} />
               </button>
             </div>
@@ -202,7 +202,7 @@ export function Sidebar() {
 
       {/* Desktop sidebar */}
       <aside className="fixed left-0 top-0 z-50 hidden h-screen w-[240px] flex-col lg:flex"
-        style={{ background: '#08080d', borderRight: '1px solid rgba(0,240,255,0.06)' }}>
+        style={{ background: '#111220', borderRight: '1px solid rgba(0,240,255,0.06)' }}>
         <SidebarContent />
       </aside>
     </>

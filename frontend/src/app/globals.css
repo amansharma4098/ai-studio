@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --bg-page: #0a0a0f;
-  --bg-card: #12121a;
-  --bg-card-hover: #1a1a2e;
-  --bg-sidebar: #08080d;
-  --bg-input: #0f0f18;
+  --bg-page: #13141d;
+  --bg-card: #1c1d2b;
+  --bg-card-hover: #262840;
+  --bg-sidebar: #111220;
+  --bg-input: #1a1b28;
   --accent: #00f0ff;
   --accent-2: #8b5cf6;
   --accent-3: #ff00aa;
   --accent-4: #00ff88;
   --accent-5: #ff6b35;
-  --text-primary: #e2e8f0;
-  --text-muted: #64748b;
+  --text-primary: #eef0f6;
+  --text-muted: #8b92a8;
   --text-bright: #ffffff;
-  --border: rgba(255,255,255,0.06);
-  --border-glow: rgba(0,240,255,0.15);
-  --glow-cyan: 0 0 20px rgba(0,240,255,0.15), 0 0 40px rgba(0,240,255,0.05);
-  --glow-purple: 0 0 20px rgba(139,92,246,0.15), 0 0 40px rgba(139,92,246,0.05);
-  --glow-pink: 0 0 20px rgba(255,0,170,0.15), 0 0 40px rgba(255,0,170,0.05);
-  --glow-green: 0 0 20px rgba(0,255,136,0.15), 0 0 40px rgba(0,255,136,0.05);
+  --border: rgba(255,255,255,0.1);
+  --border-glow: rgba(0,240,255,0.2);
+  --glow-cyan: 0 0 20px rgba(0,240,255,0.18), 0 0 40px rgba(0,240,255,0.06);
+  --glow-purple: 0 0 20px rgba(139,92,246,0.18), 0 0 40px rgba(139,92,246,0.06);
+  --glow-pink: 0 0 20px rgba(255,0,170,0.18), 0 0 40px rgba(255,0,170,0.06);
+  --glow-green: 0 0 20px rgba(0,255,136,0.18), 0 0 40px rgba(0,255,136,0.06);
 }
 
 body {
@@ -168,7 +168,7 @@ body {
   outline: none;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
-.game-input::placeholder { color: #475569; }
+.game-input::placeholder { color: #6b7394; }
 .game-input:focus {
   border-color: rgba(0,240,255,0.4);
   box-shadow: 0 0 0 3px rgba(0,240,255,0.08), var(--glow-cyan);
@@ -289,7 +289,7 @@ body {
 .game-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(8px);
   z-index: 50;
   display: flex;
@@ -329,7 +329,7 @@ body {
   color: var(--text-primary);
 }
 .game-table tr:hover td {
-  background: rgba(0,240,255,0.02);
+  background: rgba(0,240,255,0.05);
 }
 
 /* ── Scrollbar ──────────────────────────────────────────── */
@@ -346,8 +346,8 @@ body {
 
 /* ── Tooltip ────────────────────────────────────────────── */
 .game-tooltip {
-  background: #1a1a2e;
-  color: #e2e8f0;
+  background: #262840;
+  color: #eef0f6;
   border: 1px solid rgba(0,240,255,0.15);
   border-radius: 8px;
   padding: 6px 12px;

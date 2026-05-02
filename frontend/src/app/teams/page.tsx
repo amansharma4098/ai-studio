@@ -37,7 +37,7 @@ export default function TeamsPage() {
   })
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in" style={{ background: '#0a0a0f', minHeight: '100vh' }}>
+    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in" style={{ background: '#13141d', minHeight: '100vh' }}>
 
       {/* Page Header */}
       <div className="mb-7 flex items-center justify-between">
@@ -45,7 +45,7 @@ export default function TeamsPage() {
           <h1 className="text-2xl font-bold neon-text" style={{ letterSpacing: '0.5px' }}>
             Guild Management
           </h1>
-          <p className="mt-1 text-sm" style={{ color: '#64748b' }}>
+          <p className="mt-1 text-sm" style={{ color: '#8b92a8' }}>
             Manage your squads and recruit allies for AI missions
           </p>
         </div>
@@ -99,14 +99,14 @@ export default function TeamsPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold neon-text">Forge New Guild</h2>
-                  <p className="text-[11px]" style={{ color: '#64748b' }}>Establish your team headquarters</p>
+                  <p className="text-[11px]" style={{ color: '#8b92a8' }}>Establish your team headquarters</p>
                 </div>
               </div>
             </div>
 
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#64748b' }}>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#8b92a8' }}>
                   Guild Name
                 </label>
                 <input
@@ -117,7 +117,7 @@ export default function TeamsPage() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#64748b' }}>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#8b92a8' }}>
                   Description
                 </label>
                 <textarea
@@ -181,14 +181,14 @@ export default function TeamsPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold neon-text-green">Recruit Member</h2>
-                  <p className="text-[11px]" style={{ color: '#64748b' }}>Send an invite to join your guild</p>
+                  <p className="text-[11px]" style={{ color: '#8b92a8' }}>Send an invite to join your guild</p>
                 </div>
               </div>
             </div>
 
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#64748b' }}>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#8b92a8' }}>
                   Recruit Email
                 </label>
                 <input
@@ -200,7 +200,7 @@ export default function TeamsPage() {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#64748b' }}>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#8b92a8' }}>
                   Assign Role
                 </label>
                 <select
@@ -220,18 +220,18 @@ export default function TeamsPage() {
                 className="rounded-lg p-3 space-y-2"
                 style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
-                <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#64748b' }}>
+                <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#8b92a8' }}>
                   Role Permissions
                 </div>
                 {[
                   { role: 'Admin', icon: Shield, color: '#8b5cf6', desc: 'Full guild management' },
                   { role: 'Member', icon: Users, color: '#00f0ff', desc: 'Deploy agents & run missions' },
-                  { role: 'Viewer', icon: Eye, color: '#64748b', desc: 'Observe missions only' },
+                  { role: 'Viewer', icon: Eye, color: '#8b92a8', desc: 'Observe missions only' },
                 ].map(r => (
                   <div key={r.role} className="flex items-center gap-2">
                     <r.icon size={12} style={{ color: r.color, filter: `drop-shadow(0 0 4px ${r.color}60)` }} />
                     <span className="text-[11px] font-semibold" style={{ color: r.color }}>{r.role}</span>
-                    <span className="text-[11px]" style={{ color: '#475569' }}>{r.desc}</span>
+                    <span className="text-[11px]" style={{ color: '#6b7394' }}>{r.desc}</span>
                   </div>
                 ))}
               </div>
@@ -261,7 +261,7 @@ export default function TeamsPage() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="animate-spin" size={28} style={{ color: '#00f0ff', filter: 'drop-shadow(0 0 8px rgba(0,240,255,0.5))' }} />
-          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#64748b' }}>Loading guilds...</span>
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#8b92a8' }}>Loading guilds...</span>
         </div>
       ) : (teams as any[]).length === 0 ? (
         /* Empty State -- No Squads */
@@ -293,7 +293,7 @@ export default function TeamsPage() {
                 <Users size={28} style={{ color: '#8b5cf6', filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.6))' }} />
               </div>
               <h3 className="text-lg font-bold neon-text mb-2">No Squads Found</h3>
-              <p className="text-sm mb-6" style={{ color: '#64748b' }}>
+              <p className="text-sm mb-6" style={{ color: '#8b92a8' }}>
                 Create your first guild to assemble your team and conquer AI missions together.
               </p>
               <button onClick={() => setShowCreate(true)} className="game-btn flex items-center gap-2 mx-auto">
@@ -358,7 +358,7 @@ export default function TeamsPage() {
                       <Building2
                         size={20}
                         style={{
-                          color: team.plan === 'enterprise' ? '#a78bfa' : team.plan === 'pro' ? '#00f0ff' : '#64748b',
+                          color: team.plan === 'enterprise' ? '#a78bfa' : team.plan === 'pro' ? '#00f0ff' : '#8b92a8',
                           filter: team.plan !== 'free'
                             ? `drop-shadow(0 0 4px ${team.plan === 'enterprise' ? 'rgba(139,92,246,0.5)' : 'rgba(0,240,255,0.5)'})`
                             : 'none',
@@ -369,12 +369,12 @@ export default function TeamsPage() {
                       <h3
                         className="text-sm font-bold"
                         style={{
-                          color: '#e2e8f0',
+                          color: '#eef0f6',
                         }}
                       >
                         {team.name}
                       </h3>
-                      <p className="text-[11px] font-mono" style={{ color: '#475569' }}>{team.slug}</p>
+                      <p className="text-[11px] font-mono" style={{ color: '#6b7394' }}>{team.slug}</p>
                     </div>
                   </div>
 
@@ -388,7 +388,7 @@ export default function TeamsPage() {
                     style={
                       team.plan === 'free' ? {
                         background: 'rgba(255,255,255,0.04)',
-                        color: '#475569',
+                        color: '#6b7394',
                         border: '1px solid rgba(255,255,255,0.08)',
                         padding: '2px 10px',
                         borderRadius: '999px',
@@ -413,7 +413,7 @@ export default function TeamsPage() {
 
                 {/* Guild Description */}
                 {team.description && (
-                  <p className="text-[12px] mb-4" style={{ color: '#64748b', lineHeight: '1.5' }}>
+                  <p className="text-[12px] mb-4" style={{ color: '#8b92a8', lineHeight: '1.5' }}>
                     {team.description}
                   </p>
                 )}
@@ -437,7 +437,7 @@ export default function TeamsPage() {
                     >
                       {team.member_count}
                     </div>
-                    <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#64748b' }}>
+                    <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#8b92a8' }}>
                       Members
                     </div>
                   </div>
@@ -458,7 +458,7 @@ export default function TeamsPage() {
                     >
                       {team.runs_this_month}
                     </div>
-                    <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#64748b' }}>
+                    <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#8b92a8' }}>
                       Runs
                     </div>
                   </div>
@@ -479,7 +479,7 @@ export default function TeamsPage() {
                     >
                       {team.max_agents === -1 ? '\u221E' : team.max_agents}
                     </div>
-                    <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#64748b' }}>
+                    <div className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#8b92a8' }}>
                       Max Agents
                     </div>
                   </div>

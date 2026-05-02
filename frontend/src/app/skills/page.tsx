@@ -612,7 +612,7 @@ export default function SkillsPage() {
   ]
 
   return (
-    <div className="animate-fade-in min-h-screen p-4 sm:p-6 lg:p-8" style={{ background: '#12121a' }}>
+    <div className="animate-fade-in min-h-screen p-4 sm:p-6 lg:p-8" style={{ background: '#1c1d2b' }}>
 
       {/* ── Inline Styles for Gaming Aesthetic ── */}
       <style>{`
@@ -686,7 +686,7 @@ export default function SkillsPage() {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.06);
           border-radius: 8px;
-          color: #e2e8f0;
+          color: #eef0f6;
           font-size: 13px;
           padding: 10px 14px;
           transition: all 0.25s ease;
@@ -1017,7 +1017,7 @@ export default function SkillsPage() {
                         <div key={skill.id} className="game-card skill-node" style={{ padding: 16 }}>
                           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
                             <div style={{ flex: 1 }}>
-                              <p style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0' }}>{skill.name}</p>
+                              <p style={{ fontSize: 13, fontWeight: 700, color: '#eef0f6' }}>{skill.name}</p>
                               <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, lineHeight: 1.5 }}>{skill.description}</p>
                             </div>
                             {/* XP counter */}
@@ -1164,7 +1164,7 @@ export default function SkillsPage() {
                       boxShadow: '0 0 15px rgba(0,240,255,0.08)',
                     }}>{skill.icon || '\u{1F527}'}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: '#eef0f6', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {skill.name}
                       </p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
@@ -1542,7 +1542,7 @@ export default function SkillsPage() {
                         {parsedEndpoints.length > 0 && (
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                              <p style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0' }}>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: '#eef0f6' }}>
                                 Select endpoints
                                 <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>({parsedEndpoints.length} found)</span>
                               </p>
@@ -1593,7 +1593,7 @@ export default function SkillsPage() {
                                     }}>
                                       {ep.method}
                                     </span>
-                                    <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#e2e8f0' }}>{ep.path}</span>
+                                    <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#eef0f6' }}>{ep.path}</span>
                                     {ep.summary && (
                                       <>
                                         <span style={{ color: 'rgba(255,255,255,0.15)' }}>--</span>
@@ -1787,7 +1787,7 @@ export default function SkillsPage() {
             <div style={{
               position: 'fixed', right: 0, top: 0, zIndex: 40,
               display: 'flex', height: '100%', width: 400, flexDirection: 'column',
-              background: 'linear-gradient(180deg, #1a1a2e 0%, #12121a 100%)',
+              background: 'linear-gradient(180deg, #1a1a2e 0%, #1c1d2b 100%)',
               borderLeft: '1px solid rgba(0,240,255,0.15)',
               boxShadow: '-10px 0 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,240,255,0.05)',
             }}>

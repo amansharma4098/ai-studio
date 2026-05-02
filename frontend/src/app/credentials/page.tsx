@@ -161,7 +161,7 @@ export default function CredentialsPage() {
   if (!mounted) return null
 
   return (
-    <div className="animate-fade-in" style={{ padding: '24px 32px', background: '#12121a', minHeight: '100vh' }}>
+    <div className="animate-fade-in" style={{ padding: '24px 32px', background: '#1c1d2b', minHeight: '100vh' }}>
       {/* ── Vault Header ───────────────────────────────────── */}
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 6 }}>
@@ -183,7 +183,7 @@ export default function CredentialsPage() {
             <h1 className="neon-text" style={{ fontSize: 28, fontWeight: 800, letterSpacing: 1.5, lineHeight: 1.2, textTransform: 'uppercase' }}>
               Vault
             </h1>
-            <p style={{ fontSize: 13, color: '#64748b', letterSpacing: 0.5, marginTop: 2 }}>
+            <p style={{ fontSize: 13, color: '#8b92a8', letterSpacing: 0.5, marginTop: 2 }}>
               Secure credential storage &bull; Encrypted keys &amp; secrets
             </p>
           </div>
@@ -221,7 +221,7 @@ export default function CredentialsPage() {
                     ? val === 'active' ? '#00ff88'
                     : val === 'inactive' ? '#ff4d6a'
                     : '#00f0ff'
-                    : '#64748b',
+                    : '#8b92a8',
                   border: `1px solid ${isActive
                     ? val === 'active' ? 'rgba(0,255,136,0.3)'
                     : val === 'inactive' ? 'rgba(255,0,85,0.3)'
@@ -306,7 +306,7 @@ export default function CredentialsPage() {
                 <tr>
                   <td colSpan={10} style={{ textAlign: 'center', padding: '60px 0' }}>
                     <Loader2 size={22} className="animate-spin" style={{ margin: '0 auto', color: '#00f0ff' }} />
-                    <p style={{ marginTop: 10, fontSize: 13, color: '#64748b', letterSpacing: 0.5 }}>
+                    <p style={{ marginTop: 10, fontSize: 13, color: '#8b92a8', letterSpacing: 0.5 }}>
                       Decrypting vault entries...
                     </p>
                   </td>
@@ -327,8 +327,8 @@ export default function CredentialsPage() {
                         <path d="M10 11V9a2 2 0 1 1 4 0v2"/>
                       </svg>
                     </div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', letterSpacing: 0.5 }}>Vault is empty</p>
-                    <p style={{ marginTop: 4, fontSize: 12, color: '#64748b' }}>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: '#eef0f6', letterSpacing: 0.5 }}>Vault is empty</p>
+                    <p style={{ marginTop: 4, fontSize: 12, color: '#8b92a8' }}>
                       Click &quot;Add Credential&quot; to store your first secret
                     </p>
                   </td>
@@ -376,7 +376,7 @@ export default function CredentialsPage() {
                       <X size={13} />
                     </button>
                   </td>
-                  <td style={{ fontWeight: 600, color: '#e2e8f0', letterSpacing: 0.3 }}>{cred.name}</td>
+                  <td style={{ fontWeight: 600, color: '#eef0f6', letterSpacing: 0.3 }}>{cred.name}</td>
                   <td>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                       {/* Green glow dot for active */}
@@ -394,9 +394,9 @@ export default function CredentialsPage() {
                     </span>
                   </td>
                   <td style={{ color: '#94a3b8' }}>{cred.created_by || '—'}</td>
-                  <td style={{ color: '#64748b', fontSize: 12 }}>{fmtDate(cred.created_at)}</td>
+                  <td style={{ color: '#8b92a8', fontSize: 12 }}>{fmtDate(cred.created_at)}</td>
                   <td style={{ color: '#94a3b8' }}>{cred.modified_by || '—'}</td>
-                  <td style={{ color: '#64748b', fontSize: 12 }}>{fmtDate(cred.modified_at)}</td>
+                  <td style={{ color: '#8b92a8', fontSize: 12 }}>{fmtDate(cred.modified_at)}</td>
                   <td>
                     <button
                       type="button"
@@ -477,7 +477,7 @@ export default function CredentialsPage() {
                 Purge Credential
               </h3>
               <p style={{
-                fontSize: 13, color: '#64748b', textAlign: 'center', lineHeight: 1.5,
+                fontSize: 13, color: '#8b92a8', textAlign: 'center', lineHeight: 1.5,
                 marginBottom: 24,
               }}>
                 This action cannot be undone. The credential and its stored values will be permanently removed from the vault.
@@ -656,11 +656,11 @@ function AddEditModal({
             type="button" onClick={onClose}
             style={{
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 8, padding: 6, cursor: 'pointer', color: '#64748b',
+              borderRadius: 8, padding: 6, cursor: 'pointer', color: '#8b92a8',
               transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             onMouseEnter={e => { e.currentTarget.style.color = '#ff4d6a'; e.currentTarget.style.borderColor = 'rgba(255,0,85,0.3)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#64748b'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#8b92a8'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
           >
             <X size={16} />
           </button>
@@ -672,7 +672,7 @@ function AddEditModal({
           <div style={{ marginBottom: 20 }}>
             <label style={{
               display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-              textTransform: 'uppercase', color: '#64748b', marginBottom: 8,
+              textTransform: 'uppercase', color: '#8b92a8', marginBottom: 8,
             }}>
               Credential Name <span style={{ color: '#ff4d6a' }}>*</span>
             </label>
@@ -697,7 +697,7 @@ function AddEditModal({
             <div>
               <label style={{
                 display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-                textTransform: 'uppercase', color: '#64748b', marginBottom: 8,
+                textTransform: 'uppercase', color: '#8b92a8', marginBottom: 8,
               }}>
                 Security Protocol <span style={{ color: '#ff4d6a' }}>*</span>
               </label>
@@ -748,7 +748,7 @@ function AddEditModal({
             <div>
               <label style={{
                 display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-                textTransform: 'uppercase', color: '#64748b', marginBottom: 8,
+                textTransform: 'uppercase', color: '#8b92a8', marginBottom: 8,
               }}>
                 Category <span style={{ color: '#ff4d6a' }}>*</span>
               </label>
@@ -782,13 +782,13 @@ function AddEditModal({
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <label style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-                textTransform: 'uppercase', color: '#64748b',
+                textTransform: 'uppercase', color: '#8b92a8',
               }}>
                 Description
               </label>
               <span style={{
                 fontSize: 10, fontWeight: 600,
-                color: description.length > 255 ? '#ff4d6a' : '#475569',
+                color: description.length > 255 ? '#ff4d6a' : '#6b7394',
               }}>
                 {description.length}/255
               </span>
@@ -835,7 +835,7 @@ function AddEditModal({
                     <div key={field.key}>
                       <label style={{
                         display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-                        textTransform: 'uppercase', color: '#64748b', marginBottom: 8,
+                        textTransform: 'uppercase', color: '#8b92a8', marginBottom: 8,
                       }}>
                         {field.label}
                         {field.required && <span style={{ color: '#ff4d6a', marginLeft: 3 }}>*</span>}
@@ -860,7 +860,7 @@ function AddEditModal({
                             style={{
                               position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
                               background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-                              color: showPasswords[field.key] ? '#00f0ff' : '#475569',
+                              color: showPasswords[field.key] ? '#00f0ff' : '#6b7394',
                               transition: 'color 0.3s',
                               filter: showPasswords[field.key] ? 'drop-shadow(0 0 4px rgba(0,240,255,0.4))' : 'none',
                             }}
@@ -984,11 +984,11 @@ function ViewModal({ credId, onClose }: { credId: string; onClose: () => void })
             type="button" onClick={onClose}
             style={{
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 8, padding: 6, cursor: 'pointer', color: '#64748b',
+              borderRadius: 8, padding: 6, cursor: 'pointer', color: '#8b92a8',
               transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             onMouseEnter={e => { e.currentTarget.style.color = '#ff4d6a'; e.currentTarget.style.borderColor = 'rgba(255,0,85,0.3)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#64748b'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#8b92a8'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
           >
             <X size={16} />
           </button>
@@ -999,7 +999,7 @@ function ViewModal({ credId, onClose }: { credId: string; onClose: () => void })
           {isLoading ? (
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
               <Loader2 size={22} className="animate-spin" style={{ margin: '0 auto', color: '#8b5cf6' }} />
-              <p style={{ marginTop: 10, fontSize: 13, color: '#64748b', letterSpacing: 0.5 }}>
+              <p style={{ marginTop: 10, fontSize: 13, color: '#8b92a8', letterSpacing: 0.5 }}>
                 Decrypting vault entry...
               </p>
             </div>
@@ -1026,11 +1026,11 @@ function ViewModal({ credId, onClose }: { credId: string; onClose: () => void })
                     borderBottom: idx < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
                     transition: 'background 0.2s',
                   }}>
-                    <span style={{ color: '#64748b', fontWeight: 600, letterSpacing: 0.5, fontSize: 11, textTransform: 'uppercase' }}>
+                    <span style={{ color: '#8b92a8', fontWeight: 600, letterSpacing: 0.5, fontSize: 11, textTransform: 'uppercase' }}>
                       {label}
                     </span>
                     <span style={{
-                      color: '#e2e8f0', fontWeight: 500, textAlign: 'right',
+                      color: '#eef0f6', fontWeight: 500, textAlign: 'right',
                       maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
                       {(value as string) ?? '—'}
@@ -1074,7 +1074,7 @@ function ViewModal({ credId, onClose }: { credId: string; onClose: () => void })
                         <div key={key}>
                           <label style={{
                             display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
-                            textTransform: 'uppercase', color: '#64748b', marginBottom: 6,
+                            textTransform: 'uppercase', color: '#8b92a8', marginBottom: 6,
                           }}>
                             {key.replace(/_/g, ' ')}
                           </label>
@@ -1084,7 +1084,7 @@ function ViewModal({ credId, onClose }: { credId: string; onClose: () => void })
                               border: '1px solid rgba(255,255,255,0.06)',
                               background: 'rgba(15,15,24,0.8)',
                               padding: '10px 14px', paddingRight: isPassword ? 44 : 14,
-                              fontSize: 13, fontFamily: 'monospace', color: '#e2e8f0',
+                              fontSize: 13, fontFamily: 'monospace', color: '#eef0f6',
                               letterSpacing: isPassword && !show ? 4 : 0.5,
                             }}>
                               {isPassword && !show
@@ -1098,7 +1098,7 @@ function ViewModal({ credId, onClose }: { credId: string; onClose: () => void })
                                 style={{
                                   position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
                                   background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-                                  color: show ? '#00f0ff' : '#475569',
+                                  color: show ? '#00f0ff' : '#6b7394',
                                   transition: 'color 0.3s',
                                   filter: show ? 'drop-shadow(0 0 4px rgba(0,240,255,0.4))' : 'none',
                                 }}

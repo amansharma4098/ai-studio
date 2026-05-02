@@ -227,7 +227,7 @@ export default function DeploymentsPage() {
         .game-modal {
           width: 100%;
           max-width: 480px;
-          background: linear-gradient(180deg, #16162a 0%, #12121a 100%);
+          background: linear-gradient(180deg, #16162a 0%, #1c1d2b 100%);
           border: 1px solid rgba(0, 240, 255, 0.15);
           border-radius: 16px;
           padding: 28px;
@@ -411,7 +411,7 @@ export default function DeploymentsPage() {
         }
       `}</style>
 
-      <div className="grid-bg p-4 sm:p-6 lg:p-8 min-h-screen" style={{ background: '#12121a' }}>
+      <div className="grid-bg p-4 sm:p-6 lg:p-8 min-h-screen" style={{ background: '#1c1d2b' }}>
         {/* Header */}
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center gap-3 mb-2">

@@ -360,7 +360,7 @@ export default function ApiKeysPage() {
         }
       `}</style>
 
-      <div style={{ background: '#12121a', minHeight: '100vh' }} className="p-4 sm:p-6 lg:p-8">
+      <div style={{ background: '#1c1d2b', minHeight: '100vh' }} className="p-4 sm:p-6 lg:p-8">
         {/* Grid overlay background */}
         <div className="grid-overlay" style={{ position: 'fixed' }} />
 

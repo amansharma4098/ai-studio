@@ -18,7 +18,7 @@ export default function MonitoringPage() {
   ]
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8" style={{ background: '#12121a' }}>
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8" style={{ background: '#1c1d2b' }}>
       {/* Ambient background grid */}
       <div className="pointer-events-none fixed inset-0 z-0" style={{
         backgroundImage: 'linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px)',

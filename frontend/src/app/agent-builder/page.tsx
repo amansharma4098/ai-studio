@@ -61,7 +61,7 @@ export default function AgentBuilderPage() {
   }
 
   return (
-    <div className="animate-fade-in p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto" style={{ background: '#12121a', minHeight: '100vh' }}>
+    <div className="animate-fade-in p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto" style={{ background: '#1c1d2b', minHeight: '100vh' }}>
 
       {/* ── Header: Forge Title ──────────────────────────────── */}
       <div className="mb-10">
@@ -80,7 +80,7 @@ export default function AgentBuilderPage() {
             <h1 className="neon-text text-2xl font-black tracking-tight" style={{ letterSpacing: '0.5px' }}>
               AGENT FORGE
             </h1>
-            <p style={{ color: '#64748b', fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 500 }}>
+            <p style={{ color: '#8b92a8', fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 500 }}>
               Describe your vision &mdash; the forge brings it to life
             </p>
           </div>
@@ -171,7 +171,7 @@ export default function AgentBuilderPage() {
 
         {/* Quick suggestions: Ability Chips */}
         <div className="mt-5">
-          <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#64748b' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#8b92a8' }}>
             Quick Abilities:
           </span>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -224,7 +224,7 @@ export default function AgentBuilderPage() {
           style={{
             padding: '28px',
             borderColor: 'rgba(0,255,136,0.15)',
-            background: 'linear-gradient(135deg, rgba(0,255,136,0.03), #12121a 60%)',
+            background: 'linear-gradient(135deg, rgba(0,255,136,0.03), #1c1d2b 60%)',
             position: 'relative',
           }}
         >
@@ -251,7 +251,7 @@ export default function AgentBuilderPage() {
                 <h2 className="neon-text-green" style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
                   Blueprint Generated
                 </h2>
-                <span style={{ fontSize: '10px', color: '#64748b', letterSpacing: '1px', textTransform: 'uppercase' }}>Agent Schematic Ready</span>
+                <span style={{ fontSize: '10px', color: '#8b92a8', letterSpacing: '1px', textTransform: 'uppercase' }}>Agent Schematic Ready</span>
               </div>
             </div>
             <button
@@ -275,7 +275,7 @@ export default function AgentBuilderPage() {
                 <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#00f0ff' }}>
                   // Designation
                 </span>
-                <p style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginTop: '4px' }}>
+                <p style={{ fontSize: '14px', fontWeight: 700, color: '#eef0f6', marginTop: '4px' }}>
                   {generatedConfig.icon} {generatedConfig.name}
                 </p>
               </div>
@@ -377,7 +377,7 @@ export default function AgentBuilderPage() {
       <div>
         <div className="flex items-center gap-3 mb-6">
           <div style={{ width: '4px', height: '20px', borderRadius: '2px', background: 'linear-gradient(180deg, #8b5cf6, #00f0ff)' }} />
-          <h2 style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', color: '#e2e8f0' }}>
+          <h2 style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', color: '#eef0f6' }}>
             Pre-forged Templates
           </h2>
           <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, rgba(139,92,246,0.2), transparent)' }} />
@@ -418,16 +418,16 @@ export default function AgentBuilderPage() {
                     <Icon size={20} style={{ color: '#8b5cf6', transition: 'color 0.3s' }} className="group-hover:!text-[#00f0ff]" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#e2e8f0', letterSpacing: '0.3px' }}>
+                    <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#eef0f6', letterSpacing: '0.3px' }}>
                       {tpl.name}
                     </h3>
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#8b92a8', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
                       {tpl.category}
                     </span>
                   </div>
                 </div>
 
-                <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                <p style={{ fontSize: '12px', color: '#8b92a8', marginBottom: '12px', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {tpl.description}
                 </p>
 

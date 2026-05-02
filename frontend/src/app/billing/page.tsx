@@ -34,7 +34,7 @@ export default function BillingPage() {
   const PLAN_ICONS: Record<string, any> = { free: Zap, pro: Crown, enterprise: Building2 }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto animate-fade-in" style={{ background: '#12121a', minHeight: '100vh' }}>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto animate-fade-in" style={{ background: '#1c1d2b', minHeight: '100vh' }}>
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
@@ -52,7 +52,7 @@ export default function BillingPage() {
             </h1>
           </div>
         </div>
-        <p style={{ fontSize: 13, color: '#64748b', letterSpacing: '0.5px', marginLeft: 53 }}>
+        <p style={{ fontSize: 13, color: '#8b92a8', letterSpacing: '0.5px', marginLeft: 53 }}>
           Upgrade your loadout. Unlock new capabilities.
         </p>
       </div>
@@ -85,11 +85,11 @@ export default function BillingPage() {
                 </div>
                 <div style={{
                   fontSize: 10, fontWeight: 700, letterSpacing: '2px',
-                  textTransform: 'uppercase' as const, color: '#64748b'
+                  textTransform: 'uppercase' as const, color: '#8b92a8'
                 }}>
                   Est. Cost
                 </div>
-                <div style={{ fontSize: 11, color: '#64748b' }}>
+                <div style={{ fontSize: 11, color: '#8b92a8' }}>
                   {(usage.total_input_tokens / 1000).toFixed(0)}K in / {(usage.total_output_tokens / 1000).toFixed(0)}K out
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function BillingPage() {
         }} />
         <span style={{
           fontSize: 10, fontWeight: 700, letterSpacing: '3px',
-          textTransform: 'uppercase' as const, color: '#64748b'
+          textTransform: 'uppercase' as const, color: '#8b92a8'
         }}>
           SELECT YOUR TIER
         </span>
@@ -133,7 +133,7 @@ export default function BillingPage() {
             : isHighlighted
             ? 'rgba(0,240,255,0.3)'
             : 'rgba(255,255,255,0.06)'
-          const iconColor = isEnterprise ? '#8b5cf6' : isHighlighted ? '#00f0ff' : '#64748b'
+          const iconColor = isEnterprise ? '#8b5cf6' : isHighlighted ? '#00f0ff' : '#8b92a8'
           const iconBg = isEnterprise
             ? 'rgba(139,92,246,0.12)'
             : isHighlighted
@@ -208,7 +208,7 @@ export default function BillingPage() {
                   </div>
                   <div>
                     <h3 style={{
-                      fontSize: 18, fontWeight: 800, color: '#e2e8f0',
+                      fontSize: 18, fontWeight: 800, color: '#eef0f6',
                       letterSpacing: '-0.3px'
                     }}>
                       {plan.name}
@@ -216,7 +216,7 @@ export default function BillingPage() {
                     <span style={{
                       fontSize: 10, fontWeight: 600, letterSpacing: '1px',
                       textTransform: 'uppercase' as const,
-                      color: isEnterprise ? '#8b5cf6' : isHighlighted ? '#00f0ff' : '#475569'
+                      color: isEnterprise ? '#8b5cf6' : isHighlighted ? '#00f0ff' : '#6b7394'
                     }}>
                       {isFree ? 'STARTER' : isEnterprise ? 'LEGENDARY' : 'ELITE'}
                     </span>
@@ -229,16 +229,16 @@ export default function BillingPage() {
                     className={isEnterprise ? 'neon-text-pink' : isHighlighted ? 'neon-text' : ''}
                     style={{
                       fontSize: 42, fontWeight: 900, lineHeight: 1,
-                      color: isFree ? '#64748b' : undefined,
+                      color: isFree ? '#8b92a8' : undefined,
                       letterSpacing: '-1px'
                     }}
                   >
                     ${plan.price_monthly}
                   </span>
-                  <span style={{ fontSize: 14, color: '#475569', marginLeft: 4 }}>/month</span>
+                  <span style={{ fontSize: 14, color: '#6b7394', marginLeft: 4 }}>/month</span>
                   {plan.price_yearly > 0 && (
                     <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 11, color: '#64748b' }}>
+                      <span style={{ fontSize: 11, color: '#8b92a8' }}>
                         ${plan.price_yearly}/year
                       </span>
                       <span style={{
@@ -275,7 +275,7 @@ export default function BillingPage() {
                 <div style={{ marginBottom: 20 }}>
                   <span style={{
                     fontSize: 10, fontWeight: 700, letterSpacing: '2px',
-                    textTransform: 'uppercase' as const, color: '#475569'
+                    textTransform: 'uppercase' as const, color: '#6b7394'
                   }}>
                     Models
                   </span>
@@ -332,7 +332,7 @@ export default function BillingPage() {
         marginTop: 40, textAlign: 'center', padding: '20px 0',
         borderTop: '1px solid rgba(255,255,255,0.06)'
       }}>
-        <p style={{ fontSize: 12, color: '#475569' }}>
+        <p style={{ fontSize: 12, color: '#6b7394' }}>
           All plans include SSL encryption and 99.9% uptime SLA.
           Upgrade or downgrade anytime.
         </p>
@@ -352,13 +352,13 @@ function UsageCard({ icon: Icon, label, used, limit }: { icon: any; label: strin
         color: pct > 80 ? '#ff00aa' : pct > 50 ? '#fbbf24' : '#00ff88',
         filter: `drop-shadow(0 0 6px ${pct > 80 ? 'rgba(255,0,170,0.4)' : pct > 50 ? 'rgba(251,191,36,0.4)' : 'rgba(0,255,136,0.4)'})`
       }} />
-      <div style={{ fontSize: 22, fontWeight: 800, color: '#e2e8f0' }}>
+      <div style={{ fontSize: 22, fontWeight: 800, color: '#eef0f6' }}>
         {used}
-        <span style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>/{limitText}</span>
+        <span style={{ fontSize: 13, fontWeight: 500, color: '#6b7394' }}>/{limitText}</span>
       </div>
       <div style={{
         fontSize: 10, fontWeight: 700, letterSpacing: '2px',
-        textTransform: 'uppercase' as const, color: '#64748b'
+        textTransform: 'uppercase' as const, color: '#8b92a8'
       }}>
         {label}
       </div>

@@ -59,7 +59,7 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className="animate-fade-in" style={{ minHeight: '100vh', background: '#12121a', padding: '24px 32px' }}>
+    <div className="animate-fade-in" style={{ minHeight: '100vh', background: '#1c1d2b', padding: '24px 32px' }}>
       {/* Inline styles for gaming aesthetic */}
       <style>{`
         .game-card {
@@ -75,7 +75,7 @@ export default function DocumentsPage() {
         }
         .game-btn {
           background: linear-gradient(135deg, #00f0ff, #8b5cf6);
-          color: #12121a;
+          color: #1c1d2b;
           font-weight: 700;
           border: none;
           border-radius: 8px;
@@ -123,7 +123,7 @@ export default function DocumentsPage() {
           background: rgba(0,0,0,0.4);
           border: 1px solid rgba(255,255,255,0.06);
           border-radius: 8px;
-          color: #e2e8f0;
+          color: #eef0f6;
           font-size: 13px;
           padding: 10px 14px;
           width: 100%;

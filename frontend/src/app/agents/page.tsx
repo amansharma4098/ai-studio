@@ -349,7 +349,7 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 min-h-screen animate-fade-in" style={{ background: '#0a0a0f' }}>
+    <div className="p-4 sm:p-6 lg:p-8 min-h-screen animate-fade-in" style={{ background: '#13141d' }}>
 
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
@@ -363,7 +363,7 @@ export default function AgentsPage() {
           className="game-btn flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold transition-all duration-300"
           style={{
             background: 'linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%)',
-            color: '#0a0a0f',
+            color: '#13141d',
             boxShadow: '0 0 20px rgba(0,240,255,0.3), 0 0 40px rgba(139,92,246,0.2)',
             border: '1px solid rgba(0,240,255,0.4)',
           }}>
@@ -377,7 +377,7 @@ export default function AgentsPage() {
           <div key={agent.id}
             className="game-card cursor-pointer rounded-xl p-5 transition-all duration-300 animate-fade-in"
             style={{
-              background: 'linear-gradient(145deg, #12121a 0%, #0f0f18 100%)',
+              background: 'linear-gradient(145deg, #1c1d2b 0%, #0f0f18 100%)',
               border: `1px solid ${agent.is_active ? 'rgba(0,255,136,0.2)' : 'rgba(255,255,255,0.06)'}`,
               boxShadow: agent.is_active
                 ? '0 0 20px rgba(0,255,136,0.08), inset 0 1px 0 rgba(0,255,136,0.1)'
@@ -410,7 +410,7 @@ export default function AgentsPage() {
                   <Bot size={20} style={{ color: agent.is_active ? '#00ff88' : '#8b5cf6' }} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold" style={{ color: '#e2e8f0' }}>{agent.name}</p>
+                  <p className="text-sm font-bold" style={{ color: '#eef0f6' }}>{agent.name}</p>
                   <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{agent.description || 'No description'}</p>
                 </div>
               </div>
@@ -469,7 +469,7 @@ export default function AgentsPage() {
           onClick={() => setModal(null)}>
           <div className="game-modal flex w-full max-w-2xl mx-4 sm:mx-0 flex-col rounded-xl max-h-[95vh] sm:max-h-[90vh] animate-fade-in"
             style={{
-              background: 'linear-gradient(145deg, #12121a 0%, #0a0a0f 100%)',
+              background: 'linear-gradient(145deg, #1c1d2b 0%, #13141d 100%)',
               border: '1px solid rgba(0,240,255,0.15)',
               boxShadow: '0 0 40px rgba(0,240,255,0.1), 0 0 80px rgba(139,92,246,0.05), 0 25px 50px rgba(0,0,0,0.5)',
             }}
@@ -488,7 +488,7 @@ export default function AgentsPage() {
                         style={step >= n
                           ? {
                               background: 'linear-gradient(135deg, #00f0ff, #8b5cf6)',
-                              color: '#0a0a0f',
+                              color: '#13141d',
                               boxShadow: '0 0 12px rgba(0,240,255,0.4), 0 0 24px rgba(139,92,246,0.2)',
                             }
                           : {
@@ -544,7 +544,7 @@ export default function AgentsPage() {
                           }}>
                           <span className="text-xl">{tpl.icon}</span>
                           <div className="min-w-0">
-                            <p className="text-[12px] font-bold truncate" style={{ color: '#e2e8f0' }}>{tpl.name}</p>
+                            <p className="text-[12px] font-bold truncate" style={{ color: '#eef0f6' }}>{tpl.name}</p>
                             <p className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.35)' }}>{tpl.description}</p>
                           </div>
                         </button>
@@ -561,7 +561,7 @@ export default function AgentsPage() {
                         style={{
                           background: 'rgba(255,255,255,0.03)',
                           border: '1px solid rgba(255,255,255,0.08)',
-                          color: '#e2e8f0',
+                          color: '#eef0f6',
                         }}
                         onFocus={e => { e.currentTarget.style.border = '1px solid rgba(0,240,255,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,240,255,0.1)' }}
                         onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
@@ -584,7 +584,7 @@ export default function AgentsPage() {
                     </div>
                     <textarea rows={4}
                       className="game-input w-full rounded-lg px-3.5 py-2.5 font-mono text-[12px] focus:outline-none resize-none transition-all duration-200"
-                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                       onFocus={e => { e.currentTarget.style.border = '1px solid rgba(0,240,255,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,240,255,0.1)' }}
                       onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
                       value={form.system_prompt} onChange={e => setForm({ ...form, system_prompt: e.target.value })} />
@@ -609,7 +609,7 @@ export default function AgentsPage() {
                     className="game-btn w-full rounded-lg py-2.5 text-sm font-bold transition-all duration-300"
                     style={{
                       background: 'linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%)',
-                      color: '#0a0a0f',
+                      color: '#13141d',
                       boxShadow: '0 0 20px rgba(0,240,255,0.2)',
                       border: '1px solid rgba(0,240,255,0.3)',
                     }}
@@ -626,7 +626,7 @@ export default function AgentsPage() {
                   <p className="mb-4 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Select skills and bind a credential. Credentials are matched by auth type.</p>
                   {(catalog as any[]).map((cat: any) => (
                     <div key={cat.id} className="mb-5">
-                      <div className="mb-2 flex items-center gap-2 text-sm font-bold" style={{ color: '#e2e8f0' }}>
+                      <div className="mb-2 flex items-center gap-2 text-sm font-bold" style={{ color: '#eef0f6' }}>
                         <span>{cat.icon}</span>{cat.name}
                         <span className="ml-auto text-xs font-bold" style={{ color: '#00f0ff', textShadow: '0 0 6px rgba(0,240,255,0.3)' }}>
                           {form.skill_bindings.filter(b => allSkills.find(s => s.id === b.skillId)?.catId === cat.id).length} equipped
@@ -668,11 +668,11 @@ export default function AgentsPage() {
                               onClick={() => !isAdded && toggleSkill(sk)}>
                               <div className="flex items-center gap-2 mb-1.5">
                                 <span>{sk.icon}</span>
-                                <span className="text-[11.5px] font-bold flex-1" style={{ color: isAdded ? '#00ff88' : '#e2e8f0' }}>{sk.label}</span>
+                                <span className="text-[11.5px] font-bold flex-1" style={{ color: isAdded ? '#00ff88' : '#eef0f6' }}>{sk.label}</span>
                                 {isAdded && hasBoundCred && (
                                   <span className="flex h-4 w-4 items-center justify-center rounded-full"
                                     style={{ background: '#00ff88', boxShadow: '0 0 8px rgba(0,255,136,0.4)' }}>
-                                    <Check size={10} style={{ color: '#0a0a0f' }} />
+                                    <Check size={10} style={{ color: '#13141d' }} />
                                   </span>
                                 )}
                                 {isAdded && <button onClick={e => { e.stopPropagation(); toggleSkill(sk) }}
@@ -685,7 +685,7 @@ export default function AgentsPage() {
                               {isAdded && needsCred && compatCreds.length > 0 && (
                                 <select onClick={e => e.stopPropagation()}
                                   className="mt-1 w-full rounded px-2 py-1 text-[11px] focus:outline-none"
-                                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                                   value={binding?.credentialId || ''} onChange={e => bindCred(sk.id, e.target.value)}>
                                   <option value="">Bind credential...</option>
                                   {compatCreds.map((c: any) => (
@@ -713,7 +713,7 @@ export default function AgentsPage() {
                     <button onClick={() => setStep(1)}
                       className="game-btn-secondary flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200"
                       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = '#e2e8f0' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = '#eef0f6' }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)' }}>
                       &larr; Back
                     </button>
@@ -721,7 +721,7 @@ export default function AgentsPage() {
                       className="game-btn flex-1 rounded-lg py-2.5 text-sm font-bold transition-all duration-300"
                       style={{
                         background: 'linear-gradient(135deg, #00f0ff 0%, #8b5cf6 100%)',
-                        color: '#0a0a0f',
+                        color: '#13141d',
                         boxShadow: '0 0 20px rgba(0,240,255,0.2)',
                         border: '1px solid rgba(0,240,255,0.3)',
                       }}
@@ -761,7 +761,7 @@ export default function AgentsPage() {
                               : { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }
                             }>
                             <span>{sk.icon}</span>
-                            <span className="flex-1 font-semibold" style={{ color: '#e2e8f0' }}>{sk.label}</span>
+                            <span className="flex-1 font-semibold" style={{ color: '#eef0f6' }}>{sk.label}</span>
                             {cred ? <span className="text-[10.5px] font-semibold" style={{ color: '#00ff88' }}>{(cred as any).name}</span>
                               : needsCred ? <span className="text-[10px] font-semibold" style={{ color: '#ff4466' }}>No credential</span>
                               : <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>No auth</span>}
@@ -774,7 +774,7 @@ export default function AgentsPage() {
                     <button onClick={() => setStep(2)}
                       className="game-btn-secondary flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200"
                       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = '#e2e8f0' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = '#eef0f6' }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)' }}>
                       &larr; Back
                     </button>
@@ -784,7 +784,7 @@ export default function AgentsPage() {
                       className="game-btn flex-1 rounded-lg py-2.5 text-sm font-bold transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
                       style={{
                         background: 'linear-gradient(135deg, #00ff88 0%, #00f0ff 100%)',
-                        color: '#0a0a0f',
+                        color: '#13141d',
                         boxShadow: '0 0 20px rgba(0,255,136,0.2)',
                         border: '1px solid rgba(0,255,136,0.3)',
                       }}
@@ -808,7 +808,7 @@ export default function AgentsPage() {
           onClick={() => setModal(null)}>
           <div className="game-modal flex w-full max-w-3xl mx-4 rounded-xl h-[85vh] animate-fade-in"
             style={{
-              background: '#0a0a0f',
+              background: '#13141d',
               border: '1px solid rgba(0,240,255,0.12)',
               boxShadow: '0 0 40px rgba(0,240,255,0.08), 0 0 80px rgba(139,92,246,0.04), 0 25px 50px rgba(0,0,0,0.6)',
             }}
@@ -878,7 +878,7 @@ export default function AgentsPage() {
                   <Bot size={16} style={{ color: '#00f0ff' }} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold" style={{ color: '#e2e8f0' }}>{(agents as any[]).find((a: any) => a.id === (modal as any).agentId)?.name}</p>
+                  <p className="text-sm font-bold" style={{ color: '#eef0f6' }}>{(agents as any[]).find((a: any) => a.id === (modal as any).agentId)?.name}</p>
                   <p className="text-[11px]" style={{ color: 'rgba(0,240,255,0.5)' }}>COMMS CHANNEL ACTIVE</p>
                 </div>
                 <button onClick={() => setModal(null)} className="transition-colors duration-200" style={{ color: 'rgba(255,255,255,0.3)' }}
@@ -888,7 +888,7 @@ export default function AgentsPage() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ background: '#0a0a0f' }}>
+              <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ background: '#13141d' }}>
                 {chatMsgs.length === 0 && !running && (
                   <div className="flex flex-col items-center justify-center h-full" style={{ color: 'rgba(255,255,255,0.15)' }}>
                     <MessageSquare size={28} className="mb-2 opacity-40" />
@@ -902,7 +902,7 @@ export default function AgentsPage() {
                       style={m.role === 'user'
                         ? {
                             background: 'linear-gradient(135deg, rgba(0,240,255,0.15), rgba(139,92,246,0.15))',
-                            color: '#e2e8f0',
+                            color: '#eef0f6',
                             border: '1px solid rgba(0,240,255,0.2)',
                             borderBottomRightRadius: '4px',
                           }
@@ -938,7 +938,7 @@ export default function AgentsPage() {
 
               <div className="flex gap-2 p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,240,255,0.02)' }}>
                 <input className="game-input flex-1 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none transition-all duration-200"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                   onFocus={e => { e.currentTarget.style.border = '1px solid rgba(0,240,255,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,240,255,0.1)' }}
                   onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
                   placeholder="Transmit message..." value={chatInput} onChange={e => setChatInput(e.target.value)}
@@ -948,7 +948,7 @@ export default function AgentsPage() {
                   className="game-btn rounded-lg px-3.5 transition-all duration-200 disabled:opacity-30"
                   style={{
                     background: 'linear-gradient(135deg, #00f0ff, #8b5cf6)',
-                    color: '#0a0a0f',
+                    color: '#13141d',
                     boxShadow: '0 0 12px rgba(0,240,255,0.2)',
                     border: '1px solid rgba(0,240,255,0.3)',
                   }}
@@ -969,7 +969,7 @@ export default function AgentsPage() {
           onClick={closeEditModal}>
           <div className="game-modal flex w-full max-w-2xl mx-4 flex-col rounded-xl max-h-[90vh] animate-fade-in"
             style={{
-              background: 'linear-gradient(145deg, #12121a 0%, #0a0a0f 100%)',
+              background: 'linear-gradient(145deg, #1c1d2b 0%, #13141d 100%)',
               border: '1px solid rgba(139,92,246,0.15)',
               boxShadow: '0 0 40px rgba(139,92,246,0.1), 0 0 80px rgba(0,240,255,0.04), 0 25px 50px rgba(0,0,0,0.5)',
             }}
@@ -1012,7 +1012,7 @@ export default function AgentsPage() {
                   <div>
                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Agent Name</label>
                     <input className="game-input w-full rounded-lg px-3.5 py-2.5 text-sm focus:outline-none transition-all duration-200"
-                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                       onFocus={e => { e.currentTarget.style.border = '1px solid rgba(139,92,246,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(139,92,246,0.1)' }}
                       onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
                       value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} />
@@ -1020,7 +1020,7 @@ export default function AgentsPage() {
                   <div>
                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>System Prompt</label>
                     <textarea className="game-input w-full rounded-lg px-3.5 py-2.5 font-mono text-[12px] focus:outline-none resize-none min-h-[120px] transition-all duration-200"
-                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                       onFocus={e => { e.currentTarget.style.border = '1px solid rgba(139,92,246,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(139,92,246,0.1)' }}
                       onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
                       rows={5} value={editForm.system_prompt} onChange={e => setEditForm({ ...editForm, system_prompt: e.target.value })} />
@@ -1029,7 +1029,7 @@ export default function AgentsPage() {
                     <div>
                       <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Model</label>
                       <select className="game-input w-full rounded-lg px-3.5 py-2.5 text-sm focus:outline-none transition-all duration-200"
-                        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                         value={editForm.model_name} onChange={e => setEditForm({ ...editForm, model_name: e.target.value })}>
                         <option value="claude-opus">Claude Opus (Most Capable)</option>
                         <option value="claude-sonnet">Claude Sonnet (Balanced)</option>
@@ -1049,7 +1049,7 @@ export default function AgentsPage() {
                     className="game-btn w-full rounded-lg py-2.5 text-sm font-bold transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
                     style={{
                       background: editSuccess ? 'linear-gradient(135deg, #00ff88, #00f0ff)' : 'linear-gradient(135deg, #8b5cf6, #ff00aa)',
-                      color: editSuccess ? '#0a0a0f' : '#fff',
+                      color: editSuccess ? '#13141d' : '#fff',
                       boxShadow: editSuccess ? '0 0 20px rgba(0,255,136,0.3)' : '0 0 20px rgba(139,92,246,0.2)',
                       border: editSuccess ? '1px solid rgba(0,255,136,0.3)' : '1px solid rgba(139,92,246,0.3)',
                     }}>
@@ -1079,7 +1079,7 @@ export default function AgentsPage() {
                             onMouseLeave={e => (e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.06)'}>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-sm font-bold" style={{ color: '#e2e8f0' }}>{sk.skill_name || sk.name}</span>
+                                <span className="text-sm font-bold" style={{ color: '#eef0f6' }}>{sk.skill_name || sk.name}</span>
                                 <span className="rounded-full px-2 py-0.5 text-[10px] font-bold"
                                   style={{ background: 'rgba(139,92,246,0.1)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
                                   {sk.skill_type || 'Custom'}
@@ -1134,7 +1134,7 @@ export default function AgentsPage() {
                         <div>
                           <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Skill Name</label>
                           <input className="game-input w-full rounded-lg px-3.5 py-2.5 text-sm focus:outline-none transition-all duration-200"
-                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                             onFocus={e => { e.currentTarget.style.border = '1px solid rgba(0,255,136,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,255,136,0.1)' }}
                             onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
                             placeholder="e.g. Fetch Weather"
@@ -1143,7 +1143,7 @@ export default function AgentsPage() {
                         <div>
                           <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Skill Type</label>
                           <select className="game-input w-full rounded-lg px-3.5 py-2.5 text-sm focus:outline-none transition-all duration-200"
-                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                             value={newSkill.skill_type} onChange={e => setNewSkill({ ...newSkill, skill_type: e.target.value, config_json: '' })}>
                             <option>REST API</option>
                             <option>SQL Query</option>
@@ -1155,7 +1155,7 @@ export default function AgentsPage() {
                       <div>
                         <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Config JSON</label>
                         <textarea className="game-input w-full rounded-lg px-3.5 py-2.5 font-mono text-[12px] focus:outline-none resize-none transition-all duration-200"
-                          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#e2e8f0' }}
+                          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: '#eef0f6' }}
                           onFocus={e => { e.currentTarget.style.border = '1px solid rgba(0,255,136,0.4)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,255,136,0.1)' }}
                           onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
                           rows={4}
@@ -1166,7 +1166,7 @@ export default function AgentsPage() {
                         className="game-btn w-full rounded-lg py-2.5 text-sm font-bold transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
                         style={{
                           background: 'linear-gradient(135deg, #00ff88, #00f0ff)',
-                          color: '#0a0a0f',
+                          color: '#13141d',
                           boxShadow: '0 0 20px rgba(0,255,136,0.2)',
                           border: '1px solid rgba(0,255,136,0.3)',
                         }}

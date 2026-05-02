@@ -39,7 +39,7 @@ const makeNode = (type: string, position: { x: number; y: number }, id: string) 
       border: `1.5px solid ${meta.color}`,
       borderRadius: '10px',
       padding: '8px 12px',
-      color: '#e2e8f0',
+      color: '#eef0f6',
       minWidth: '140px',
       boxShadow: `0 0 12px ${meta.color}40, inset 0 1px 0 ${meta.color}20`,
     },
@@ -113,7 +113,7 @@ export default function WorkflowsPage() {
   }
 
   return (
-    <div className="animate-fade-in min-h-screen p-8" style={{ background: '#12121a' }}>
+    <div className="animate-fade-in min-h-screen p-8" style={{ background: '#1c1d2b' }}>
       {/* Inline styles for gaming aesthetic */}
       <style jsx global>{`
         @keyframes neonPulse {
@@ -159,7 +159,7 @@ export default function WorkflowsPage() {
           padding: 8px 16px;
           font-size: 13px;
           font-weight: 600;
-          color: #12121a;
+          color: #1c1d2b;
           background: linear-gradient(135deg, #00f0ff 0%, #00c4cc 100%);
           border: none;
           cursor: pointer;
@@ -186,12 +186,12 @@ export default function WorkflowsPage() {
         }
         .game-btn-secondary:hover {
           border-color: rgba(255,255,255,0.2);
-          color: #e2e8f0;
+          color: #eef0f6;
           background: rgba(255,255,255,0.03);
         }
         .game-btn-danger {
           padding: 6px;
-          color: #64748b;
+          color: #8b92a8;
           background: transparent;
           border: none;
           border-radius: 6px;
@@ -207,10 +207,10 @@ export default function WorkflowsPage() {
           width: 100%;
           border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.08);
-          background: #12121a;
+          background: #1c1d2b;
           padding: 10px 14px;
           font-size: 13px;
-          color: #e2e8f0;
+          color: #eef0f6;
           outline: none;
           transition: all 0.2s ease;
         }
@@ -218,7 +218,7 @@ export default function WorkflowsPage() {
           border-color: #00f0ff;
           box-shadow: 0 0 0 2px #00f0ff20, 0 0 12px #00f0ff10;
         }
-        .game-input::placeholder { color: #475569; }
+        .game-input::placeholder { color: #6b7394; }
         .game-modal-overlay {
           position: fixed;
           inset: 0;
@@ -287,8 +287,8 @@ export default function WorkflowsPage() {
           padding: 8px 14px;
           font-size: 11.5px;
           font-weight: 600;
-          background: #12121a;
-          color: #e2e8f0;
+          background: #1c1d2b;
+          color: #eef0f6;
           cursor: pointer;
           transition: all 0.25s ease;
           overflow: hidden;
@@ -344,7 +344,7 @@ export default function WorkflowsPage() {
             width: 3, height: 14, borderRadius: 2,
             background: 'linear-gradient(180deg, #00f0ff, #8b5cf6)',
           }} />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#64748b' }}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: '#8b92a8' }}>
             Deploy Abilities
           </span>
         </div>
@@ -390,7 +390,7 @@ export default function WorkflowsPage() {
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           }} />
           <MiniMap style={{
-            background: '#12121a',
+            background: '#1c1d2b',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '8px',
           }} nodeColor={(node) => {
@@ -412,7 +412,7 @@ export default function WorkflowsPage() {
               width: 3, height: 14, borderRadius: 2,
               background: 'linear-gradient(180deg, #8b5cf6, #ff00aa)',
             }} />
-            <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#e2e8f0' }}>
+            <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#eef0f6' }}>
               Saved Mission Profiles
             </h2>
           </div>
@@ -444,7 +444,7 @@ export default function WorkflowsPage() {
               }} />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-sm font-semibold" style={{ color: '#e2e8f0' }}>{wf.name}</span>
+                  <span className="text-sm font-semibold" style={{ color: '#eef0f6' }}>{wf.name}</span>
                   {wf.schedule_cron && (
                     <span className="badge-info">
                       {wf.schedule_cron}
@@ -482,7 +482,7 @@ export default function WorkflowsPage() {
                         border: '1px solid rgba(0,255,136,0.3)',
                       }
                     : {
-                        color: '#12121a',
+                        color: '#1c1d2b',
                         background: 'linear-gradient(135deg, #00ff88 0%, #00cc6a 100%)',
                         border: 'none',
                       }
@@ -511,7 +511,7 @@ export default function WorkflowsPage() {
                   background: '#00f0ff',
                   boxShadow: '0 0 8px #00f0ff80',
                 }} />
-                <h2 className="text-base font-bold uppercase tracking-wider" style={{ color: '#e2e8f0' }}>
+                <h2 className="text-base font-bold uppercase tracking-wider" style={{ color: '#eef0f6' }}>
                   Save Mission
                 </h2>
               </div>
@@ -526,14 +526,14 @@ export default function WorkflowsPage() {
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#64748b' }}>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#8b92a8' }}>
                   Mission Designation
                 </label>
                 <input className="game-input"
                   value={wfName} onChange={e => setWfName(e.target.value)} />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#64748b' }}>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: '#8b92a8' }}>
                   Cron Schedule <span className="font-normal normal-case" style={{ color: '#4a5568' }}>(leave empty for manual trigger)</span>
                 </label>
                 <input className="game-input"
@@ -550,7 +550,7 @@ export default function WorkflowsPage() {
                 background: 'rgba(0,240,255,0.03)',
                 padding: '12px 14px',
                 fontSize: '11px',
-                color: '#64748b',
+                color: '#8b92a8',
                 display: 'flex',
                 gap: '16px',
               }}>

@@ -551,13 +551,13 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in" style={{ background: '#0a0a0f', minHeight: '100vh' }}>
+    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in" style={{ background: '#13141d', minHeight: '100vh' }}>
 
       {/* Page Header */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black neon-text" style={{ letterSpacing: '1px' }}>AI STUDIO</h1>
-          <p className="mt-1 text-sm" style={{ color: '#64748b' }}>Your AI-powered assistant hub — Expert agents & Custom studio</p>
+          <p className="mt-1 text-sm" style={{ color: '#8b92a8' }}>Your AI-powered assistant hub — Expert agents & Custom studio</p>
         </div>
         <div className="flex items-center gap-3">
           {statCards.map(s => (
@@ -565,7 +565,7 @@ export default function DashboardPage() {
               style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <s.icon size={12} style={{ color: s.color }} />
               <span className="text-xs font-bold" style={{ color: s.color }}>{s.value as any}</span>
-              <span className="text-[10px]" style={{ color: '#475569' }}>{s.label}</span>
+              <span className="text-[10px]" style={{ color: '#6b7394' }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -578,7 +578,7 @@ export default function DashboardPage() {
           className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold transition-all"
           style={activeSection === 'experts'
             ? { background: 'linear-gradient(135deg, rgba(0,240,255,0.12), rgba(139,92,246,0.12))', color: '#00f0ff', border: '1px solid rgba(0,240,255,0.2)', boxShadow: '0 0 15px rgba(0,240,255,0.1)' }
-            : { background: 'transparent', color: '#64748b', border: '1px solid transparent' }
+            : { background: 'transparent', color: '#8b92a8', border: '1px solid transparent' }
           }>
           <Sparkles size={16} /> Expert Agents
         </button>
@@ -586,7 +586,7 @@ export default function DashboardPage() {
           className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold transition-all"
           style={activeSection === 'studio'
             ? { background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(255,0,170,0.08))', color: '#8b5cf6', border: '1px solid rgba(139,92,246,0.2)', boxShadow: '0 0 15px rgba(139,92,246,0.1)' }
-            : { background: 'transparent', color: '#64748b', border: '1px solid transparent' }
+            : { background: 'transparent', color: '#8b92a8', border: '1px solid transparent' }
           }>
           <Wand2 size={16} /> Custom Studio
         </button>
@@ -604,9 +604,9 @@ export default function DashboardPage() {
           }}>
             <div className="flex items-center gap-3 mb-1">
               <Sparkles size={20} style={{ color: '#00f0ff' }} />
-              <h2 className="text-lg font-bold" style={{ color: '#e2e8f0' }}>Ready-to-Use Expert Agents</h2>
+              <h2 className="text-lg font-bold" style={{ color: '#eef0f6' }}>Ready-to-Use Expert Agents</h2>
             </div>
-            <p className="text-sm" style={{ color: '#64748b' }}>
+            <p className="text-sm" style={{ color: '#8b92a8' }}>
               Click any expert below to instantly start chatting. No setup needed — just ask your question.
             </p>
           </div>
@@ -639,10 +639,10 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                <h3 className="text-[15px] font-bold mb-1.5 group-hover:text-white transition-colors" style={{ color: '#e2e8f0' }}>
+                <h3 className="text-[15px] font-bold mb-1.5 group-hover:text-white transition-colors" style={{ color: '#eef0f6' }}>
                   {expert.name}
                 </h3>
-                <p className="text-[12px] leading-relaxed mb-4" style={{ color: '#64748b' }}>
+                <p className="text-[12px] leading-relaxed mb-4" style={{ color: '#8b92a8' }}>
                   {expert.description}
                 </p>
 
@@ -650,7 +650,7 @@ export default function DashboardPage() {
                 <div className="flex flex-wrap gap-1.5">
                   {expert.suggestions.slice(0, 2).map((s, i) => (
                     <span key={i} className="text-[10px] px-2 py-1 rounded-md truncate max-w-[180px]"
-                      style={{ background: 'rgba(255,255,255,0.04)', color: '#64748b', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      style={{ background: 'rgba(255,255,255,0.04)', color: '#8b92a8', border: '1px solid rgba(255,255,255,0.06)' }}>
                       {s}
                     </span>
                   ))}
@@ -681,14 +681,14 @@ export default function DashboardPage() {
                 <Wand2 size={22} style={{ color: '#8b5cf6' }} />
               </div>
               <div>
-                <h2 className="text-[15px] font-bold" style={{ color: '#e2e8f0' }}>Create Your Own Agent</h2>
-                <p className="text-[12px]" style={{ color: '#64748b' }}>Write a custom system prompt and launch your personalized AI agent instantly</p>
+                <h2 className="text-[15px] font-bold" style={{ color: '#eef0f6' }}>Create Your Own Agent</h2>
+                <p className="text-[12px]" style={{ color: '#8b92a8' }}>Write a custom system prompt and launch your personalized AI agent instantly</p>
               </div>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: '#64748b' }}>
+                <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: '#8b92a8' }}>
                   Agent Name
                 </label>
                 <input
@@ -701,7 +701,7 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: '#64748b' }}>
+                <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: '#8b92a8' }}>
                   System Prompt <span style={{ color: '#ff4d6a' }}>*</span>
                 </label>
                 <textarea
@@ -712,7 +712,7 @@ export default function DashboardPage() {
                   onChange={e => setCustomPrompt(e.target.value)}
                   style={{ fontSize: '13px', resize: 'vertical', minHeight: '120px' }}
                 />
-                <p className="text-[11px] mt-1.5" style={{ color: '#475569' }}>
+                <p className="text-[11px] mt-1.5" style={{ color: '#6b7394' }}>
                   Tip: Be specific about the agent's expertise, tone, and behavior for best results.
                 </p>
               </div>
@@ -727,7 +727,7 @@ export default function DashboardPage() {
                   <Rocket size={16} /> Launch Custom Agent
                 </button>
                 {customPrompt.trim() && (
-                  <span className="text-[11px]" style={{ color: '#64748b' }}>
+                  <span className="text-[11px]" style={{ color: '#8b92a8' }}>
                     Agent will be created and chat will open instantly
                   </span>
                 )}
@@ -765,7 +765,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold neon-text">Smart Agent Builder</h2>
-                    <p className="text-sm" style={{ color: '#64748b' }}>Describe what you need in plain English — AI builds the agent for you.</p>
+                    <p className="text-sm" style={{ color: '#8b92a8' }}>Describe what you need in plain English — AI builds the agent for you.</p>
                   </div>
                 </div>
                 <button onClick={() => router.push('/agent-builder')} className="game-btn flex items-center gap-2 shrink-0">
@@ -797,8 +797,8 @@ export default function DashboardPage() {
                   ;(e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
                 }}>
                 <a.icon size={22} className="mb-2" style={{ color: a.accent, filter: `drop-shadow(0 0 6px ${a.accent}60)` }} />
-                <div className="text-[13px] font-bold" style={{ color: '#e2e8f0' }}>{a.title}</div>
-                <div className="mt-0.5 text-[11px]" style={{ color: '#64748b' }}>{a.sub}</div>
+                <div className="text-[13px] font-bold" style={{ color: '#eef0f6' }}>{a.title}</div>
+                <div className="mt-0.5 text-[11px]" style={{ color: '#8b92a8' }}>{a.sub}</div>
               </button>
             ))}
           </div>
@@ -806,10 +806,10 @@ export default function DashboardPage() {
           {/* My Custom Agents */}
           <div className="game-card p-5 mb-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
+              <h2 className="text-sm font-bold" style={{ color: '#eef0f6' }}>
                 <span style={{ color: '#8b5cf6', marginRight: '6px' }}>//</span>
                 My Custom Agents
-                <span className="ml-2 text-[11px] font-normal" style={{ color: '#64748b' }}>({(agents as any[]).length} total)</span>
+                <span className="ml-2 text-[11px] font-normal" style={{ color: '#8b92a8' }}>({(agents as any[]).length} total)</span>
               </h2>
               <button onClick={() => router.push('/agents')} className="game-btn-secondary" style={{ padding: '4px 12px', fontSize: '11px' }}>
                 Manage All
@@ -818,9 +818,9 @@ export default function DashboardPage() {
 
             {(agents as any[]).length === 0 ? (
               <div className="py-10 text-center">
-                <Bot size={36} className="mx-auto mb-3" style={{ color: '#475569' }} />
-                <p className="text-sm font-medium mb-1" style={{ color: '#64748b' }}>No custom agents yet</p>
-                <p className="text-xs mb-4" style={{ color: '#475569' }}>Use the AI Builder above or create one manually</p>
+                <Bot size={36} className="mx-auto mb-3" style={{ color: '#6b7394' }} />
+                <p className="text-sm font-medium mb-1" style={{ color: '#8b92a8' }}>No custom agents yet</p>
+                <p className="text-xs mb-4" style={{ color: '#6b7394' }}>Use the AI Builder above or create one manually</p>
                 <button onClick={() => router.push('/agent-builder')} className="game-btn text-xs" style={{ padding: '8px 20px' }}>
                   <Wand2 size={14} className="inline mr-1" /> Create Your First Agent
                 </button>
@@ -846,8 +846,8 @@ export default function DashboardPage() {
                         <Bot size={16} style={{ color: '#8b5cf6' }} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-bold truncate" style={{ color: '#e2e8f0' }}>{agent.name}</div>
-                        <div className="text-[11px] truncate" style={{ color: '#64748b' }}>{agent.model_name}</div>
+                        <div className="text-[13px] font-bold truncate" style={{ color: '#eef0f6' }}>{agent.name}</div>
+                        <div className="text-[11px] truncate" style={{ color: '#8b92a8' }}>{agent.model_name}</div>
                       </div>
                       <div className="h-2 w-2 rounded-full" style={{
                         background: agent.is_active ? '#00ff88' : '#ff4d6a',
@@ -878,10 +878,10 @@ export default function DashboardPage() {
               <button key={s.label} onClick={() => router.push(s.href)} className="hud-stat text-left transition-all hover:scale-[1.02] group" style={{ cursor: 'pointer' }}>
                 <div className="mb-2 flex items-center justify-between">
                   <s.icon size={16} style={{ color: s.color, filter: `drop-shadow(0 0 4px ${s.color}60)` }} />
-                  <ChevronRight size={12} style={{ color: '#475569' }} />
+                  <ChevronRight size={12} style={{ color: '#6b7394' }} />
                 </div>
                 <div className="text-2xl font-bold" style={{ color: s.color, textShadow: `0 0 15px ${s.color}30` }}>{s.value as any}</div>
-                <div className="mt-1 text-[9px] font-bold uppercase tracking-widest" style={{ color: '#64748b' }}>{s.label}</div>
+                <div className="mt-1 text-[9px] font-bold uppercase tracking-widest" style={{ color: '#8b92a8' }}>{s.label}</div>
               </button>
             ))}
           </div>
@@ -909,30 +909,30 @@ export default function DashboardPage() {
                 }
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
+                <h3 className="text-sm font-bold" style={{ color: '#eef0f6' }}>
                   {activeExpert ? activeExpert.name : (customName.trim() || 'My Custom Agent')}
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: '#00ff88', boxShadow: '0 0 4px #00ff88' }} />
-                  <span className="text-[10px]" style={{ color: '#64748b' }}>Online</span>
+                  <span className="text-[10px]" style={{ color: '#8b92a8' }}>Online</span>
                 </div>
               </div>
               <button onClick={closeChat} className="rounded-lg p-2 transition-colors"
-                style={{ color: '#64748b' }}
+                style={{ color: '#8b92a8' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#ff4d6a'; e.currentTarget.style.background = 'rgba(255,0,85,0.1)' }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#64748b'; e.currentTarget.style.background = 'transparent' }}>
+                onMouseLeave={e => { e.currentTarget.style.color = '#8b92a8'; e.currentTarget.style.background = 'transparent' }}>
                 <X size={18} />
               </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ background: '#0a0a0f' }}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ background: '#13141d' }}>
               {chatMsgs.length === 0 && activeExpert && (
                 <div className="py-6">
                   <div className="text-center mb-6">
                     <activeExpert.icon size={32} className="mx-auto mb-3" style={{ color: activeExpert.accent, filter: `drop-shadow(0 0 8px ${activeExpert.accent}60)` }} />
-                    <h3 className="text-sm font-bold mb-1" style={{ color: '#e2e8f0' }}>Chat with {activeExpert.name}</h3>
-                    <p className="text-xs" style={{ color: '#64748b' }}>Ask any question or try a suggestion below</p>
+                    <h3 className="text-sm font-bold mb-1" style={{ color: '#eef0f6' }}>Chat with {activeExpert.name}</h3>
+                    <p className="text-xs" style={{ color: '#8b92a8' }}>Ask any question or try a suggestion below</p>
                   </div>
                   <div className="flex flex-col gap-2">
                     {activeExpert.suggestions.map((s, i) => (
@@ -942,7 +942,7 @@ export default function DashboardPage() {
                         onMouseEnter={e => {
                           (e.currentTarget as HTMLElement).style.borderColor = `${activeExpert.accent}30`
                           ;(e.currentTarget as HTMLElement).style.background = `${activeExpert.glow}`
-                          ;(e.currentTarget as HTMLElement).style.color = '#e2e8f0'
+                          ;(e.currentTarget as HTMLElement).style.color = '#eef0f6'
                         }}
                         onMouseLeave={e => {
                           (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
@@ -960,10 +960,10 @@ export default function DashboardPage() {
               {chatMsgs.length === 0 && activeCustom && (
                 <div className="py-6 text-center">
                   <Wand2 size={32} className="mx-auto mb-3" style={{ color: '#8b5cf6', filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.6))' }} />
-                  <h3 className="text-sm font-bold mb-1" style={{ color: '#e2e8f0' }}>
+                  <h3 className="text-sm font-bold mb-1" style={{ color: '#eef0f6' }}>
                     Chat with {customName.trim() || 'Custom Agent'}
                   </h3>
-                  <p className="text-xs" style={{ color: '#64748b' }}>Your custom agent is ready. Start typing to begin!</p>
+                  <p className="text-xs" style={{ color: '#8b92a8' }}>Your custom agent is ready. Start typing to begin!</p>
                 </div>
               )}
 
@@ -971,7 +971,7 @@ export default function DashboardPage() {
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className="max-w-[85%] rounded-xl px-4 py-3 text-[13px] leading-relaxed"
                     style={msg.role === 'user'
-                      ? { background: 'linear-gradient(135deg, rgba(0,240,255,0.12), rgba(139,92,246,0.12))', color: '#e2e8f0', border: '1px solid rgba(0,240,255,0.15)' }
+                      ? { background: 'linear-gradient(135deg, rgba(0,240,255,0.12), rgba(139,92,246,0.12))', color: '#eef0f6', border: '1px solid rgba(0,240,255,0.15)' }
                       : { background: 'rgba(255,255,255,0.04)', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.06)' }
                     }>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
@@ -984,7 +984,7 @@ export default function DashboardPage() {
                   <div className="rounded-xl px-4 py-3 flex items-center gap-2"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <Loader2 size={14} className="animate-spin" style={{ color: activeExpert ? activeExpert.accent : '#8b5cf6' }} />
-                    <span className="text-xs" style={{ color: '#64748b' }}>Thinking...</span>
+                    <span className="text-xs" style={{ color: '#8b92a8' }}>Thinking...</span>
                   </div>
                 </div>
               )}
