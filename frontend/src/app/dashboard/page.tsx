@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { agentsApi, threadsApi, monitoringApi, skillsApi, credentialsApi, api } from '@/lib/api'
+import { agentsApi, monitoringApi, skillsApi, credentialsApi } from '@/lib/api'
 import {
   Bot, Star, Key, Activity, ChevronRight, Wand2,
   Scale, Stethoscope, GraduationCap, BookOpen, MessageSquare, Plus,
@@ -460,7 +460,6 @@ Be creative, encouraging, and constructive. When giving feedback, highlight what
 
 export default function DashboardPage() {
   const router = useRouter()
-  const queryClient = useQueryClient()
 
   /* ── Data Queries ─────────────────────────────────────────── */
   const { data: agents = [] } = useQuery({ queryKey: ['agents'], queryFn: () => agentsApi.list().then(r => r.data) })
@@ -473,12 +472,9 @@ export default function DashboardPage() {
 
   /* ── Chat State ───────────────────────────────────────────── */
   const [chatOpen, setChatOpen] = useState<string | null>(null) // expert agent id or 'custom'
-  const [chatAgentId, setChatAgentId] = useState<string | null>(null) // actual created agent id
-  const [threadId, setThreadId] = useState<string | null>(null)
   const [chatMsgs, setChatMsgs] = useState<{ role: string; content: string }[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
-  const [creating, setCreating] = useState(false)
 
   /* ── Custom Agent State ────────────────────────────────────── */
   const [customName, setCustomName] = useState('')
@@ -488,59 +484,42 @@ export default function DashboardPage() {
   const activeCustom = chatOpen === 'custom'
 
   /* ── Launch Expert Agent ──────────────────────────────────── */
-  const launchExpert = async (expert: typeof EXPERT_AGENTS[0]) => {
+  const launchExpert = (expert: typeof EXPERT_AGENTS[0]) => {
     setChatOpen(expert.id)
     setChatMsgs([])
     setChatInput('')
-    setCreating(true)
-
-    try {
-      // Check if this expert agent already exists
-      const existing = (agents as any[]).find((a: any) => a.name === expert.name)
-      let agentId: string
-
-      if (existing) {
-        agentId = existing.id
-      } else {
-        // Create agent
-        const { data } = await agentsApi.create({
-          name: expert.name,
-          description: expert.description,
-          system_prompt: expert.system_prompt,
-          model_name: expert.model_name,
-          temperature: 0.7,
-          max_tokens: 4096,
-          memory_enabled: true,
-        })
-        agentId = data.id
-        queryClient.invalidateQueries({ queryKey: ['agents'] })
-      }
-
-      setChatAgentId(agentId)
-
-      // Create a new thread
-      const { data: thread } = await threadsApi.create(agentId)
-      setThreadId(thread.id)
-    } catch (err) {
-      console.error('Failed to launch expert:', err)
-    } finally {
-      setCreating(false)
-    }
   }
 
-  /* ── Send Chat Message ────────────────────────────────────── */
+  /* ── Send Chat Message (via Cloudflare Function → Anthropic) */
   const sendMessage = async (text?: string) => {
     const msg = text || chatInput.trim()
-    if (!msg || !threadId || chatLoading) return
+    if (!msg || chatLoading) return
 
     setChatInput('')
-    setChatMsgs(prev => [...prev, { role: 'user', content: msg }])
+    const newMsgs = [...chatMsgs, { role: 'user', content: msg }]
+    setChatMsgs(newMsgs)
     setChatLoading(true)
 
+    const systemPrompt = activeExpert?.system_prompt || customPrompt
+
     try {
-      const { data } = await threadsApi.chat(threadId, msg)
-      setChatMsgs(prev => [...prev, { role: 'assistant', content: data.response || data.content || data.output_text || 'No response' }])
-    } catch (err) {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_prompt: systemPrompt,
+          messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
+          temperature: 0.7,
+          max_tokens: 4096,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setChatMsgs(prev => [...prev, { role: 'assistant', content: `Error: ${data.error}` }])
+      } else {
+        setChatMsgs(prev => [...prev, { role: 'assistant', content: data.response || 'No response' }])
+      }
+    } catch {
       setChatMsgs(prev => [...prev, { role: 'assistant', content: 'Error: Failed to get response. Please try again.' }])
     } finally {
       setChatLoading(false)
@@ -549,43 +528,16 @@ export default function DashboardPage() {
 
   const closeChat = () => {
     setChatOpen(null)
-    setChatAgentId(null)
-    setThreadId(null)
     setChatMsgs([])
     setChatInput('')
   }
 
   /* ── Launch Custom Agent from User's System Prompt ─────── */
-  const launchCustom = async () => {
-    const name = customName.trim() || 'My Custom Agent'
-    const prompt = customPrompt.trim()
-    if (!prompt) return
-
+  const launchCustom = () => {
+    if (!customPrompt.trim()) return
     setChatOpen('custom')
     setChatMsgs([])
     setChatInput('')
-    setCreating(true)
-
-    try {
-      const { data } = await agentsApi.create({
-        name,
-        description: `Custom agent: ${name}`,
-        system_prompt: prompt,
-        model_name: 'anthropic/claude-sonnet',
-        temperature: 0.7,
-        max_tokens: 4096,
-        memory_enabled: true,
-      })
-      setChatAgentId(data.id)
-      queryClient.invalidateQueries({ queryKey: ['agents'] })
-
-      const { data: thread } = await threadsApi.create(data.id)
-      setThreadId(thread.id)
-    } catch (err) {
-      console.error('Failed to launch custom agent:', err)
-    } finally {
-      setCreating(false)
-    }
   }
 
   /* ── Section Toggle ───────────────────────────────────────── */
@@ -962,9 +914,7 @@ export default function DashboardPage() {
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: '#00ff88', boxShadow: '0 0 4px #00ff88' }} />
-                  <span className="text-[10px]" style={{ color: '#64748b' }}>
-                    {creating ? 'Initializing...' : 'Online'}
-                  </span>
+                  <span className="text-[10px]" style={{ color: '#64748b' }}>Online</span>
                 </div>
               </div>
               <button onClick={closeChat} className="rounded-lg p-2 transition-colors"
@@ -977,16 +927,7 @@ export default function DashboardPage() {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ background: '#0a0a0f' }}>
-              {creating && (
-                <div className="flex items-center justify-center gap-2 py-8">
-                  <Loader2 size={20} className="animate-spin" style={{ color: activeExpert ? activeExpert.accent : '#8b5cf6' }} />
-                  <span className="text-sm" style={{ color: '#64748b' }}>
-                    Setting up {activeExpert ? activeExpert.name : (customName.trim() || 'Custom Agent')}...
-                  </span>
-                </div>
-              )}
-
-              {!creating && chatMsgs.length === 0 && activeExpert && (
+              {chatMsgs.length === 0 && activeExpert && (
                 <div className="py-6">
                   <div className="text-center mb-6">
                     <activeExpert.icon size={32} className="mx-auto mb-3" style={{ color: activeExpert.accent, filter: `drop-shadow(0 0 8px ${activeExpert.accent}60)` }} />
@@ -1016,7 +957,7 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {!creating && chatMsgs.length === 0 && activeCustom && (
+              {chatMsgs.length === 0 && activeCustom && (
                 <div className="py-6 text-center">
                   <Wand2 size={32} className="mx-auto mb-3" style={{ color: '#8b5cf6', filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.6))' }} />
                   <h3 className="text-sm font-bold mb-1" style={{ color: '#e2e8f0' }}>
@@ -1054,18 +995,18 @@ export default function DashboardPage() {
               <div className="flex gap-2">
                 <input
                   className="game-input flex-1"
-                  placeholder={creating ? 'Initializing...' : `Ask ${activeExpert ? activeExpert.name : (customName.trim() || 'Custom Agent')}...`}
+                  placeholder={`Ask ${activeExpert ? activeExpert.name : (customName.trim() || 'Custom Agent')}...`}
                   value={chatInput}
                   onChange={e => setChatInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                  disabled={creating || chatLoading}
+                  disabled={chatLoading}
                   style={{ fontSize: '13px' }}
                 />
                 <button
                   onClick={() => sendMessage()}
-                  disabled={!chatInput.trim() || creating || chatLoading}
+                  disabled={!chatInput.trim() || chatLoading}
                   className="game-btn flex items-center gap-1.5"
-                  style={{ padding: '8px 16px', opacity: (!chatInput.trim() || creating || chatLoading) ? 0.4 : 1 }}>
+                  style={{ padding: '8px 16px', opacity: (!chatInput.trim() || chatLoading) ? 0.4 : 1 }}>
                   {chatLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 </button>
               </div>
