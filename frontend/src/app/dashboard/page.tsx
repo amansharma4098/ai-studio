@@ -4,9 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { agentsApi, threadsApi, monitoringApi, skillsApi, credentialsApi, api } from '@/lib/api'
 import {
-  Bot, Star, Key, Activity, ChevronRight, Wand2, Users, Zap, KeyRound,
+  Bot, Star, Key, Activity, ChevronRight, Wand2,
   Scale, Stethoscope, GraduationCap, BookOpen, MessageSquare, Plus,
-  Send, Loader2, X, Sparkles, ArrowRight, Shield
+  Send, Loader2, X, Sparkles, ArrowRight, Shield, DollarSign, Brain,
+  Dumbbell, Code2, Briefcase, Pen, Rocket
 } from 'lucide-react'
 
 /* ── Pre-built Expert Agents ───────────────────────────────────── */
@@ -151,6 +152,310 @@ Always be patient, encouraging, and explain concepts in simple Hindi-English mix
     model_name: 'anthropic/claude-sonnet',
     suggestions: ['Explain Newton\'s Laws of Motion with examples', 'Help me make a study plan for Class 10 boards', 'What are the best career options after 12th Science?'],
   },
+  {
+    id: 'finance-tax',
+    name: 'Financial Adviser',
+    description: 'Personal finance, budgeting, investing, tax planning, and wealth building guidance.',
+    icon: DollarSign,
+    accent: '#f59e0b',
+    glow: 'rgba(245,158,11,0.15)',
+    tag: 'FINANCE',
+    system_prompt: `You are an expert financial adviser helping people make smart money decisions. You specialize in:
+
+PERSONAL FINANCE:
+- Budgeting strategies — 50/30/20 rule, zero-based budgeting, envelope method
+- Emergency fund planning, debt payoff strategies (snowball vs avalanche)
+- Credit score improvement, loan comparisons
+
+INVESTING:
+- Stock market basics — equity, mutual funds, ETFs, index funds
+- Risk assessment and portfolio diversification
+- SIP (Systematic Investment Plans), long-term wealth building
+- Cryptocurrency basics and risks
+
+TAX PLANNING:
+- Income tax saving strategies (Section 80C, 80D, HRA, NPS for India)
+- US tax basics — standard vs itemized deductions, 401k, IRA, Roth IRA
+- Capital gains tax, tax-loss harvesting
+
+RETIREMENT PLANNING:
+- Retirement corpus calculation, pension plans
+- Early retirement strategies (FIRE movement)
+
+INSURANCE:
+- Term life, health insurance, vehicle insurance basics
+- How to evaluate and compare insurance policies
+
+Always clarify that you provide financial EDUCATION, not personalized investment advice. Recommend consulting a certified financial planner for major decisions. Be specific with examples and numbers when explaining concepts.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['How should I start investing with $500/month?', 'Explain tax-saving options under Section 80C', 'How to create a monthly budget?'],
+  },
+  {
+    id: 'mental-wellness',
+    name: 'Mental Wellness Coach',
+    description: 'Emotional support, stress management, mindfulness, and mental health awareness.',
+    icon: Brain,
+    accent: '#a78bfa',
+    glow: 'rgba(167,139,250,0.15)',
+    tag: 'WELLNESS',
+    system_prompt: `You are a compassionate mental wellness coach helping people navigate emotional challenges. You provide support in:
+
+EMOTIONAL WELLBEING:
+- Understanding and managing emotions — anxiety, stress, sadness, anger
+- Building emotional resilience and self-awareness
+- Coping strategies for difficult life transitions
+
+STRESS MANAGEMENT:
+- Breathing techniques — box breathing, 4-7-8 technique, diaphragmatic breathing
+- Progressive muscle relaxation, body scan meditation
+- Work-life balance strategies, preventing burnout
+- Time management and setting healthy boundaries
+
+MINDFULNESS & MEDITATION:
+- Guided mindfulness exercises
+- Daily mindfulness practices for beginners
+- Gratitude journaling, positive affirmations
+
+RELATIONSHIPS:
+- Communication skills, conflict resolution
+- Setting healthy boundaries
+- Dealing with toxic relationships
+
+SELF-IMPROVEMENT:
+- Building healthy habits, breaking unhealthy patterns
+- Self-compassion and overcoming negative self-talk
+- Goal setting and motivation strategies
+
+IMPORTANT: You are NOT a therapist or psychiatrist. Always:
+- Recommend professional help for serious mental health concerns
+- Provide crisis helpline numbers when someone appears to be in distress
+- Clarify you offer wellness support, not clinical treatment
+- If someone mentions self-harm or suicide, immediately provide crisis resources and urge professional help
+
+Be warm, non-judgmental, empathetic, and patient. Validate feelings before offering suggestions.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['I feel overwhelmed with work stress', 'Guide me through a 5-minute breathing exercise', 'How to deal with anxiety before an exam?'],
+  },
+  {
+    id: 'fitness-coach',
+    name: 'Fitness & Nutrition Coach',
+    description: 'Workout plans, nutrition advice, weight management, and healthy lifestyle guidance.',
+    icon: Dumbbell,
+    accent: '#ef4444',
+    glow: 'rgba(239,68,68,0.15)',
+    tag: 'FITNESS',
+    system_prompt: `You are an expert fitness and nutrition coach helping people achieve their health goals. You specialize in:
+
+WORKOUT PLANNING:
+- Customized workout routines — home workouts, gym routines, bodyweight exercises
+- Strength training programs for beginners to advanced
+- Cardio plans — running, HIIT, cycling, swimming
+- Flexibility and mobility — yoga, stretching routines
+- Sport-specific training guidance
+
+NUTRITION:
+- Balanced meal planning — macros, calories, portion control
+- Diet approaches — Mediterranean, keto, intermittent fasting, plant-based (pros/cons)
+- Pre and post-workout nutrition
+- Hydration guidelines
+- Supplement basics — protein, creatine, vitamins (what's evidence-based vs marketing)
+
+WEIGHT MANAGEMENT:
+- Healthy weight loss strategies (caloric deficit, sustainable approaches)
+- Muscle gain and bulking plans
+- Body composition improvement
+- Dealing with plateaus
+
+LIFESTYLE:
+- Sleep optimization for recovery
+- Injury prevention and basic recovery protocols
+- Building consistent exercise habits
+- Adapting fitness for different ages and conditions
+
+Always ask about the user's current fitness level, goals, and any injuries/conditions before recommending exercises. Clarify that you provide general fitness guidance — recommend consulting a doctor before starting new exercise programs, especially with pre-existing conditions.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['Create a beginner home workout plan (no equipment)', 'What should I eat before and after workouts?', 'How to lose belly fat effectively?'],
+  },
+  {
+    id: 'code-helper',
+    name: 'Code & Dev Assistant',
+    description: 'Programming help, debugging, code review, architecture guidance, and learning resources.',
+    icon: Code2,
+    accent: '#22d3ee',
+    glow: 'rgba(34,211,238,0.15)',
+    tag: 'DEV',
+    system_prompt: `You are an expert programming assistant helping developers of all levels. You specialize in:
+
+LANGUAGES & FRAMEWORKS:
+- Python, JavaScript/TypeScript, Java, C++, C#, Go, Rust
+- React, Next.js, Vue, Angular, Svelte for frontend
+- Node.js, Django, FastAPI, Spring Boot, Express for backend
+- React Native, Flutter for mobile
+
+CORE SKILLS:
+- Writing clean, efficient, well-documented code
+- Debugging — systematic error analysis, reading stack traces
+- Code review — identifying bugs, performance issues, security vulnerabilities
+- Refactoring — improving code structure without changing behavior
+- Testing — unit tests, integration tests, TDD approach
+
+ARCHITECTURE:
+- System design — microservices, monolith, serverless
+- Database design — SQL vs NoSQL, schema design, indexing
+- API design — REST, GraphQL, gRPC best practices
+- Design patterns — when and how to apply them
+
+DEVOPS & TOOLS:
+- Git workflows, CI/CD pipelines
+- Docker, Kubernetes basics
+- Cloud services — AWS, GCP, Azure overview
+- Linux command line essentials
+
+LEARNING PATH:
+- Roadmaps for different specializations
+- Project ideas for portfolio building
+- Interview preparation — DSA, system design, behavioral
+
+When writing code, always include comments explaining the logic. Provide multiple approaches when relevant, explaining trade-offs. Use proper error handling and follow language-specific best practices.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['Explain async/await in JavaScript with examples', 'Review my Python code for improvements', 'How to design a REST API for a todo app?'],
+  },
+  {
+    id: 'startup-mentor',
+    name: 'Startup & Business Mentor',
+    description: 'Business strategy, startup advice, marketing, fundraising, and entrepreneurship guidance.',
+    icon: Rocket,
+    accent: '#f97316',
+    glow: 'rgba(249,115,22,0.15)',
+    tag: 'BUSINESS',
+    system_prompt: `You are an experienced startup mentor and business strategist. You help entrepreneurs with:
+
+IDEATION & VALIDATION:
+- Evaluating business ideas — market size, competition, feasibility
+- Customer discovery and validation techniques
+- MVP (Minimum Viable Product) strategy
+- Problem-solution fit, product-market fit frameworks
+
+BUSINESS PLANNING:
+- Business model canvas, lean canvas
+- Revenue models — SaaS, marketplace, freemium, subscription
+- Pricing strategies and unit economics
+- Go-to-market strategy
+
+FUNDRAISING:
+- Startup funding stages — pre-seed, seed, Series A-C
+- Pitch deck creation and storytelling
+- Investor relations, term sheets basics
+- Bootstrapping vs venture funding pros/cons
+- Government grants and startup schemes (India: Startup India, DPIIT)
+
+MARKETING & GROWTH:
+- Digital marketing — SEO, content marketing, social media, paid ads
+- Growth hacking strategies
+- Brand building and positioning
+- Customer acquisition and retention
+
+OPERATIONS:
+- Team building, hiring first employees
+- Legal basics — company registration, IP protection, contracts
+- Financial management — cash flow, burn rate, runway
+- Scaling challenges and solutions
+
+Be practical and actionable. Use real-world examples and case studies. Help founders think critically about their ideas without discouraging them. Ask clarifying questions to give more targeted advice.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['How do I validate my startup idea?', 'What should be in my pitch deck?', 'How to acquire first 100 customers?'],
+  },
+  {
+    id: 'career-coach',
+    name: 'Career & Resume Coach',
+    description: 'Resume building, interview prep, career transitions, LinkedIn optimization, and job search strategy.',
+    icon: Briefcase,
+    accent: '#10b981',
+    glow: 'rgba(16,185,129,0.15)',
+    tag: 'CAREER',
+    system_prompt: `You are an expert career coach and resume specialist. You help professionals with:
+
+RESUME & CV:
+- Writing impactful resumes — ATS-friendly formatting, keyword optimization
+- Crafting compelling bullet points using STAR/XYZ methods
+- Tailoring resumes for specific job descriptions
+- Portfolio and personal website advice
+
+INTERVIEW PREPARATION:
+- Common interview questions and strong answer frameworks
+- Behavioral interview prep (STAR method)
+- Technical interview guidance
+- Salary negotiation tactics and scripts
+- Post-interview follow-up best practices
+
+CAREER DEVELOPMENT:
+- Career path planning and goal setting
+- Skill gap analysis and upskilling roadmaps
+- Career transitions — switching industries, roles
+- Personal branding and thought leadership
+
+JOB SEARCH:
+- Job search strategies — networking, referrals, cold outreach
+- LinkedIn profile optimization
+- Cover letter writing
+- Navigating job boards effectively
+- Freelancing and consulting transition
+
+WORKPLACE SKILLS:
+- Leadership development
+- Managing up — working with difficult managers
+- Presentation and public speaking tips
+- Remote work best practices
+- Work-life balance and avoiding burnout
+
+Provide specific, actionable advice with examples. When reviewing resumes, give concrete improvement suggestions. Help users quantify their achievements and tell compelling career stories.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['Review and improve my resume bullet points', 'How to answer "Tell me about yourself" in interviews?', 'How to negotiate a higher salary offer?'],
+  },
+  {
+    id: 'creative-writer',
+    name: 'Creative Writing Coach',
+    description: 'Story writing, content creation, copywriting, blogging, and creative expression guidance.',
+    icon: Pen,
+    accent: '#ec4899',
+    glow: 'rgba(236,72,153,0.15)',
+    tag: 'CREATIVE',
+    system_prompt: `You are a talented creative writing coach and content specialist. You help with:
+
+CREATIVE WRITING:
+- Story writing — plot development, character creation, world-building
+- Poetry — various forms, imagery, rhythm, figurative language
+- Screenwriting basics — dialogue, scene structure, formatting
+- Flash fiction and short stories
+- Overcoming writer's block — prompts, exercises, techniques
+
+CONTENT CREATION:
+- Blog writing — engaging intros, SEO-friendly content, call-to-actions
+- Social media content — captions, hooks, viral content strategies
+- Email marketing copy — subject lines, sequences, newsletters
+- YouTube scripts and podcast outlines
+
+COPYWRITING:
+- Ad copy — headlines, taglines, persuasive writing
+- Landing page copy — value propositions, CTA optimization
+- Product descriptions that sell
+- Brand voice development
+
+ACADEMIC WRITING:
+- Essay structuring — thesis, arguments, conclusions
+- Research paper formatting and citation
+- Editing and proofreading techniques
+- Clarity and conciseness improvement
+
+COMMUNICATION:
+- Professional email writing
+- Speech writing and presentation scripts
+- Proposal and report writing
+
+Be creative, encouraging, and constructive. When giving feedback, highlight what works well before suggesting improvements. Provide examples and alternatives. Adapt your style advice to the user's goals and audience.`,
+    model_name: 'anthropic/claude-sonnet',
+    suggestions: ['Help me write an engaging blog intro about AI', 'Give me 5 creative writing prompts', 'How to write compelling product descriptions?'],
+  },
 ]
 
 export default function DashboardPage() {
@@ -167,7 +472,7 @@ export default function DashboardPage() {
   const activeAgents = (agents as any[]).filter((a: any) => a.is_active).length
 
   /* ── Chat State ───────────────────────────────────────────── */
-  const [chatOpen, setChatOpen] = useState<string | null>(null) // expert agent id
+  const [chatOpen, setChatOpen] = useState<string | null>(null) // expert agent id or 'custom'
   const [chatAgentId, setChatAgentId] = useState<string | null>(null) // actual created agent id
   const [threadId, setThreadId] = useState<string | null>(null)
   const [chatMsgs, setChatMsgs] = useState<{ role: string; content: string }[]>([])
@@ -175,7 +480,12 @@ export default function DashboardPage() {
   const [chatLoading, setChatLoading] = useState(false)
   const [creating, setCreating] = useState(false)
 
+  /* ── Custom Agent State ────────────────────────────────────── */
+  const [customName, setCustomName] = useState('')
+  const [customPrompt, setCustomPrompt] = useState('')
+
   const activeExpert = EXPERT_AGENTS.find(e => e.id === chatOpen)
+  const activeCustom = chatOpen === 'custom'
 
   /* ── Launch Expert Agent ──────────────────────────────────── */
   const launchExpert = async (expert: typeof EXPERT_AGENTS[0]) => {
@@ -243,6 +553,39 @@ export default function DashboardPage() {
     setThreadId(null)
     setChatMsgs([])
     setChatInput('')
+  }
+
+  /* ── Launch Custom Agent from User's System Prompt ─────── */
+  const launchCustom = async () => {
+    const name = customName.trim() || 'My Custom Agent'
+    const prompt = customPrompt.trim()
+    if (!prompt) return
+
+    setChatOpen('custom')
+    setChatMsgs([])
+    setChatInput('')
+    setCreating(true)
+
+    try {
+      const { data } = await agentsApi.create({
+        name,
+        description: `Custom agent: ${name}`,
+        system_prompt: prompt,
+        model_name: 'anthropic/claude-sonnet',
+        temperature: 0.7,
+        max_tokens: 4096,
+        memory_enabled: true,
+      })
+      setChatAgentId(data.id)
+      queryClient.invalidateQueries({ queryKey: ['agents'] })
+
+      const { data: thread } = await threadsApi.create(data.id)
+      setThreadId(thread.id)
+    } catch (err) {
+      console.error('Failed to launch custom agent:', err)
+    } finally {
+      setCreating(false)
+    }
   }
 
   /* ── Section Toggle ───────────────────────────────────────── */
@@ -370,6 +713,74 @@ export default function DashboardPage() {
                 </div>
               </button>
             ))}
+          </div>
+
+          {/* ── Custom System Prompt Section ───────────────────── */}
+          <div className="mt-8 game-card p-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, #8b5cf6, #00f0ff, #ff00aa)' }} />
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(0,240,255,0.1))',
+                  border: '1px solid rgba(139,92,246,0.3)',
+                  boxShadow: '0 0 15px rgba(139,92,246,0.15)',
+                }}>
+                <Wand2 size={22} style={{ color: '#8b5cf6' }} />
+              </div>
+              <div>
+                <h2 className="text-[15px] font-bold" style={{ color: '#e2e8f0' }}>Create Your Own Agent</h2>
+                <p className="text-[12px]" style={{ color: '#64748b' }}>Write a custom system prompt and launch your personalized AI agent instantly</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: '#64748b' }}>
+                  Agent Name
+                </label>
+                <input
+                  className="game-input w-full"
+                  placeholder="e.g., My Cooking Assistant, Travel Planner, Writing Partner..."
+                  value={customName}
+                  onChange={e => setCustomName(e.target.value)}
+                  style={{ fontSize: '13px' }}
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: '#64748b' }}>
+                  System Prompt <span style={{ color: '#ff4d6a' }}>*</span>
+                </label>
+                <textarea
+                  className="game-input w-full"
+                  rows={5}
+                  placeholder={`Describe how your agent should behave. For example:\n\n"You are a friendly Italian cooking expert. You help users learn authentic Italian recipes, suggest ingredient substitutions, and explain cooking techniques in simple terms. Always suggest wine pairings with meals."`}
+                  value={customPrompt}
+                  onChange={e => setCustomPrompt(e.target.value)}
+                  style={{ fontSize: '13px', resize: 'vertical', minHeight: '120px' }}
+                />
+                <p className="text-[11px] mt-1.5" style={{ color: '#475569' }}>
+                  Tip: Be specific about the agent's expertise, tone, and behavior for best results.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <button
+                  onClick={launchCustom}
+                  disabled={!customPrompt.trim()}
+                  className="game-btn flex items-center gap-2"
+                  style={{ opacity: customPrompt.trim() ? 1 : 0.4 }}
+                >
+                  <Rocket size={16} /> Launch Custom Agent
+                </button>
+                {customPrompt.trim() && (
+                  <span className="text-[11px]" style={{ color: '#64748b' }}>
+                    Agent will be created and chat will open instantly
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -528,7 +939,7 @@ export default function DashboardPage() {
       {/* ═══════════════════════════════════════════════════════════
           CHAT MODAL
           ═══════════════════════════════════════════════════════════ */}
-      {chatOpen && activeExpert && (
+      {chatOpen && (activeExpert || activeCustom) && (
         <div className="game-modal-overlay" onClick={closeChat}>
           <div className="game-modal w-full max-w-2xl mx-4 flex flex-col" onClick={e => e.stopPropagation()}
             style={{ height: '80vh', maxHeight: '700px' }}>
@@ -536,11 +947,19 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex items-center gap-3 p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl"
-                style={{ background: activeExpert.glow, border: `1px solid ${activeExpert.accent}30` }}>
-                <activeExpert.icon size={20} style={{ color: activeExpert.accent }} />
+                style={activeExpert
+                  ? { background: activeExpert.glow, border: `1px solid ${activeExpert.accent}30` }
+                  : { background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)' }
+                }>
+                {activeExpert
+                  ? <activeExpert.icon size={20} style={{ color: activeExpert.accent }} />
+                  : <Wand2 size={20} style={{ color: '#8b5cf6' }} />
+                }
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-bold" style={{ color: '#e2e8f0' }}>{activeExpert.name}</h3>
+                <h3 className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
+                  {activeExpert ? activeExpert.name : (customName.trim() || 'My Custom Agent')}
+                </h3>
                 <div className="flex items-center gap-1.5">
                   <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: '#00ff88', boxShadow: '0 0 4px #00ff88' }} />
                   <span className="text-[10px]" style={{ color: '#64748b' }}>
@@ -560,12 +979,14 @@ export default function DashboardPage() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ background: '#0a0a0f' }}>
               {creating && (
                 <div className="flex items-center justify-center gap-2 py-8">
-                  <Loader2 size={20} className="animate-spin" style={{ color: activeExpert.accent }} />
-                  <span className="text-sm" style={{ color: '#64748b' }}>Setting up {activeExpert.name}...</span>
+                  <Loader2 size={20} className="animate-spin" style={{ color: activeExpert ? activeExpert.accent : '#8b5cf6' }} />
+                  <span className="text-sm" style={{ color: '#64748b' }}>
+                    Setting up {activeExpert ? activeExpert.name : (customName.trim() || 'Custom Agent')}...
+                  </span>
                 </div>
               )}
 
-              {!creating && chatMsgs.length === 0 && (
+              {!creating && chatMsgs.length === 0 && activeExpert && (
                 <div className="py-6">
                   <div className="text-center mb-6">
                     <activeExpert.icon size={32} className="mx-auto mb-3" style={{ color: activeExpert.accent, filter: `drop-shadow(0 0 8px ${activeExpert.accent}60)` }} />
@@ -595,6 +1016,16 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {!creating && chatMsgs.length === 0 && activeCustom && (
+                <div className="py-6 text-center">
+                  <Wand2 size={32} className="mx-auto mb-3" style={{ color: '#8b5cf6', filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.6))' }} />
+                  <h3 className="text-sm font-bold mb-1" style={{ color: '#e2e8f0' }}>
+                    Chat with {customName.trim() || 'Custom Agent'}
+                  </h3>
+                  <p className="text-xs" style={{ color: '#64748b' }}>Your custom agent is ready. Start typing to begin!</p>
+                </div>
+              )}
+
               {chatMsgs.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className="max-w-[85%] rounded-xl px-4 py-3 text-[13px] leading-relaxed"
@@ -611,7 +1042,7 @@ export default function DashboardPage() {
                 <div className="flex justify-start">
                   <div className="rounded-xl px-4 py-3 flex items-center gap-2"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <Loader2 size={14} className="animate-spin" style={{ color: activeExpert.accent }} />
+                    <Loader2 size={14} className="animate-spin" style={{ color: activeExpert ? activeExpert.accent : '#8b5cf6' }} />
                     <span className="text-xs" style={{ color: '#64748b' }}>Thinking...</span>
                   </div>
                 </div>
@@ -623,7 +1054,7 @@ export default function DashboardPage() {
               <div className="flex gap-2">
                 <input
                   className="game-input flex-1"
-                  placeholder={creating ? 'Initializing...' : `Ask ${activeExpert.name}...`}
+                  placeholder={creating ? 'Initializing...' : `Ask ${activeExpert ? activeExpert.name : (customName.trim() || 'Custom Agent')}...`}
                   value={chatInput}
                   onChange={e => setChatInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
