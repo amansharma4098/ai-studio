@@ -15,4 +15,4 @@ pages_build_output_dir = "frontend/out"
 [[d1_databases]]
 binding = "DB"
 database_name = "ai-studio-db"
-database_id = "" # <- paste your D1 database ID here after running: wrangler d1 create ai-studio-db
+database_id = "ef7d7d06-5379-420b-84c6-fcb882010b68"
