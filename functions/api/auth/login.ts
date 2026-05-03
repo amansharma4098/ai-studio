@@ -1,10 +1,11 @@
 // POST /api/auth/login — authenticate user
 import { Env, json, error, options } from '../_helpers';
-import { verifyPassword, createJWT } from './_crypto';
+import { verifyPassword, createJWT, setJWTSecret } from './_crypto';
 
 export const onRequestOptions: PagesFunction<Env> = async () => options();
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  if (env.JWT_SECRET) setJWTSecret(env.JWT_SECRET);
   const body = (await request.json()) as any;
   const { email, password } = body;
 

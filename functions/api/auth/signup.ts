@@ -1,10 +1,11 @@
 // POST /api/auth/signup — register new user
 import { Env, uuid, json, error, options } from '../_helpers';
-import { hashPassword, createJWT } from './_crypto';
+import { hashPassword, createJWT, setJWTSecret } from './_crypto';
 
 export const onRequestOptions: PagesFunction<Env> = async () => options();
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  if (env.JWT_SECRET) setJWTSecret(env.JWT_SECRET);
   const body = (await request.json()) as any;
   const { email, name, password, account_type, org_name } = body;
 

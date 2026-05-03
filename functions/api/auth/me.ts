@@ -1,10 +1,11 @@
 // GET /api/auth/me — get current user from JWT
 import { Env, json, error, options } from '../_helpers';
-import { verifyJWT } from './_crypto';
+import { verifyJWT, setJWTSecret } from './_crypto';
 
 export const onRequestOptions: PagesFunction<Env> = async () => options();
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
+  if (env.JWT_SECRET) setJWTSecret(env.JWT_SECRET);
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return error('Not authenticated', 401);

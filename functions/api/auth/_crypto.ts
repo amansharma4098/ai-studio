@@ -42,7 +42,11 @@ async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>
 }
 
 // Simple JWT using HMAC-SHA256
-const JWT_SECRET = 'ai-studio-jwt-secret-change-in-prod';
+let _jwtSecret = 'ai-studio-jwt-secret-change-in-prod';
+
+export function setJWTSecret(secret: string) {
+  _jwtSecret = secret;
+}
 
 export async function createJWT(payload: Record<string, any>): Promise<string> {
   const header = { alg: 'HS256', typ: 'JWT' };
@@ -54,7 +58,7 @@ export async function createJWT(payload: Record<string, any>): Promise<string> {
   const payloadB64 = base64url(JSON.stringify(claims));
   const data = `${headerB64}.${payloadB64}`;
 
-  const key = await crypto.subtle.importKey('raw', enc.encode(JWT_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const key = await crypto.subtle.importKey('raw', enc.encode(_jwtSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
   const sigB64 = base64url(String.fromCharCode(...new Uint8Array(sig)));
 
@@ -70,7 +74,7 @@ export async function verifyJWT(token: string): Promise<Record<string, any> | nu
     const data = `${parts[0]}.${parts[1]}`;
     const sig = Uint8Array.from(base64urlDecode(parts[2]), c => c.charCodeAt(0));
 
-    const key = await crypto.subtle.importKey('raw', enc.encode(JWT_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    const key = await crypto.subtle.importKey('raw', enc.encode(_jwtSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
     const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(data));
     if (!valid) return null;
 
