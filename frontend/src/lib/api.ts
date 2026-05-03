@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.stupidaistudio.com'
+// Use relative /api path — Cloudflare Pages Functions handle the API
+const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,

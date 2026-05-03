@@ -5,3 +5,14 @@ pages_build_output_dir = "frontend/out"
 # NOTE: The build command must be set in the Cloudflare Pages dashboard,
 # not here. Pages does not support the [build] section in wrangler.toml.
 # Build command for dashboard: cd frontend && npm install && npm run build
+
+# ── Cloudflare D1 Database ────────────────────────────────────────
+# Create the database first:
+#   wrangler d1 create ai-studio-db
+# Then paste the database_id below.
+# Apply schema:
+#   wrangler d1 execute ai-studio-db --file=d1/schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "ai-studio-db"
+database_id = "" # <- paste your D1 database ID here after running: wrangler d1 create ai-studio-db

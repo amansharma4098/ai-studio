@@ -77,7 +77,7 @@ export default function DeploymentsPage() {
   }
 
   const deployedAgentIds = new Set(Object.keys(allDeployments))
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.stupidaistudio.com'
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
   return (
     <>
