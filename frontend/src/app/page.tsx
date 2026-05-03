@@ -1,11 +1,13 @@
 'use client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
 
 export default function RootPage() {
   const router = useRouter()
+  const { isAuthenticated } = useAuthStore()
   useEffect(() => {
-    router.replace('/dashboard')
+    router.replace(isAuthenticated() ? '/dashboard' : '/login')
   }, [])
   return null
 }
