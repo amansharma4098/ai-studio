@@ -172,7 +172,9 @@ export default function AgentsPage() {
       } catch {
         setAgentSkills([])
       }
-    } catch {}
+    } catch {
+      console.error('Failed to open edit modal')
+    }
   }
 
   const closeEditModal = () => {
@@ -190,8 +192,9 @@ export default function AgentsPage() {
       setEditSuccess(true)
       qc.invalidateQueries({ queryKey: ['agents'] })
       setTimeout(() => setEditSuccess(false), 3000)
-    } catch {}
-    finally { setEditSaving(false) }
+    } catch {
+      console.error('Failed to save agent')
+    } finally { setEditSaving(false) }
   }
 
   const addAgentSkill = async () => {
@@ -206,8 +209,9 @@ export default function AgentsPage() {
       const res = await agentsApi.getSkills(editAgent.id)
       setAgentSkills(res.data || [])
       setNewSkill({ skill_name: '', skill_type: 'REST API', config_json: '' })
-    } catch {}
-    finally { setSkillAdding(false) }
+    } catch {
+      console.error('Failed to add skill')
+    } finally { setSkillAdding(false) }
   }
 
   const removeAgentSkill = async (skillId: string) => {
@@ -216,7 +220,9 @@ export default function AgentsPage() {
       await agentsApi.removeSkill(editAgent.id, skillId)
       setAgentSkills(prev => prev.filter(s => s.id !== skillId))
       setSkillDeleteConfirm(null)
-    } catch {}
+    } catch {
+      console.error('Failed to remove skill')
+    }
   }
 
   const deleteAgentFull = async () => {
@@ -225,7 +231,9 @@ export default function AgentsPage() {
       await agentsApi.delete(editAgent.id)
       qc.invalidateQueries({ queryKey: ['agents'] })
       closeEditModal()
-    } catch {}
+    } catch {
+      console.error('Failed to delete agent')
+    }
   }
 
   const toggleSkill = (sk: any) => {
@@ -262,7 +270,8 @@ export default function AgentsPage() {
           const newThread = created.data
           setThreads([newThread])
           loadThread(newThread.id)
-        } catch {
+        } catch (err) {
+          console.error('Failed to create thread', err)
           setThreads([])
           setActiveThreadId(null)
           setChatMsgs([])
@@ -282,7 +291,8 @@ export default function AgentsPage() {
       const res = await threadsApi.getMessages(threadId)
       const msgs = (res.data || []).map((m: any) => ({ role: m.role, content: m.content }))
       setChatMsgs(msgs.length > 0 ? msgs : [])
-    } catch {
+    } catch (err) {
+      console.error('Failed to load thread', err)
       setChatMsgs([])
     }
   }
@@ -294,7 +304,9 @@ export default function AgentsPage() {
       const newThread = res.data
       setThreads(prev => [newThread, ...prev])
       loadThread(newThread.id)
-    } catch {}
+    } catch (err) {
+      console.error('Failed to create thread', err)
+    }
   }
 
   const deleteThread = async (threadId: string) => {
@@ -312,7 +324,9 @@ export default function AgentsPage() {
         }
         return updated
       })
-    } catch {}
+    } catch (err) {
+      console.error('Failed to delete thread', err)
+    }
   }
 
   const formatTimeAgo = (dateStr: string) => {
@@ -336,7 +350,7 @@ export default function AgentsPage() {
     setRunning(true)
     try {
       const resp = await threadsApi.chat(activeThreadId, userMsg)
-      setChatMsgs(m => [...m, { role: 'assistant', content: resp.data.output_text || resp.data.content || 'No response' }])
+      setChatMsgs(m => [...m, { role: 'assistant', content: resp.data.response || resp.data.content || resp.data.output_text || 'No response' }])
       // Update thread title/timestamp in sidebar
       setThreads(prev => prev.map(t =>
         t.id === activeThreadId

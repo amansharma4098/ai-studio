@@ -36,7 +36,7 @@ export default function DocumentsPage() {
       await documentsApi.upload(file)
       qc.invalidateQueries({ queryKey: ['documents'] })
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Upload failed')
+      console.error('Upload failed:', err.response?.data?.detail || err.message)
     } finally {
       setUploading(false)
       if (fileRef.current) fileRef.current.value = ''

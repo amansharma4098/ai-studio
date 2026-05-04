@@ -645,7 +645,7 @@ export default function DeploymentsPage() {
                               {`<script src="${window.location.origin}/embed.js" data-agent="${dep.slug}"></script>`}
                             </div>
                             <button
-                              onClick={() => copyToClipboard(dep.embed_code, 'embed')}
+                              onClick={() => copyToClipboard(`<script src="${window.location.origin}/embed.js" data-agent="${dep.slug}"></script>`, 'embed')}
                               className={`copy-btn ${copied === 'embed' ? 'copied' : ''}`}
                             >
                               {copied === 'embed' ? <Check size={13} style={{ color: '#00ff88' }} /> : <Copy size={13} />}
@@ -667,10 +667,10 @@ export default function DeploymentsPage() {
                           <div className="flex items-center gap-2">
                             <div className="terminal-block flex-1 truncate" style={{ fontSize: 11 }}>
                               <span style={{ color: '#00f0ff' }}>POST</span>{' '}
-                              <span style={{ color: '#00ff88' }}>{API_URL}{dep.api_endpoint}</span>
+                              <span style={{ color: '#00ff88' }}>{API_URL}/api/public/{dep.slug}/chat</span>
                             </div>
                             <button
-                              onClick={() => copyToClipboard(`curl -X POST ${API_URL}${dep.api_endpoint} -H "Content-Type: application/json" -d '{"message": "Hello"}'`, 'api')}
+                              onClick={() => copyToClipboard(`curl -X POST ${API_URL}/api/public/${dep.slug}/chat -H "Content-Type: application/json" -d '{"message": "Hello"}'`, 'api')}
                               className={`copy-btn ${copied === 'api' ? 'copied' : ''}`}
                             >
                               {copied === 'api' ? <Check size={13} style={{ color: '#00ff88' }} /> : <Copy size={13} />}

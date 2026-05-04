@@ -29,6 +29,7 @@ export default function PlaygroundPage() {
         .then(r => { setLatency(Date.now() - start); return r })
     },
     onSuccess: (r) => setResponse(r.data.response),
+    onError: (err: any) => setResponse(`Error: ${err.response?.data?.error || err.message || 'Request failed'}`),
   })
 
   const providerName = model.split('/')[0] || 'anthropic'
